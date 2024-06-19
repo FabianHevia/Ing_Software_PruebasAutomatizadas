@@ -4,7 +4,7 @@ Library           SeleniumLibrary
 
 *** Variables ***
 ${BROWSER}        Chrome
-${URL}            http://localhost/index.html
+${URL}            http://127.0.0.1:5000/
 ${USERNAME}       admin
 ${PASSWORD}       1234
 
@@ -26,7 +26,7 @@ Ingresar Credenciales y Enviar
     Click Button    id=login-button
 
 Verificar Redireccionamiento a Menu
-    Location Should Be    http://localhost/menu.html
+    Location Should Be    http://127.0.0.1:5000/menu
     Title Should Be    Menú Principal
 
 Cerrar Navegador
