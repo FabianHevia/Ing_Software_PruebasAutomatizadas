@@ -14,6 +14,7 @@
             padding: 20px; /* Espaciado interno */
             text-align: center;
             transition: transform 0.3s ease;
+            border: 2px solid black; /* Borde negro agregado */
         }
 
             /* Efecto hover */
@@ -21,16 +22,22 @@
                 transform: scale(1.05); /* Ligeramente más grande al hacer hover */
             }
 
+        /* Estilos para modo oscuro */
+        body.dark-mode {
+            background-color: #333;
+            color: white;
+        }
+
+        .dark-mode .container-box {
+            background-color: #444;
+            color: white;
+            border: 2px solid white; /* Borde blanco para modo oscuro */
+        }
+
         /* Centrado del texto "Elige una opción" */
         .text-center h1 {
             margin-top: 50px; /* Ajusta la altura superior para alinearlo mejor con los contenedores */
             margin-bottom: 30px; /* Espaciado inferior */
-        }
-
-        /* Estilos adicionales */
-        .animacion-container {
-            color: #333; /* Color del texto dentro de los contenedores */
-            font-weight: bold;
         }
 
         /* Estilo para el nuevo contenedor de texto */
@@ -43,18 +50,31 @@
             color: #333;
             border: 2px solid black; /* Borde negro */
         }
+
+        /* Estilos para el botón de cambio de modo */
+        .mode-toggle-btn {
+            margin-bottom: 20px; /* Espacio debajo del botón */
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #4e57d4; /* Color del botón */
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
-
+    <div class="container col-12 text-center">
+        <!-- Botón para cambiar entre modos -->
+        <button id="mode-toggle-btn" class="mode-toggle-btn">Dark Mode</button> <!-- Botón para cambiar de modo -->
+        <h1>Elige un concepto para el usuario</h1> <!-- Texto centrado y alineado -->
+    </div>
     <div class="container col-12">
-        <div class="text-center">
-            <h1>Elige un concepto para el usuario</h1> <!-- Texto centrado y alineado -->
-        </div>
         <div class="row mt-4 text-center justify-content-center">
             <!-- Redirección en una nueva pestaña -->
             <a class="col-4 animacion-container container-box mx-2" href="#" target="_blank">
-                 Sistema
+                Sistema
             </a>
             <a class="col-4 animacion-container container-box mx-2" href="#" target="_blank">
                 CRM
@@ -71,8 +91,8 @@
                 Texto adicional para Concepto 2 fila 1
                 Texto adicional para Concepto 2 fila 2
                 Texto adicional para Concepto 2 fila 3
-                Texto adicional para Concepto 2 fila 4 
-                Texto adicional para Concepto 2 fila 5 
+                Texto adicional para Concepto 2 fila 4
+                Texto adicional para Concepto 2 fila 5
                 Texto adicional para Concepto 2 fila 6
                 Texto adicional para Concepto 2 fila 7
                 Texto adicional para Concepto 2 fila 8
@@ -83,7 +103,20 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.3/js/bootstrap.min.js"></script>
+    <script>
+        // JavaScript para alternar entre modos claro y oscuro
+        const modeToggleBtn = document.getElementById('mode-toggle-btn');
+        const body = document.body;
+
+        modeToggleBtn.addEventListener('click', function () {
+            body.classList.toggle('dark-mode');
+            if (body.classList.contains('dark-mode')) {
+                modeToggleBtn.textContent = 'Light Mode';
+            } else {
+                modeToggleBtn.textContent = 'Dark Mode';
+            }
+        });
+    </script>
 </body>
 </html>
-
 
