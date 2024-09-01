@@ -5,33 +5,85 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Duality 5</title>
     <link rel="stylesheet" href="https://unpkg.com/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/bs-brain@2.0.4/components/logins/login-4/assets/css/login-4.css">
     <style>
-.animacion-container {
-    transition: transform 1s ease;
-}
+        /* Fondo blanco para los contenedores */
+        .container-box {
+            background-color: white; /* Fondo blanco */
+            border-radius: 10px; /* Bordes redondeados */
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+            padding: 20px; /* Espaciado interno */
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
 
-.animacion-container:hover {
-    transform: scale(1.20);
-}
+            /* Efecto hover */
+            .container-box:hover {
+                transform: scale(1.05); /* Ligeramente más grande al hacer hover */
+            }
 
+        /* Centrado del texto "Elige una opción" */
+        .text-center h1 {
+            margin-top: 50px; /* Ajusta la altura superior para alinearlo mejor con los contenedores */
+            margin-bottom: 30px; /* Espaciado inferior */
+        }
+
+        /* Estilos adicionales */
+        .animacion-container {
+            color: #333; /* Color del texto dentro de los contenedores */
+            font-weight: bold;
+        }
+
+        /* Estilo para el nuevo contenedor de texto */
+        .new-container {
+            background-color: #f8f9fa; /* Fondo claro para el contenedor de texto */
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px; /* Espaciado superior */
+            font-size: 18px;
+            color: #333;
+            border: 2px solid black; /* Borde negro */
+        }
     </style>
 </head>
 <body>
-<h1>Elige una opcion</h1>
-<div class="container col-12 mx-auto">
-    <div class="row mt-5">
-        <a class="animacion-container col-6 text-center rounded-3 mx-auto" style="background-color: black; max-width:40%; min-height: 200px;" target="_blank" href="#">
-            SEPARACION 1
-        </a>
-        <a class="col-6 animacion-container text-center rounded-3 mx-auto" style="background-color: black; max-width:40%; min-height: 200px;" target="_blank" href="#">
-            SEPARACION 2
-        </a>
+
+    <div class="container col-12">
+        <div class="text-center">
+            <h1>Elige un concepto para el usuario</h1> <!-- Texto centrado y alineado -->
+        </div>
+        <div class="row mt-4 text-center justify-content-center">
+            <!-- Redirección en una nueva pestaña -->
+            <a class="col-4 animacion-container container-box mx-2" href="#" target="_blank">
+                 Usuario
+            </a>
+            <a class="col-4 animacion-container container-box mx-2" href="#" target="_blank">
+                Administrador
+            </a>
+        </div>
+
+        <!-- Nuevo contenedor de texto debajo de SEPARACION 1 -->
+        <div class="row mt-4 text-center justify-content-center">
+            <div class="col-4 animacion-container new-container mx-2">
+                Texto adicional para Concepto 1
+            </div>
+            <!-- Nuevo contenedor de texto debajo de SEPARACION 2 -->
+            <div class="col-4 animacion-container new-container mx-2">
+                Texto adicional para Concepto 2 fila 1
+                Texto adicional para Concepto 2 fila 2
+                Texto adicional para Concepto 2 fila 3
+                Texto adicional para Concepto 2 fila 4 
+                Texto adicional para Concepto 2 fila 5 
+                Texto adicional para Concepto 2 fila 6
+                Texto adicional para Concepto 2 fila 7
+                Texto adicional para Concepto 2 fila 8
+            </div>
+        </div>
     </div>
 
-</div>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.3/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.3/js/bootstrap.min.js"></script>
 </body>
 </html>
+
+
