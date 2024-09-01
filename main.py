@@ -31,5 +31,9 @@ def menu():
 def duality():
     return render_template('duality.html')
 
+@app.route('/empresas')
+def empresas():
+    return render_template('empresas.html')
+
 if __name__ == '__main__':
     app.run(debug=True)
