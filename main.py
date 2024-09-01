@@ -18,6 +18,10 @@ def login():
         return redirect(url_for('menu'))
     else:
         return redirect(url_for('index'))
+    
+@app.route('/register')
+def register():
+    return render_template('register.html')
 
 @app.route('/menu')
 def menu():
