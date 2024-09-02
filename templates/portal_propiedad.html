@@ -1,0 +1,182 @@
+@ -0,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+  <meta name="description" content=""/>
+  <meta name="author" content=""/>
+  <title>Dashtreme Admin - Free Dashboard for Bootstrap 4 by Codervent</title>
+ <!-- loader-->
+ <link href="{{ url_for('static', filename='assets/css/pace.min.css') }}" rel="stylesheet"/>
+ <script src="{{ url_for('static', filename='assets/js/pace.min.js') }}"></script>
+ <!-- favicon-->
+ <link rel="icon" href="{{ url_for('static', filename='assets/images/favicon.ico') }}" type="image/x-icon">
+ <!-- Vector CSS -->
+ <link href="{{ url_for('static', filename='assets/plugins/vectormap/jquery-jvectormap-2.0.2.css') }}" rel="stylesheet"/>
+ <!-- simplebar CSS-->
+ <link href="{{ url_for('static', filename='assets/plugins/simplebar/css/simplebar.css') }}" rel="stylesheet"/>
+ <!-- Bootstrap core CSS-->
+ <link href="{{ url_for('static', filename='assets/css/bootstrap.min.css') }}" rel="stylesheet"/>
+ <!-- animate CSS-->
+ <link href="{{ url_for('static', filename='assets/css/animate.css') }}" rel="stylesheet" type="text/css"/>
+ <!-- Icons CSS-->
+ <link href="{{ url_for('static', filename='assets/css/icons.css') }}" rel="stylesheet" type="text/css"/>
+ <!-- Sidebar CSS-->
+ <link href="{{ url_for('static', filename='assets/css/sidebar-menu.css') }}" rel="stylesheet"/>
+ <!-- Custom Style-->
+ <link href="{{ url_for('static', filename='assets/css/app-style.css') }}" rel="stylesheet"/>
+
+ <style>
+     .animacion-container {
+            border-radius: 20px; /* Bordes redondeados */
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+            transition: transform 0.3s ease;
+    }
+
+            /* Efecto hover */
+    .animacion-container:hover {
+            transform: scale(1.05); /* Ligeramente más grande al hacer hover */
+            background-color: #ffffff04;
+    }
+</style>
+</head>
+
+<body class="bg-theme bg-theme1">
+ 
+<!-- Start wrapper-->
+ <div id="wrapper">
+
+<div class="clearfix"></div>
+	
+    <div class="row mt-5 p-3 text-center" style="text-align:center;">
+    <div class="col-12 mb-3" style="text-align:center;"><h1 class="mb-1 text-center" style="text-align:center; font-weight: bold;" >Vista de Propiedades</h1></div>
+	 <div class="col-6 col-lg-6">
+	   <a class="card animacion-container" href="#" target="_blank">
+	     <div class="card-header">Propiedad 1.
+		 </div>
+	       <div class="table-responsive">
+                <table class="table align-items-center table-flush table-borderless">
+                    <tbody>
+                        <tr>
+                            <img class="mx-auto" style="min-width: 100%; max-width: 100%; max-height:1000px; min-height: 400px;" src="https://lajoya.ec/wp-content/uploads/2015/02/LJ-CONDOMINIO-2-SALA-COMEDOR-1108x960.png" alt="product img">
+                            <td style="font-weight:bold; text-align: justify;">
+                                <p>Direccion</p>
+                                <p>Comuna, Ciudad</p>
+                                <p>Captador</p>
+                                <p>Estado: <strong style="color: rgb(7, 206, 7)">Inspeccionada</strong></p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </a>
+    </div>
+     <div class="col-6 col-lg-6">
+        <a class="card animacion-container" href="#" target="_blank">
+          <div class="card-header">Propiedad 2.
+          </div>
+          <div class="table-responsive">
+            <table class="table align-items-center table-flush table-borderless">
+                <tbody>
+                    <tr>
+                        <img class="mx-auto" style="min-width: 100%; max-width: 100%; max-height:1000px; min-height: 400px;" src="https://www.bricsa.cl/wp-content/uploads/2021/10/Imagen2-1024x683-640x480.jpg" alt="product img">
+                        <td style="font-weight:bold; text-align: justify;">
+                            <p>Direccion</p>
+                            <p>Comuna, Ciudad</p>
+                            <p>Captador</p>
+                            <p>Estado: <strong style="color: rgb(7, 206, 7)">Inspeccionada</strong></p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </a>
+	</div><!--End Row-->
+
+      <!--End Dashboard Content-->
+	  
+	<!--start overlay-->
+		  <div class="overlay toggle-menu"></div>
+		<!--end overlay-->
+		
+    </div>
+    <!-- End container-fluid-->
+    
+    </div><!--End content-wrapper-->
+   <!--Start Back To Top Button-->
+    <a href="javaScript:void();" class="back-to-top"><i class="fa fa-angle-double-up"></i> </a>
+    <!--End Back To Top Button-->
+	
+	<!--Start footer-->
+	<footer class="footer">
+      <div class="container">
+        <div class="text-center">
+          Copyright © 2024 BrokerSync
+        </div>
+      </div>
+    </footer>
+	<!--End footer-->
+	
+  <!--start color switcher-->
+   <div class="right-sidebar">
+    <div class="switcher-icon">
+      <i class="zmdi zmdi-settings zmdi-hc-spin"></i>
+    </div>
+    <div class="right-sidebar-content">
+
+      <p class="mb-0">Gaussion Texture</p>
+      <hr>
+      
+      <ul class="switcher">
+        <li id="theme1"></li>
+        <li id="theme2"></li>
+        <li id="theme3"></li>
+        <li id="theme4"></li>
+        <li id="theme5"></li>
+        <li id="theme6"></li>
+      </ul>
+
+      <p class="mb-0">Gradient Background</p>
+      <hr>
+      
+      <ul class="switcher">
+        <li id="theme7"></li>
+        <li id="theme8"></li>
+        <li id="theme9"></li>
+        <li id="theme10"></li>
+        <li id="theme11"></li>
+        <li id="theme12"></li>
+		<li id="theme13"></li>
+        <li id="theme14"></li>
+        <li id="theme15"></li>
+      </ul>
+      
+     </div>
+   </div>
+  <!--end color switcher-->
+   
+  </div><!--End wrapper-->
+
+<!-- Bootstrap core JavaScript-->
+<script src="{{ url_for('static', filename='assets/js/jquery.min.js') }}"></script>
+<script src="{{ url_for('static', filename='assets/js/popper.min.js') }}"></script>
+<script src="{{ url_for('static', filename='assets/js/bootstrap.min.js') }}"></script>
+
+<!-- simplebar js -->
+<script src="{{ url_for('static', filename='assets/plugins/simplebar/js/simplebar.js') }}"></script>
+<!-- sidebar-menu js -->
+<script src="{{ url_for('static', filename='assets/js/sidebar-menu.js') }}"></script>
+<!-- loader scripts -->
+<script src="{{ url_for('static', filename='assets/js/jquery.loading-indicator.js') }}"></script>
+<!-- Custom scripts -->
+<script src="{{ url_for('static', filename='assets/js/app-script.js') }}"></script>
+<!-- Chart js -->
+<script src="{{ url_for('static', filename='assets/plugins/Chart.js/Chart.min.js') }}"></script>
+<!-- Index js -->
+<script src="{{ url_for('static', filename='assets/js/index.js') }}"></script>
+
+  
+</body>
+</html>

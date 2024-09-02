@@ -85,5 +85,14 @@ def duality():
 def empresas():
     return render_template('empresas.html')
 
+@app.route('/vista_propiedad')
+def vista_propiedad():
+    return render_template('vista_propiedad.html')
+
+@app.route('/portal_propiedad')
+def portal_propiedad():
+    return render_template('portal_propiedad.html')
+
+
 if __name__ == '__main__':
     app.run(debug=True)
