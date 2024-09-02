@@ -5,138 +5,95 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Duality 5</title>
     <link rel="stylesheet" href="https://unpkg.com/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link href="{{ url_for('static', filename='assets/plugins/vectormap/jquery-jvectormap-2.0.2.css') }}" rel="stylesheet"/>
+ <!-- simplebar CSS-->
+ <link href="{{ url_for('static', filename='assets/plugins/simplebar/css/simplebar.css') }}" rel="stylesheet"/>
+ <!-- Bootstrap core CSS-->
+ <link href="{{ url_for('static', filename='assets/css/bootstrap.min.css') }}" rel="stylesheet"/>
+ <!-- animate CSS-->
+ <link href="{{ url_for('static', filename='assets/css/animate.css') }}" rel="stylesheet" type="text/css"/>
+ <!-- Icons CSS-->
+ <link href="{{ url_for('static', filename='assets/css/icons.css') }}" rel="stylesheet" type="text/css"/>
+ <!-- Sidebar CSS-->
+ <link href="{{ url_for('static', filename='assets/css/sidebar-menu.css') }}" rel="stylesheet"/>
+ <!-- Custom Style-->
+ <link href="{{ url_for('static', filename='assets/css/app-style.css') }}" rel="stylesheet"/>
     <style>
+        
         /* Fondo blanco para los contenedores */
-        .container-box {
+        .animacion-container {
             background-color: white; /* Fondo blanco */
             border-radius: 10px; /* Bordes redondeados */
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* Sombra sutil */
-            padding: 20px; /* Espaciado interno */
-            text-align: center;
             transition: transform 0.3s ease;
-            border: 2px solid black; /* Borde negro agregado */
         }
 
             /* Efecto hover */
-            .container-box:hover {
-                transform: scale(1.05); /* Ligeramente más grande al hacer hover */
-            }
+        .animacion-container:hover {
+            transform: scale(1.05); /* Ligeramente más grande al hacer hover */
+            background-color: #cecece;
+        }
 
         /* Estilos para modo oscuro */
         body.dark-mode {
             background-color: #333;
             color: white;
         }
-
-        .dark-mode .container-box {
-            background-color: #444;
-            color: white;
-            border: 2px solid white; /* Borde blanco para modo oscuro */
+        .shadow-hr {
+            height: 2px; /* Altura de la línea */
+            box-shadow: 0px 4px 5px rgba(0, 0, 0, 0.3); /* Sombra */
+            margin: 20px 0; /* Margen arriba y abajo */
         }
-
-        /* Centrado del texto "Elige una opción" */
-        .text-center h1 {
-            margin-top: 50px; /* Ajusta la altura superior para alinearlo mejor con los contenedores */
-            margin-bottom: 30px; /* Espaciado inferior */
-        }
-
-        /* Estilo para el nuevo contenedor de texto */
-        .new-container {
-            background-color: #f8f9fa; /* Fondo claro para el contenedor de texto */
-            border-radius: 10px;
-            padding: 20px;
-            margin-top: 20px; /* Espaciado superior */
-            font-size: 18px;
-            color: #333;
-            border: 2px solid black; /* Borde negro */
-        }
-
-        /* Estilos para el botón de cambio de modo */
-        .mode-toggle-btn {
-            margin-bottom: 20px; /* Espacio debajo del botón */
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            background-color: #4e57d4; /* Color del botón */
-            color: white;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        /* Contenedor para la imagen */
-        .image-container {
-            text-align: center; /* Centra la imagen dentro del contenedor */
-            margin-bottom: 15px; /* Espacio debajo de la imagen */
-        }
-
-            .image-container img {
-                max-width: 100%; /* Asegura que la imagen no exceda el ancho del contenedor */
-                height: auto; /* Mantiene la proporción de la imagen */
-                border-radius: 10px; /* Opcional: redondea las esquinas de la imagen */
-                max-height: 200px; /* Ajusta la altura máxima de la imagen */
-            }
     </style>
 </head>
-<body>
+<body class="bg-theme bg-theme1">
     <div class="container col-12 text-center">
-        <!-- Botón para cambiar entre modos -->
-        <button id="mode-toggle-btn" class="mode-toggle-btn">Dark Mode</button> <!-- Botón para cambiar de modo -->
-        <h1>Elige un concepto para el usuario</h1> <!-- Texto centrado y alineado -->
+        <!-- Botón para cambiar entre modos --><!-- Botón para cambiar de modo -->
+        <h1 class="mt-5" style="font-weight: bold;">Elige una opción</h1> <!-- Texto centrado y alineado -->
     </div>
-    <div class="container col-12">
+    <div class="container col-12 position-absolute top-50 end-0 translate-middle-y">
         <div class="row mt-4 text-center justify-content-center">
             <!-- Redirección en una nueva pestaña -->
-            <a class="col-4 animacion-container container-box mx-2" href="#" target="_blank">
-                Sistema
+            <a class="col-6 animacion-container bg-gray mx-auto shadow-lg" style="max-width:35%;" href="#" target="_blank">
+                <div class="card-header" style="color:#010c35">Sistema BrokerSync</div>
+        
+        <div class="row">
+            <div class="col-3">
+                <img src="../static/assets/images/brokersyncdibujo_rbg.png" style="max-height:100px; max-width:100px;"alt="Icono Acceso">
+            </div>
+                <div class="col-9 p-1">
+                    <div style="color:#000000">✔ Administrar propiedades</div>
+                    <div style="color:#000000">✔ Administrar Grabaciones</div>
+                    <div style="color:#000000">✔ Obtener documentos</div>
+                    <div style="color:#000000">✔ Administrar propiedades</div>
+                </div>
+            </div>
+            <hr style="border-color: black;" class="shadow-hr">
+            <p class="pb-2" style="color:#000000">Sistema de BrokerSync, donde podras encontrar reuniones virtuales de tus propiedades.</p>
             </a>
-            <a class="col-4 animacion-container container-box mx-2" href="#" target="_blank">
-                CRM
-            </a>
+            <a class="col-6 animacion-container bg-gray mx-auto shadow-lg" style="max-width:35%;" href="#" target="_blank">
+                <div class="card-header" style="color:#271001">CRM BrokerSync</div>
+
+                <div class="row">
+                    <div class="col-3">
+                        <img src="../static/assets/images/logo-icon.png" class="mt-4" style="max-height:100px; max-width:100px;"alt="Icono Acceso">
+                    </div>
+                        <div class="col-9 p-1">
+                        <div style="color:#000000">✔ Control de usuario</div>
+                        <div style="color:#000000">✔ Ajustes de la empresa</div>
+                        <div style="color:#000000">✔ Control de permisos</div>
+                        <div style="color:#000000">✔ Administracion del calendario</div>
+                    </div>
+                </div>
+                <hr style="border-color: black;" class="shadow-hr">
+                <p class="p-2" style="color:#000000">CRM de BrokerSync, dónde podrás gestionar tu empresa.</p>
+             </a>
         </div>
 
-        <!-- Nuevo contenedor de texto debajo de SEPARACION 1 -->
-        <div class="row mt-4 text-center justify-content-center">
-            <div class="col-4 animacion-container new-container mx-2">
-                <!-- Contenedor para la imagen -->
-                <div class="image-container">
-                    <img src=""poner/ruta/acceso"" alt="Icono Sistema">
-                </div>
-                <div>- Administrar propiedades</div>
-                <div>- Administrar Grabaciones</div>
-                <div>- Obtener documentos</div>
-                <div>- Administrar propiedades</div>
-            </div>
-            <!-- Nuevo contenedor de texto debajo de SEPARACION 2 -->
-            <div class="col-4 animacion-container new-container mx-2">
-                <!-- Contenedor para la imagen -->
-                <div class="image-container">
-                    <img src=""poner/ruta/acceso"" alt="Icono CRM">
-                </div>
-                <div>- Control de usuario</div>
-                <div>- Ajustes de la empresa</div>
-                <div>- Control de permisos</div>
-                <div>- Administracion del calendario</div>
-                <div>- Descripcion de (agregar más info)</div>
-            </div>
-        </div>
-    </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.3/js/bootstrap.min.js"></script>
-    <script>
-        // JavaScript para alternar entre modos claro y oscuro
-        const modeToggleBtn = document.getElementById('mode-toggle-btn');
-        const body = document.body;
-
-        modeToggleBtn.addEventListener('click', function () {
-            body.classList.toggle('dark-mode');
-            if (body.classList.contains('dark-mode')) {
-                modeToggleBtn.textContent = 'Light Mode';
-            } else {
-                modeToggleBtn.textContent = 'Dark Mode';
-            }
-        });
-    </script>
 </body>
 </html>
+
