@@ -63,11 +63,18 @@
             font-weight: bold;
         }
 
-        /* Imagen en los contenedores adicionales */
-        .new-container img {
-            max-width: 50px; /* Tamaño máximo de la imagen */
-            margin-bottom: 10px; /* Espacio debajo de la imagen */
+        /* Contenedor para la imagen */
+        .image-container {
+            text-align: center; /* Centra la imagen dentro del contenedor */
+            margin-bottom: 15px; /* Espacio debajo de la imagen */
         }
+
+            .image-container img {
+                max-width: 100%; /* Asegura que la imagen no exceda el ancho del contenedor */
+                height: auto; /* Mantiene la proporción de la imagen */
+                border-radius: 10px; /* Opcional: redondea las esquinas de la imagen */
+                max-height: 200px; /* Ajusta la altura máxima de la imagen */
+            }
     </style>
 </head>
 <body>
@@ -87,17 +94,24 @@
             </a>
         </div>
 
-        <!-- Nuevo contenedor de texto debajo de SIstema -->
+        <!-- Nuevo contenedor de texto debajo de SEPARACION 1 -->
         <div class="row mt-4 text-center justify-content-center">
             <div class="col-4 animacion-container new-container mx-2">
-                <!-- Imagen agregada aquí -->
-                <img src="""" alt="">
-                Texto adicional para Sistema
+                <!-- Contenedor para la imagen -->
+                <div class="image-container">
+                    <img src=""poner/ruta/acceso"" alt="Icono Sistema">
+                </div>
+                <div>- Administrar propiedades</div>
+                <div>- Administrar Grabaciones</div>
+                <div>- Obtener documentos</div>
+                <div>- Administrar propiedades</div>
             </div>
-            <!-- Nuevo contenedor de texto debajo de CRM -->
+            <!-- Nuevo contenedor de texto debajo de SEPARACION 2 -->
             <div class="col-4 animacion-container new-container mx-2">
-                <!-- Imagen agregada aquí -->
-                <img src=""""alt="">
+                <!-- Contenedor para la imagen -->
+                <div class="image-container">
+                    <img src=""poner/ruta/acceso"" alt="Icono CRM">
+                </div>
                 <div>- Control de usuario</div>
                 <div>- Ajustes de la empresa</div>
                 <div>- Control de permisos</div>
@@ -126,4 +140,3 @@
     </script>
 </body>
 </html>
-
