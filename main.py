@@ -67,7 +67,22 @@ def login():
         usuario = verificar_usuario(username, password)
         
         if usuario:
-            return redirect(url_for('menu'))
+            return redirect(url_for('vista_propiedad'))
+        else:
+            return redirect(url_for('index'))
+    # Si es una solicitud GET, muestra el formulario de inicio de sesión
+    return render_template('index.html')
+
+@app.route('/register_admin', methods=['GET', 'POST'])
+def register_admin():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        
+        usuario = verificar_usuario(username, password)
+        
+        if usuario:
+            return redirect(url_for('vista_propiedad'))
         else:
             return redirect(url_for('index'))
     # Si es una solicitud GET, muestra el formulario de inicio de sesión
@@ -92,7 +107,6 @@ def vista_propiedad():
 @app.route('/portal_propiedad')
 def portal_propiedad():
     return render_template('portal_propiedad.html')
-
 
 if __name__ == '__main__':
     app.run(debug=True)
