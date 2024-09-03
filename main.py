@@ -1,10 +1,13 @@
 from flask import Flask, render_template, request, redirect, url_for
-import random
-import string
+from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
+from werkzeug.security import generate_password_hash, check_password_hash
 import MySQLdb
 import re
+import random
+import string
 
 app = Flask(__name__)
+app.secret_key = 'your_secret_key'  # Necesario para manejar sesiones
 
 # Configurar la conexión a la base de datos
 db = MySQLdb.connect(
@@ -19,7 +22,7 @@ def Generacion_Codigo_Unico(length=20):
     caracteres = string.ascii_letters + string.digits
     codigo_unico = ''.join(random.choice(caracteres) for _ in range(length))
     return codigo_unico
-
+"""
 # Función para verificar credenciales de usuario
 def verificar_usuario(username, password):
     cur = db.cursor()
@@ -27,6 +30,7 @@ def verificar_usuario(username, password):
     usuario = cur.fetchone()  # Devuelve el primer resultado o None si no existe
     cur.close()
     return usuario
+"""
 
 def actualizar_admin(username):
     cur = db.cursor()
@@ -41,12 +45,64 @@ def agregar_usuario(username, email, password):
                 (username, email, password, 0))
     db.commit()
     cur.close()    
+# Inicializar LoginManager para manejar autenticaciones
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
 
+class User(UserMixin):
+    def __init__(self, id, username, email, password, is_admin=False, empresa=False):
+        self.id = id
+        self.username = username
+        self.email = email
+        self.password = password
+        self.is_admin = is_admin
+        self.empresa = empresa  # Añadimos empresa al constructor
+
+    def check_password(self, password):
+        return self.password == password  # Compara directamente en texto plano
+
+    @staticmethod
+    def get_by_username(username):
+        cur = db.cursor()
+        cur.execute("SELECT id, username, email, password, admin, empresa FROM usuarios WHERE username = %s", (username,))
+        user_data = cur.fetchone()
+        cur.close()
+        
+        if user_data:
+            return User(id=user_data[0], username=user_data[1], email=user_data[2], 
+                        password=user_data[3], is_admin=bool(user_data[4]), empresa=bool(user_data[5]))
+        return None
+
+    @staticmethod
+    def get_by_id(user_id):
+        cur = db.cursor()
+        cur.execute("SELECT id, username, email, password, admin, empresa FROM usuarios WHERE id = %s", (user_id,))
+        user_data = cur.fetchone()
+        cur.close()
+
+        if user_data:
+            return User(id=user_data[0], username=user_data[1], email=user_data[2], 
+                        password=user_data[3], is_admin=bool(user_data[4]), empresa=bool(user_data[5]))
+        return None
+
+    def save(self):
+        cur = db.cursor()
+        cur.execute("INSERT INTO usuarios (username, email, password, admin, empresa) VALUES (%s, %s, %s, %s, %s)", 
+                    (self.username, self.email, self.password, int(self.is_admin), int(self.empresa)))
+        db.commit()
+        cur.close()
+
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.get_by_id(user_id)
 
 @app.route('/')
 def index():
     return render_template('index.html')
-    
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -55,25 +111,20 @@ def register():
         password = request.form['password']
         confirm_password = request.form['confirm_password']
         
-        # Validación básica
         if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
             return "Dirección de correo no válida"
         if password != confirm_password:
             return "Las contraseñas no coinciden"
         
-        # Verificar si el usuario o email ya existe
-        cur = db.cursor()
-        cur.execute("SELECT * FROM usuarios WHERE username = %s OR email = %s", (username, email))
-        usuario = cur.fetchone()
-        if usuario:
-            return "El usuario o email ya están registrados"
+        if User.get_by_username(username):
+            return "El usuario ya está registrado"
         
-        # Agregar el usuario a la base de datos
-        agregar_usuario(username, email, password)
-        return redirect(url_for('login'))  # Redirigir al login después del registro
-    
+        # NO Generar el hash de la contraseña, solo almacenar el texto plano
+        new_user = User(id=None, username=username, email=email, password=password)
+        new_user.save()
+        
+        return redirect(url_for('login'))
     return render_template('register.html')
-
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -81,44 +132,46 @@ def login():
         username = request.form['username']
         password = request.form['password']
         
-        usuario = verificar_usuario(username, password)
+        user = User.get_by_username(username)
         
-        if usuario:
-            # `usuario[3]` asume que `admin` es la cuarta columna devuelta en el resultado.
-            # Asegúrate de que el orden de las columnas en tu tabla coincida.
-            if usuario[4] == 1:  # Si el usuario es admin
-                return redirect(url_for('duality'))
+        if user:
+            print(f"Usuario encontrado: {user.username}, Contraseña en DB: {user.password}, Contraseña ingresada: {password}")
+            if user.check_password(password):
+                print("Contraseña correcta")
+                login_user(user)
+                if user.is_admin:
+                    return redirect(url_for('duality'))
+                else:
+                    return redirect(url_for('portal_propiedad'))
             else:
-                return redirect(url_for('portal_propiedad'))
+                print("Contraseña incorrecta")
         else:
-            return redirect(url_for('index'))
-    # Si es una solicitud GET, muestra el formulario de inicio de sesión
+            print("Usuario no encontrado")
+            
+        return "Usuario o contraseña incorrectos"
     return render_template('index.html')
 
-@app.route('/register_admin', methods=['GET', 'POST'])
-def register_admin():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        
-        usuario = verificar_usuario(username, password)
-        
-        if usuario:
-            # Actualiza el valor de admin a 1
-            actualizar_admin(username)
-            return redirect(url_for('index'))
-        else:
-            return redirect(url_for('register_admin'))
-    # Si es una solicitud GET, muestra el formulario de inicio de sesión
-    return render_template('register_admin.html')
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('index'))
 
 @app.route('/menu')
+@login_required
 def menu():
     return render_template('menu.html')
 
 @app.route('/duality')
+@login_required
 def duality():
     return render_template('duality.html')
+
+@app.route('/portal_propiedad')
+@login_required
+def portal_propiedad():
+    return render_template('portal_propiedad.html')
+
 
 @app.route('/crear_empresa', methods=['POST'])
 def crear_empresa():
@@ -201,10 +254,6 @@ def registrar_propiedad():
     cur.close()
     
     return redirect(url_for('vista_propiedad'))
-
-@app.route('/portal_propiedad')
-def portal_propiedad():
-    return render_template('portal_propiedad.html')
 
 if __name__ == '__main__':
     app.run(debug=True)

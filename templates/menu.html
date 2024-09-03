@@ -43,6 +43,14 @@
    </div>
    <ul class="sidebar-menu do-nicescrol">
       <li class="sidebar-header">Side Menu</li>
+      {% if current_user.is_authenticated %}
+        <li class="sidebar-header">Bienvenido, {{ current_user.username }}!</li>
+        <li>
+            <a href="{{ url_for('logout') }}">
+                <i class="zmdi zmdi-power"></i> <span>Cerrar sesión</span>
+            </a>
+        </li>
+    {% endif %}
       <li>
         <a href="index.html">
           <i class="zmdi zmdi-view-dashboard"></i> <span>Dashboard</span>
