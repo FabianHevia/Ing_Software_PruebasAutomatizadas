@@ -22,15 +22,7 @@ def Generacion_Codigo_Unico(length=20):
     caracteres = string.ascii_letters + string.digits
     codigo_unico = ''.join(random.choice(caracteres) for _ in range(length))
     return codigo_unico
-"""
-# Función para verificar credenciales de usuario
-def verificar_usuario(username, password):
-    cur = db.cursor()
-    cur.execute("SELECT * FROM usuarios WHERE username = %s AND password = %s", (username, password))
-    usuario = cur.fetchone()  # Devuelve el primer resultado o None si no existe
-    cur.close()
-    return usuario
-"""
+
 
 def actualizar_admin(username):
     cur = db.cursor()
@@ -60,7 +52,7 @@ class User(UserMixin):
         self.empresa = empresa  # Añadimos empresa al constructor
 
     def check_password(self, password):
-        return self.password == password  # Compara directamente en texto plano
+        return check_password_hash(self.password, password)
 
     @staticmethod
     def get_by_username(username):
@@ -119,12 +111,33 @@ def register():
         if User.get_by_username(username):
             return "El usuario ya está registrado"
         
-        # NO Generar el hash de la contraseña, solo almacenar el texto plano
-        new_user = User(id=None, username=username, email=email, password=password)
+        # Generar el hash de la contraseña
+        hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
+        
+        # Crear el usuario y guardarlo en la base de datos
+        new_user = User(id=None, username=username, email=email, password=hashed_password)
         new_user.save()
         
         return redirect(url_for('login'))
     return render_template('register.html')
+
+@app.route('/register_admin', methods=['GET', 'POST'])
+def register_admin():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        
+        # Obtener el usuario desde la base de datos usando la clase User
+        user = User.get_by_username(username)
+        
+        if user and user.check_password(password):  # Verifica la contraseña con el hash
+            # Actualiza el valor de admin a 1
+            actualizar_admin(username)
+            return redirect(url_for('index'))
+        else:
+            return redirect(url_for('register_admin'))  # Redirige si las credenciales son incorrectas
+    # Si es una solicitud GET, muestra el formulario de inicio de sesión
+    return render_template('register_admin.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -132,11 +145,16 @@ def login():
         username = request.form['username']
         password = request.form['password']
         
+        print(f"Username recibido: {username}")
+        print(f"Password recibido: {password}")
+        
+        # Obtener el usuario desde la base de datos
         user = User.get_by_username(username)
         
         if user:
-            print(f"Usuario encontrado: {user.username}, Contraseña en DB: {user.password}, Contraseña ingresada: {password}")
-            if user.check_password(password):
+            print(f"Hash almacenado: {user.password}")
+            print(f"Contraseña ingresada: {password}")
+            if user.check_password(password):  # Verifica el hash de la contraseña
                 print("Contraseña correcta")
                 login_user(user)
                 if user.is_admin:
@@ -150,6 +168,7 @@ def login():
             
         return "Usuario o contraseña incorrectos"
     return render_template('index.html')
+
 
 @app.route('/logout')
 @login_required
