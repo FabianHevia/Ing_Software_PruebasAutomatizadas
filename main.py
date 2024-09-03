@@ -120,10 +120,6 @@ def menu():
 def duality():
     return render_template('duality.html')
 
-@app.route('/empresas')
-def empresas():
-    return render_template('empresas.html')
-
 @app.route('/crear_empresa', methods=['POST'])
 def crear_empresa():
     nombre_empresa = request.form['nombre_empresa']
@@ -140,7 +136,40 @@ def crear_empresa():
     # Redirige de vuelta a la página de empresas
     return redirect(url_for('empresas'))
 
+@app.route('/anadir_empresa', methods=['POST'])
+def anadir_empresa():
+    codigo_empresa = request.form['codigo_empresa']
+    
+    # Verifica si la empresa con ese código existe
+    cur = db.cursor()
+    cur.execute("SELECT nombre_empresa FROM empresas WHERE codigo_empresa = %s", (codigo_empresa,))
+    empresa = cur.fetchone()
+    
+    cur.close()
+    
+    if empresa:
+        # Si la empresa existe, agregar el nombre a la lista para mostrar en la tabla
+        return redirect(url_for('empresas', nombre_empresa=empresa[0]))
+    
+    return redirect(url_for('empresas'))  # Si no se encuentra la empresa, redirige sin agregar
 
+@app.route('/empresas')
+def empresas():
+    nombre_empresa = request.args.get('nombre_empresa')
+    
+    # Aquí podemos crear una lista de las empresas que se muestran en la tabla
+    empresas = []
+    
+    if nombre_empresa:
+        # Añadir la nueva empresa a la lista de empresas a mostrar
+        empresas.append({
+            'nombre': nombre_empresa,
+            'logo': 'https://via.placeholder.com/110x110',
+            'cargo': 'Empleado',
+            'fecha_ingreso': '24/10/2019'
+        })
+    
+    return render_template('empresas.html', empresas=empresas)
 
 @app.route('/vista_propiedad')
 def vista_propiedad():
