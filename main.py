@@ -1,4 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for
+import random
+import string
 import MySQLdb
 import re
 
@@ -13,6 +15,11 @@ db = MySQLdb.connect(
     port=15660                         # Puerto proporcionado por Railway
 )
 
+def Generacion_Codigo_Unico(length=20):
+    caracteres = string.ascii_letters + string.digits
+    codigo_unico = ''.join(random.choice(caracteres) for _ in range(length))
+    return codigo_unico
+
 # Función para verificar credenciales de usuario
 def verificar_usuario(username, password):
     cur = db.cursor()
@@ -21,12 +28,17 @@ def verificar_usuario(username, password):
     cur.close()
     return usuario
 
+def actualizar_admin(username):
+    cur = db.cursor()
+    cur.execute("UPDATE usuarios SET admin = 1 WHERE username = %s", (username,))
+    db.commit()
+    cur.close()
 
 def agregar_usuario(username, email, password):
     cur = db.cursor()
     # Inserta al usuario con admin=1 por defecto
     cur.execute("INSERT INTO usuarios (username, email, password, admin) VALUES (%s, %s, %s, %s)", 
-                (username, email, password, 1))
+                (username, email, password, 0))
     db.commit()
     cur.close()    
 
@@ -62,6 +74,7 @@ def register():
     
     return render_template('register.html')
 
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -91,11 +104,13 @@ def register_admin():
         usuario = verificar_usuario(username, password)
         
         if usuario:
-            return redirect(url_for('vista_propiedad'))
-        else:
+            # Actualiza el valor de admin a 1
+            actualizar_admin(username)
             return redirect(url_for('index'))
+        else:
+            return redirect(url_for('register_admin'))
     # Si es una solicitud GET, muestra el formulario de inicio de sesión
-    return render_template('index.html')
+    return render_template('register_admin.html')
 
 @app.route('/menu')
 def menu():
@@ -108,6 +123,24 @@ def duality():
 @app.route('/empresas')
 def empresas():
     return render_template('empresas.html')
+
+@app.route('/crear_empresa', methods=['POST'])
+def crear_empresa():
+    nombre_empresa = request.form['nombre_empresa']
+    
+    # Genera un código único para la empresa
+    codigo_empresa = Generacion_Codigo_Unico()
+    
+    # Inserta el nombre de la empresa y el código único en la base de datos
+    cur = db.cursor()
+    cur.execute("INSERT INTO empresas (codigo_empresa, nombre_empresa) VALUES (%s, %s)", (codigo_empresa, nombre_empresa))
+    db.commit()
+    cur.close()
+    
+    # Redirige de vuelta a la página de empresas
+    return redirect(url_for('empresas'))
+
+
 
 @app.route('/vista_propiedad')
 def vista_propiedad():

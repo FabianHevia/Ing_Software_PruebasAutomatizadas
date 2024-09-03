@@ -95,13 +95,13 @@
                 </div>
                 <div class="modal-body">
                     <!-- Formulario dentro del modal -->
-                    <form>
-                        <div class="mb-3">
-                            <label for="nombre" class="form-label" style="color: rgb(0, 0, 0);">Nombre Empresa</label>
-                            <input type="text" class="form-control border border-3" id="nombre" placeholder="Ingresa tu nombre" style="color: rgb(0, 0, 0);">
-                        </div>
-                        <button type="submit" class="btn btn-primary">Crear</button>
-                    </form>
+                    <form action="{{ url_for('crear_empresa') }}" method="post">
+                      <div class="mb-3">
+                          <label for="nombre" class="form-label" style="color: rgb(0, 0, 0);">Nombre Empresa</label>
+                          <input type="text" class="form-control border border-3" id="nombre" name="nombre_empresa" placeholder="Ingresa el nombre de la empresa" style="color: rgb(0, 0, 0);" required>
+                      </div>
+                      <button type="submit" class="btn btn-primary">Crear</button>
+                  </form>
                 </div>
             </div>
         </div>
