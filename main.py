@@ -171,9 +171,36 @@ def empresas():
     
     return render_template('empresas.html', empresas=empresas)
 
+
+
 @app.route('/vista_propiedad')
 def vista_propiedad():
-    return render_template('vista_propiedad.html')
+    # Obtener las propiedades desde la base de datos
+    cur = db.cursor()
+    cur.execute("SELECT direccion, comuna, codigo_postal, url_imagen FROM propiedades")
+    propiedades = cur.fetchall()
+    cur.close()
+    
+    # Pasar las propiedades al template
+    return render_template('vista_propiedad.html', propiedades=propiedades)
+
+
+@app.route('/registrar_propiedad', methods=['POST'])
+def registrar_propiedad():
+    direccion = request.form['direccion']
+    comuna = request.form['comuna']
+    codigo_postal = request.form['codigo_postal']
+    url_imagen = request.form['url_imagen']
+    
+    
+    # Insertar los datos en la base de datos
+    cur = db.cursor()
+    cur.execute("INSERT INTO propiedades (direccion, comuna, codigo_postal, url_imagen) VALUES (%s, %s, %s, %s)",
+                (direccion, comuna, codigo_postal, url_imagen))
+    db.commit()
+    cur.close()
+    
+    return redirect(url_for('vista_propiedad'))
 
 @app.route('/portal_propiedad')
 def portal_propiedad():

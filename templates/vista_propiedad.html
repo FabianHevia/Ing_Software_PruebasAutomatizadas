@@ -62,19 +62,19 @@
     <div class="col-2 mx-auto mb-5 p-2" style="text-align:center; ; background-color: rgba(0, 0, 0, 0.05);">
         <button class="btn bsb-btn-xl btn-primary" style="min-width:95%;" type="button" data-bs-toggle="modal" data-bs-target="#formModal">Registrar Propiedad</button>
     </div>
-	<div class="col-6 col-lg-6">
-	   <a class="card animacion-container mx-auto rounded-3" style="height:100%;width:90%" href="#" target="_blank">
-	     <div class="card-header">Propiedad 1.
-		 </div>
-	       <div class="table-responsive">
+    {% for propiedad in propiedades %}
+    <div class="col-6 col-lg-6">
+        <a class="card animacion-container mx-auto rounded-3" style="height:100%;width:90%" href="#" target="_blank">
+            <div class="card-header">Propiedad {{ loop.index }}.</div>
+            <div class="table-responsive">
                 <table class="table align-items-center table-flush table-borderless">
                     <tbody>
                         <tr>
-                            <img class="mx-auto object-fit-cover" style="min-width: 100%; max-width: 100%; max-height:500px; min-height: 500px" src="https://lajoya.ec/wp-content/uploads/2015/02/LJ-CONDOMINIO-2-SALA-COMEDOR-1108x960.png" alt="product img">
+                            <img class="mx-auto object-fit-cover" style="min-width: 100%; max-width: 100%; max-height:500px; min-height: 500px" src="https://lajoya.ec/wp-content/uploads/2015/02/LJ-CONDOMINIO-2-SALA-COMEDOR-1108x960.png" alt="Imagen de la propiedad">
                             <td style="font-weight:bold; text-align: justify;">
-                                <p>Direccion</p>
-                                <p>Comuna, Ciudad</p>
-                                <p>Captador</p>
+                                <p>Direccion: {{ propiedad[0] }}</p> <!-- Dirección -->
+                                <p>Comuna: {{ propiedad[1] }}</p> <!-- Comuna -->
+                                <p>Código Postal: {{ propiedad[2] }}</p> <!-- Código Postal -->
                                 <p>Estado: <strong style="color: rgb(7, 206, 7)">Inspeccionada</strong></p>
                             </td>
                         </tr>
@@ -83,27 +83,7 @@
             </div>
         </a>
     </div>
-     <div class="col-6 col-lg-6">
-        <a class="card animacion-container mx-auto rounded-3" style="height:100%;width:90%" href="#" target="_blank">
-          <div class="card-header">Propiedad 2.
-          </div>
-          <div class="table-responsive">
-            <table class="table align-items-center table-flush table-borderless">
-                <tbody>
-                    <tr>
-                        <img class="mx-auto object-fit-cover" style="min-width: 100%; max-width: 100%; max-height:500px; min-height: 500px;" src="https://www.bricsa.cl/wp-content/uploads/2021/10/Imagen2-1024x683-640x480.jpg" alt="product img">
-                        <td style="font-weight:bold; text-align: justify;">
-                            <p>Direccion</p>
-                            <p>Comuna, Ciudad</p>
-                            <p>Captador</p>
-                            <p>Estado: <strong style="color: rgb(7, 206, 7)">Inspeccionada</strong></p>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-            </div>
-        </a>
-	</div><!--End Row-->
+    {% endfor %}
     </div>
 
     <div class="modal fade" id="formModal" tabindex="-1" aria-labelledby="formModalLabel" aria-hidden="true">
@@ -115,19 +95,26 @@
                 </div>
                 <div class="modal-body">
                     <!-- Formulario dentro del modal -->
-                    <form>
+                    <form action="{{ url_for('registrar_propiedad') }}" method="post">
                         <div class="mb-3">
                             <label for="direccion" class="form-label" style="color: rgb(0, 0, 0);">Dirección</label>
-                            <input type="text" class="form-control border border-3" id="direccion" placeholder="Ingresa la dirección de la propiedad style="color: rgb(0, 0, 0);">
+                            <input type="text" class="form-control border border-3" id="direccion" name="direccion" placeholder="Ingresa la dirección de la propiedad" style="color: rgb(0, 0, 0);" required>
+                        </div>
+                        <div class="mb-3">
                             <label for="comuna" class="form-label" style="color: rgb(0, 0, 0);">Comuna</label>
-                            <input type="text" class="form-control border border-3" id="comuna" placeholder="Ingresa la Comuna" style="color: rgb(0, 0, 0);">
+                            <input type="text" class="form-control border border-3" id="comuna" name="comuna" placeholder="Ingresa la Comuna" style="color: rgb(0, 0, 0);" required>
+                        </div>
+                        <div class="mb-3">
                             <label for="codigo" class="form-label" style="color: rgb(0, 0, 0);">Código Postal</label>
-                            <input type="text" class="form-control border border-3" id="codigo" placeholder="Ingresa el Código Postal" style="color: rgb(0, 0, 0);">
+                            <input type="text" class="form-control border border-3" id="codigo" name="codigo_postal" placeholder="Ingresa el Código Postal" style="color: rgb(0, 0, 0);" required>
+                        </div>
+                        <div class="mb-3">
                             <label for="url" class="form-label" style="color: rgb(0, 0, 0);">URL IMAGEN</label>
-                            <input type="text" class="form-control border border-3" id="url" placeholder="Ingresa el URL de la Imagen" style="color: rgb(0, 0, 0);">
+                            <input type="text" class="form-control border border-3" id="url" name="url_imagen" placeholder="Ingresa el URL de la Imagen" style="color: rgb(0, 0, 0);">
                         </div>
                         <button type="submit" class="btn btn-primary mt-1">Registrar</button>
                     </form>
+                    
                 </div>
             </div>
         </div>
