@@ -20,12 +20,16 @@ def verificar_usuario(username, password):
     usuario = cur.fetchone()  # Devuelve el primer resultado o None si no existe
     cur.close()
     return usuario
-# Función para agregar un nuevo usuario a la base de datos
+
+
 def agregar_usuario(username, email, password):
     cur = db.cursor()
-    cur.execute("INSERT INTO usuarios (username, email, password) VALUES (%s, %s, %s)", (username, email, password))
+    # Inserta al usuario con admin=1 por defecto
+    cur.execute("INSERT INTO usuarios (username, email, password, admin) VALUES (%s, %s, %s, %s)", 
+                (username, email, password, 1))
     db.commit()
-    cur.close()
+    cur.close()    
+
 
 @app.route('/')
 def index():
@@ -67,7 +71,12 @@ def login():
         usuario = verificar_usuario(username, password)
         
         if usuario:
-            return redirect(url_for('vista_propiedad'))
+            # `usuario[3]` asume que `admin` es la cuarta columna devuelta en el resultado.
+            # Asegúrate de que el orden de las columnas en tu tabla coincida.
+            if usuario[4] == 1:  # Si el usuario es admin
+                return redirect(url_for('duality'))
+            else:
+                return redirect(url_for('portal_propiedad'))
         else:
             return redirect(url_for('index'))
     # Si es una solicitud GET, muestra el formulario de inicio de sesión
