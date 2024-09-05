@@ -157,7 +157,7 @@ def login():
                 if user.is_admin:
                     return redirect(url_for('duality'))
                 else:
-                    return redirect(url_for('empresas'))
+                    return redirect(url_for('portal_propiedad'))
             else:
                 print("Contraseña incorrecta")
         else:
@@ -220,23 +220,6 @@ def crear_empresa():
     # No se muestra en el HTML inmediatamente, se redirige a la página de empresas
     return redirect(url_for('empresas'))
 
-"""
-@app.route('/crear_empresa', methods=['POST'])
-def crear_empresa():
-    nombre_empresa = request.form['nombre_empresa']
-    
-    # Genera un código único para la empresa
-    codigo_empresa = Generacion_Codigo_Unico()
-    
-    # Inserta el nombre de la empresa y el código único en la base de datos
-    cur = db.cursor()
-    cur.execute("INSERT INTO empresas (codigo_empresa, nombre_empresa) VALUES (%s, %s)", (codigo_empresa, nombre_empresa))
-    db.commit()
-    cur.close()
-    
-    # Redirige de vuelta a la página de empresas
-    return redirect(url_for('empresas'))
-"""
 @app.route('/anadir_empresa', methods=['POST'])
 @login_required
 def anadir_empresa():
@@ -264,24 +247,7 @@ def anadir_empresa():
     # Si no se encuentra la empresa, redirigir sin cambios
     return redirect(url_for('empresas'))
 
-"""
-@app.route('/anadir_empresa', methods=['POST'])
-def anadir_empresa():
-    codigo_empresa = request.form['codigo_empresa']
-    
-    # Verifica si la empresa con ese código existe
-    cur = db.cursor()
-    cur.execute("SELECT nombre_empresa FROM empresas WHERE codigo_empresa = %s", (codigo_empresa,))
-    empresa = cur.fetchone()
-    
-    cur.close()
-    
-    if empresa:
-        # Si la empresa existe, agregar el nombre a la lista para mostrar en la tabla
-        return redirect(url_for('empresas', nombre_empresa=empresa[0]))
-    
-    return redirect(url_for('empresas'))  # Si no se encuentra la empresa, redirige sin agregar
-"""
+
 @app.route('/empresas')
 @login_required
 def empresas():
@@ -305,25 +271,6 @@ def empresas():
     
     return render_template('empresas.html', empresas=empresas_lista)
 
-"""
-@app.route('/empresas')
-def empresas():
-    nombre_empresa = request.args.get('nombre_empresa')
-    
-    # Aquí podemos crear una lista de las empresas que se muestran en la tabla
-    empresas = []
-    
-    if nombre_empresa:
-        # Añadir la nueva empresa a la lista de empresas a mostrar
-        empresas.append({
-            'nombre': nombre_empresa,
-            'logo': 'https://via.placeholder.com/110x110',
-            'cargo': 'Empleado',
-            'fecha_ingreso': '24/10/2019'
-        })
-    
-    return render_template('empresas.html', empresas=empresas)
-"""
 
 @app.route('/vista_propiedad')
 def vista_propiedad():
