@@ -43,6 +43,25 @@
         background-color: rgba(0, 0, 0, 0.05);
         border: none !important;
     }
+
+    .text-input-black {
+        color: black !important;  /* Forzar que el texto sea negro */
+        background-color: white !important; /* Asegurar que el fondo sea blanco */
+    }
+
+    .text-input-black::placeholder {
+        color: gray !important;  /* Placeholder en gris */
+    }
+
+    .text-input-black:focus {
+        color: black !important; /* Mantener texto en negro al hacer foco */
+        background-color: white !important; /* Mantener fondo blanco al hacer foco */
+    }
+
+    .text-input-black:active, 
+    .text-input-black:visited {
+        color: black !important; /* Forzar negro en cualquier estado */
+    }
 </style>
 </head>
 
@@ -64,7 +83,7 @@
     </div>
     {% for propiedad in propiedades %}
     <div class="col-6 col-lg-6">
-        <a class="card animacion-container mx-auto rounded-3" style="height:100%;width:90%" href="#" target="_blank">
+        <a class="card animacion-container mx-auto rounded-3" style="height:100%;width:90%" href="portal_propiedad?id=15">
             <div class="card-header">Propiedad {{ loop.index }}.</div>
             <div class="table-responsive">
                 <table class="table align-items-center table-flush table-borderless">
@@ -98,11 +117,11 @@
                     <form action="{{ url_for('registrar_propiedad') }}" method="post">
                         <div class="mb-3">
                             <label for="direccion" class="form-label" style="color: rgb(0, 0, 0);">Dirección</label>
-                            <input type="text" class="form-control border border-3" id="direccion" name="direccion" placeholder="Ingresa la dirección de la propiedad" style="color: rgb(0, 0, 0);" required>
+                            <input type="text" class="form-control border border-3 text-input-black" id="direccion" name="direccion" placeholder="Ingresa la dirección de la propiedad" required>
                         </div>
                         <div class="mb-3">
                             <label for="comuna" class="form-label" style="color: rgb(0, 0, 0);">Comuna</label>
-                            <input type="text" class="form-control border border-3" id="comuna" name="comuna" placeholder="Ingresa la Comuna" style="color: rgb(0, 0, 0);" required>
+                            <input type="text" class="form-control border border-3 text-input-black" id="comuna" name="comuna" placeholder="Ingresa la Comuna" required>
                         </div>
                         <button type="submit" class="btn btn-primary mt-1">Registrar</button>
                     </form>
