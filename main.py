@@ -157,7 +157,7 @@ def login():
                 if user.is_admin:
                     return redirect(url_for('duality'))
                 else:
-                    return redirect(url_for('empresas'))
+                    return redirect(url_for('portal_propiedad'))
             else:
                 print("Contraseña incorrecta")
         else:
@@ -198,7 +198,7 @@ def portal_propiedad():
     
     return render_template('portal_propiedad.html', propiedades=propiedades)
 
-
+#asd
 @app.route('/crear_empresa', methods=['POST'])
 @login_required  # Solo usuarios autenticados pueden crear empresas
 def crear_empresa():
