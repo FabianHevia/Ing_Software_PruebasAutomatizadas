@@ -62,11 +62,49 @@
     .text-input-black:visited {
         color: black !important; /* Forzar negro en cualquier estado */
     }
+    .navbar-custom {
+    background-color: rgba(0, 0, 0, 0.15);
+    border: none !important;
+}
 </style>
 </head>
 
 <body class="bg-theme bg-theme1">
- 
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
+        <div class="container-fluid">
+          <!-- Logo que redirige a vista_propiedad -->
+          <a class="navbar-brand" href="vista_propiedad">
+            <img src="{{ url_for('static', filename='assets/images/brokersyncdibujo_rbg.png') }}" alt="Logo" width="30" height="30" class="d-inline-block align-text-top">
+          </a>
+      
+          <!-- Botón toggle para dispositivos móviles -->
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+      
+          <!-- Contenido del navbar -->
+          <div class="collapse navbar-collapse justify-content-end" id="navbarNavDropdown">
+            <ul class="navbar-nav">
+              <li class="nav-item dropdown">
+                <!-- Icono de usuario -->
+                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <i class="fas fa-user"></i> <!-- Icono de usuario -->
+                </a>
+      
+                <!-- Dropdown con opciones -->
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                  <li>
+                    <a class="dropdown-item" href="empresas">Cambiar de empresa</a>
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="register">Cerrar sesión</a>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
 <!-- Start wrapper-->
  <div id="wrapper">
 
