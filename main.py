@@ -182,22 +182,6 @@ def menu():
 def duality():
     return render_template('duality.html')
 
-@app.route('/portal_propiedad')
-@login_required
-def portal_propiedad():
-    # Obtener las propiedades que el usuario actual ha registrado
-    cur = db.cursor()
-    cur.execute("""
-        SELECT p.direccion, p.comuna, u.username
-        FROM system_tabla_propiedades p
-        JOIN usuarios u ON p.id_usuario = u.id
-        WHERE p.id_usuario = %s
-    """, (current_user.id,))
-    propiedades = cur.fetchall()
-    cur.close()
-    
-    return render_template('portal_propiedad.html', propiedades=propiedades)
-
 @app.route('/crear_empresa', methods=['POST'])
 @login_required
 def crear_empresa():
@@ -269,40 +253,80 @@ def empresas():
     
     return render_template('empresas.html', empresas=empresas_lista)
 
-
-@app.route('/vista_propiedad')
-def vista_propiedad():
-    # Obtener las propiedades junto con el nombre del usuario que las registró
+@app.route('/registrar_propiedad', methods=['POST'])
+@login_required
+def registrar_propiedad():
+    direccion = request.form['direccion']
+    comuna = request.form['comuna']
+    id_usuario = current_user.id
+    
+    # Obtener el código de empresa del usuario desde la tabla usuarios_empresas
     cur = db.cursor()
     cur.execute("""
-        SELECT p.id_propiedad, p.direccion, p.comuna, u.username, p.modificaciones
-        FROM system_tabla_propiedades p
-        JOIN usuarios u ON p.id_usuario = u.id
-    """)
+        SELECT codigo_empresa FROM usuarios_empresas 
+        WHERE id_usuario = %s
+    """, (id_usuario,))
+    codigo_empresa = cur.fetchone()
+    
+    if not codigo_empresa:
+        return "No puedes registrar una propiedad porque no perteneces a ninguna empresa.", 403
+
+    # Insertar la propiedad sin el campo URL
+    cur.execute("""
+        INSERT INTO system_tabla_propiedades (direccion, comuna, id_usuario, modificaciones, codigo_empresa) 
+        VALUES (%s, %s, %s, %s, %s)
+    """, (direccion, comuna, id_usuario, "", codigo_empresa))
+    db.commit()
+    cur.close()
+    
+    return redirect(url_for('vista_propiedad'))
+
+@app.route('/vista_propiedad')
+@login_required
+def vista_propiedad():
+    # Obtener el id del usuario autenticado
+    id_usuario = current_user.id
+    
+    # Verificar el código de empresa del usuario en la tabla usuarios_empresas
+    cur = db.cursor()
+    cur.execute("""
+        SELECT codigo_empresa FROM usuarios_empresas 
+        WHERE id_usuario = %s
+    """, (id_usuario,))
+    codigo_empresa = cur.fetchone()
+    
+    if not codigo_empresa:
+        # Si el usuario no pertenece a ninguna empresa, redirigir o mostrar un mensaje de error
+        return "No perteneces a ninguna empresa.", 403
+
+    # Obtener las propiedades relacionadas con esa empresa
+    cur.execute("""
+        SELECT direccion, comuna, modificaciones, usuarios.username 
+        FROM system_tabla_propiedades 
+        JOIN usuarios ON system_tabla_propiedades.id_usuario = usuarios.id
+        WHERE system_tabla_propiedades.codigo_empresa = %s
+    """, (codigo_empresa,))
     propiedades = cur.fetchall()
     cur.close()
     
     return render_template('vista_propiedad.html', propiedades=propiedades)
 
-
-
-@app.route('/registrar_propiedad', methods=['POST'])
-@login_required  # Solo permitir a usuarios autenticados registrar propiedades
-def registrar_propiedad():
-    direccion = request.form['direccion']
-    comuna = request.form['comuna']
-    
-    # Obtener el id del usuario de la sesión actual
-    id_usuario = current_user.id
-    
-    # Insertar los datos en la tabla system_tabla_propiedades
+@app.route('/portal_propiedad')
+@login_required
+def portal_propiedad():
+    # Obtener las propiedades que el usuario actual ha registrado
     cur = db.cursor()
-    cur.execute("INSERT INTO system_tabla_propiedades (direccion, comuna, id_usuario, modificaciones) VALUES (%s, %s, %s, %s)",
-                (direccion, comuna, id_usuario, ""))
-    db.commit()
+    cur.execute("""
+        SELECT p.direccion, p.comuna, u.username
+        FROM system_tabla_propiedades p
+        JOIN usuarios u ON p.id_usuario = u.id
+        WHERE p.id_usuario = %s
+    """, (current_user.id,))
+    propiedades = cur.fetchall()
     cur.close()
     
-    return redirect(url_for('vista_propiedad'))
+    return render_template('portal_propiedad.html', propiedades=propiedades)
+
 
 if __name__ == '__main__':
     app.run(debug=True)

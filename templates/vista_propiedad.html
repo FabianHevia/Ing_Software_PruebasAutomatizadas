@@ -123,24 +123,24 @@
     </div>
     {% for propiedad in propiedades %}
     <div class="col-6 col-lg-6">
-        <a class="card animacion-container mx-auto rounded-3" style="height:100%;width:90%" href="portal_propiedad?id=15">
-            <div class="card-header">Propiedad {{ loop.index }}.</div>
+        <div class="card animacion-container mx-auto rounded-3" style="height:100%;width:90%">
+            <div class="card-header">Propiedad {{ loop.index }}</div>
             <div class="table-responsive">
                 <table class="table align-items-center table-flush table-borderless">
                     <tbody>
                         <tr>
                             <img class="mx-auto object-fit-cover" style="min-width: 100%; max-width: 100%; max-height:500px; min-height: 500px" src="https://lajoya.ec/wp-content/uploads/2015/02/LJ-CONDOMINIO-2-SALA-COMEDOR-1108x960.png" alt="Imagen de la propiedad">
                             <td style="font-weight:bold; text-align: justify;">
-                                <p>Dirección: {{ propiedad[1] }}</p> <!-- Dirección -->
-                                <p>Comuna: {{ propiedad[2] }}</p> <!-- Comuna -->
-                                <p>Registrada por: {{ propiedad[3] }}</p> <!-- Nombre del usuario -->
-                                <p>Modificaciones: {{ propiedad[4] }}</p> <!-- Modificaciones -->
+                                <p>Dirección: {{ propiedad[0] }}</p> <!-- Dirección -->
+                                <p>Comuna: {{ propiedad[1] }}</p> <!-- Comuna -->
+                                <p>Modificaciones: {{ propiedad[2] }}</p> <!-- Modificaciones -->
+                                <p>Subido por: {{ propiedad[3] }}</p> <!-- Nombre del usuario -->
                             </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
-        </a>
+        </div>
     </div>
     {% endfor %}
 
@@ -162,11 +162,6 @@
                         <div class="mb-3">
                             <label for="comuna" class="form-label" style="color: rgb(0, 0, 0);">Comuna</label>
                             <input type="text" class="form-control border border-3 text-input-black" id="comuna" name="comuna" placeholder="Ingresa la Comuna" required>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="URL" class="form-label" style="color: rgb(0, 0, 0);">Link URL Imagen</label>
-                            <input type="text" class="form-control border border-3 text-input-black" id="URL" name="URL" placeholder="Ingresa link Empresa" required>
                         </div>
                         <button type="submit" class="btn btn-primary mt-1">Registrar</button>
                     </form>
