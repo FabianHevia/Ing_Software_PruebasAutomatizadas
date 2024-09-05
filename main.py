@@ -187,7 +187,19 @@ def duality():
 @app.route('/portal_propiedad')
 @login_required
 def portal_propiedad():
-    return render_template('portal_propiedad.html')
+    # Obtener las propiedades que el usuario actual ha registrado
+    cur = db.cursor()
+    cur.execute("""
+        SELECT p.direccion, p.comuna, u.username
+        FROM system_tabla_propiedades p
+        JOIN usuarios u ON p.id_usuario = u.id
+        WHERE p.id_usuario = %s
+    """, (current_user.id,))
+    propiedades = cur.fetchall()
+    cur.close()
+    
+    return render_template('portal_propiedad.html', propiedades=propiedades)
+
 
 
 @app.route('/crear_empresa', methods=['POST'])
@@ -240,18 +252,7 @@ def empresas():
         })
     
     return render_template('empresas.html', empresas=empresas)
-"""
-@app.route('/vista_propiedad')
-def vista_propiedad():
-    # Obtener las propiedades desde la base de datos
-    cur = db.cursor()
-    cur.execute("SELECT direccion, comuna, codigo_postal, url_imagen FROM propiedades")
-    propiedades = cur.fetchall()
-    cur.close()
-    
-    # Pasar las propiedades al template
-    return render_template('vista_propiedad.html', propiedades=propiedades)
-"""
+
 @app.route('/vista_propiedad')
 def vista_propiedad():
     # Obtener las propiedades junto con el nombre del usuario que las registró
