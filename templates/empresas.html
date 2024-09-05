@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
   <meta name="description" content=""/>
   <meta name="author" content=""/>
-  <title>Dashtreme Admin - Free Dashboard for Bootstrap 4 by Codervent</title>
+  <title>Empresas</title>
  <!-- loader-->
  <link href="{{ url_for('static', filename='assets/css/pace.min.css') }}" rel="stylesheet"/>
  <script src="{{ url_for('static', filename='assets/js/pace.min.js') }}"></script>
@@ -32,7 +32,24 @@
     background-color: rgba(0, 0, 0, 0.15);
     border: none !important;
 }
+.text-input-black {
+        color: black !important;  /* Forzar que el texto sea negro */
+        background-color: white !important; /* Asegurar que el fondo sea blanco */
+    }
 
+    .text-input-black::placeholder {
+        color: gray !important;  /* Placeholder en gris */
+    }
+
+    .text-input-black:focus {
+        color: black !important; /* Mantener texto en negro al hacer foco */
+        background-color: white !important; /* Mantener fondo blanco al hacer foco */
+    }
+
+    .text-input-black:active, 
+    .text-input-black:visited {
+        color: black !important; /* Forzar negro en cualquier estado */
+    }
 </style>
 </head>
 
@@ -67,7 +84,7 @@
                             <td class="text-center"><img src="{{ empresa.logo }}" class="product-img" alt="Logo de empresa"></td>
                             <td class="text-center" style="color: white;">{{ empresa.cargo }}</td>
                             <td class="text-center" style="color: white;">{{ empresa.fecha_ingreso }}</td>
-                            <td class="text-center"><a class="btn bsb-btn-xl btn-success">Ingresar</a></td>
+                            <td class="text-center"><a class="btn bsb-btn-xl btn-success" href="vista_propiedad">Ingresar</a></td>
                             <td class="text-center"><a class="btn bsb-btn-xl btn-danger">Eliminar</a></td>
                         </tr>
                     {% endfor %}
@@ -101,7 +118,7 @@
                     <form action="{{ url_for('crear_empresa') }}" method="post">
                       <div class="mb-3">
                           <label for="nombre" class="form-label" style="color: rgb(0, 0, 0);">Nombre Empresa</label>
-                          <input type="text" class="form-control border border-3" id="nombre" name="nombre_empresa" placeholder="Ingresa el nombre de la empresa" style="color: rgb(0, 0, 0);" required>
+                          <input type="text" class="form-control border border-3 text-input-black" id="nombre" name="nombre_empresa" placeholder="Ingresa el nombre de la empresa" style="color: rgb(0, 0, 0);" required>
                       </div>
                       <button type="submit" class="btn btn-primary">Crear</button>
                   </form>
@@ -122,7 +139,7 @@
                     <form action="{{ url_for('anadir_empresa') }}" method="post">
                       <div class="mb-3">
                           <label for="codigo" class="form-label" style="color: rgb(0, 0, 0);">Código Empresa</label>
-                          <input type="text" class="form-control border border-3" id="codigo" name="codigo_empresa" placeholder="Ingresa el código" style="color: rgb(0, 0, 0);" required>
+                          <input type="text" class="form-control border border-3 text-input-black" id="codigo" name="codigo_empresa" placeholder="Ingresa el código" style="color: rgb(0, 0, 0);" required>
                       </div>
                       <button type="submit" class="btn btn-primary">Añadir</button>
                     </form>
