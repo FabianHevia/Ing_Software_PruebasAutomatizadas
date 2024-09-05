@@ -82,12 +82,45 @@
         </div>
         <!-- Botones debajo de la tabla -->
         <div class="d-flex justify-content-center mb-3">
-            <button class="btn btn-primary mx-2" onclick="editProperty()">Editar Información</button>
+            <button class="btn btn-primary mx-2" onclick="editProperty()" data-bs-toggle="modal" data-bs-target="#editModal">Editar Información</button>
             <button class="btn btn-danger mx-2" onclick="deleteProperty()">Borrar Propiedad</button>
         </div>
     </div>
 </div>
 {% endfor %}
+
+<!-- Modal -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editModalLabel">Editar Información de la Propiedad</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Formulario dentro del modal -->
+        <form id="editForm">
+          <div class="mb-3">
+            <label for="direccion" class="form-label">Dirección</label>
+            <input type="text" class="form-control" id="direccion" name="direccion" placeholder="Ingresa la dirección">
+          </div>
+          <div class="mb-3">
+            <label for="comuna" class="form-label">Comuna</label>
+            <input type="text" class="form-control" id="comuna" name="comuna" placeholder="Ingresa la comuna">
+          </div>
+          <div class="mb-3">
+            <label for="propietario" class="form-label">Propietario</label>
+            <input type="text" class="form-control" id="propietario" name="propietario" placeholder="Ingresa el nombre del propietario">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        <button type="button" class="btn btn-primary" onclick="submitForm()">Guardar Cambios</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 
         <!--End Row-->

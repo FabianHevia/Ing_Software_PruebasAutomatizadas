@@ -157,7 +157,7 @@ def login():
                 if user.is_admin:
                     return redirect(url_for('duality'))
                 else:
-                    return redirect(url_for('portal_propiedad'))
+                    return redirect(url_for('empresas'))
             else:
                 print("Contraseña incorrecta")
         else:
