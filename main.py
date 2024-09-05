@@ -198,65 +198,63 @@ def portal_propiedad():
     
     return render_template('portal_propiedad.html', propiedades=propiedades)
 
-#asd
 @app.route('/crear_empresa', methods=['POST'])
-@login_required  # Solo usuarios autenticados pueden crear empresas
+@login_required
 def crear_empresa():
     nombre_empresa = request.form['nombre_empresa']
     
-    # Generar un código único para la empresa
+    # Genera un código único para la empresa
     codigo_empresa = Generacion_Codigo_Unico()
     
-    # Obtener el id del usuario autenticado
-    id_usuario = current_user.id
-    
-    # Insertar la empresa en la base de datos y asociarla con el id del usuario
+    # Inserta la empresa en la base de datos con el usuario como creador
     cur = db.cursor()
     cur.execute("INSERT INTO empresas (codigo_empresa, nombre_empresa, id_usuario) VALUES (%s, %s, %s)", 
-                (codigo_empresa, nombre_empresa, id_usuario))
+                (codigo_empresa, nombre_empresa, current_user.id))
+    
+    # Añadir al creador como miembro de su propia empresa
+    cur.execute("INSERT INTO usuarios_empresas (id_usuario, codigo_empresa) VALUES (%s, %s)", 
+                (current_user.id, codigo_empresa))
     db.commit()
     cur.close()
     
-    # No se muestra en el HTML inmediatamente, se redirige a la página de empresas
+    # Redirige de vuelta a la página de empresas
     return redirect(url_for('empresas'))
+
 
 @app.route('/anadir_empresa', methods=['POST'])
 @login_required
 def anadir_empresa():
     codigo_empresa = request.form['codigo_empresa']
     
-    # Verifica si la empresa con ese código pertenece al usuario autenticado
+    # Verifica si el código de la empresa existe
     cur = db.cursor()
-    cur.execute("""
-        SELECT codigo_empresa, nombre_empresa 
-        FROM empresas 
-        WHERE codigo_empresa = %s AND id_usuario = %s AND confirmada = False
-    """, (codigo_empresa, current_user.id))
+    cur.execute("SELECT codigo_empresa FROM empresas WHERE codigo_empresa = %s", (codigo_empresa,))
     empresa = cur.fetchone()
     
     if empresa:
-        # Actualiza la columna 'confirmada' para mostrar la empresa en el HTML
-        cur.execute("UPDATE empresas SET confirmada = True WHERE codigo_empresa = %s", (codigo_empresa,))
+        # Añadir al usuario a la empresa
+        cur.execute("INSERT INTO usuarios_empresas (id_usuario, codigo_empresa) VALUES (%s, %s)", 
+                    (current_user.id, codigo_empresa))
         db.commit()
         cur.close()
         
-        # Redirigir a la página de empresas mostrando la empresa
-        return redirect(url_for('empresas', nombre_empresa=empresa[1]))
+        # Redirige a la página de empresas
+        return redirect(url_for('empresas'))
     
     cur.close()
     # Si no se encuentra la empresa, redirigir sin cambios
     return redirect(url_for('empresas'))
 
-
 @app.route('/empresas')
 @login_required
 def empresas():
-    # Obtener solo las empresas confirmadas que están asociadas con el usuario autenticado
+    # Obtener las empresas en las que el usuario es miembro
     cur = db.cursor()
     cur.execute("""
-        SELECT codigo_empresa, nombre_empresa, 'Empleado', '24/10/2019' 
-        FROM empresas 
-        WHERE id_usuario = %s AND confirmada = True
+        SELECT e.codigo_empresa, e.nombre_empresa, 'Empleado', '24/10/2019'
+        FROM empresas e
+        INNER JOIN usuarios_empresas ue ON e.codigo_empresa = ue.codigo_empresa
+        WHERE ue.id_usuario = %s
     """, (current_user.id,))
     empresas = cur.fetchall()
     cur.close()
@@ -265,7 +263,7 @@ def empresas():
     empresas_lista = [{
         'nombre': empresa[1], 
         'logo': 'https://via.placeholder.com/110x110',
-        'cargo': empresa[2],  
+        'cargo': empresa[2],
         'fecha_ingreso': empresa[3]
     } for empresa in empresas]
     
