@@ -72,10 +72,10 @@
                         <tr>
                             <img class="mx-auto object-fit-cover" style="min-width: 100%; max-width: 100%; max-height:500px; min-height: 500px" src="https://lajoya.ec/wp-content/uploads/2015/02/LJ-CONDOMINIO-2-SALA-COMEDOR-1108x960.png" alt="Imagen de la propiedad">
                             <td style="font-weight:bold; text-align: justify;">
-                                <p>Direccion: {{ propiedad[0] }}</p> <!-- Dirección -->
-                                <p>Comuna: {{ propiedad[1] }}</p> <!-- Comuna -->
-                                <p>Código Postal: {{ propiedad[2] }}</p> <!-- Código Postal -->
-                                <p>Estado: <strong style="color: rgb(7, 206, 7)">Inspeccionada</strong></p>
+                                <p>Dirección: {{ propiedad[1] }}</p> <!-- Dirección -->
+                                <p>Comuna: {{ propiedad[2] }}</p> <!-- Comuna -->
+                                <p>Registrada por: {{ propiedad[3] }}</p> <!-- Nombre del usuario -->
+                                <p>Modificaciones: {{ propiedad[4] }}</p> <!-- Modificaciones -->
                             </td>
                         </tr>
                     </tbody>
@@ -84,7 +84,7 @@
         </a>
     </div>
     {% endfor %}
-    </div>
+
 
     <div class="modal fade" id="formModal" tabindex="-1" aria-labelledby="formModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -104,21 +104,13 @@
                             <label for="comuna" class="form-label" style="color: rgb(0, 0, 0);">Comuna</label>
                             <input type="text" class="form-control border border-3" id="comuna" name="comuna" placeholder="Ingresa la Comuna" style="color: rgb(0, 0, 0);" required>
                         </div>
-                        <div class="mb-3">
-                            <label for="codigo" class="form-label" style="color: rgb(0, 0, 0);">Código Postal</label>
-                            <input type="text" class="form-control border border-3" id="codigo" name="codigo_postal" placeholder="Ingresa el Código Postal" style="color: rgb(0, 0, 0);" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="url" class="form-label" style="color: rgb(0, 0, 0);">URL IMAGEN</label>
-                            <input type="text" class="form-control border border-3" id="url" name="url_imagen" placeholder="Ingresa el URL de la Imagen" style="color: rgb(0, 0, 0);">
-                        </div>
                         <button type="submit" class="btn btn-primary mt-1">Registrar</button>
                     </form>
-                    
                 </div>
             </div>
         </div>
     </div>
+    
 	  
 	<!--start overlay-->
 		  <div class="overlay toggle-menu"></div>

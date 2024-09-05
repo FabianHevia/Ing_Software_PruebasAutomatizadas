@@ -23,7 +23,6 @@ def Generacion_Codigo_Unico(length=20):
     codigo_unico = ''.join(random.choice(caracteres) for _ in range(length))
     return codigo_unico
 
-
 def actualizar_admin(username):
     cur = db.cursor()
     cur.execute("UPDATE usuarios SET admin = 1 WHERE username = %s", (username,))
@@ -169,7 +168,6 @@ def login():
         return "Usuario o contraseña incorrectos"
     return render_template('index.html')
 
-
 @app.route('/logout')
 @login_required
 def logout():
@@ -242,9 +240,7 @@ def empresas():
         })
     
     return render_template('empresas.html', empresas=empresas)
-
-
-
+"""
 @app.route('/vista_propiedad')
 def vista_propiedad():
     # Obtener las propiedades desde la base de datos
@@ -255,20 +251,36 @@ def vista_propiedad():
     
     # Pasar las propiedades al template
     return render_template('vista_propiedad.html', propiedades=propiedades)
+"""
+@app.route('/vista_propiedad')
+def vista_propiedad():
+    # Obtener las propiedades junto con el nombre del usuario que las registró
+    cur = db.cursor()
+    cur.execute("""
+        SELECT p.id_propiedad, p.direccion, p.comuna, u.username, p.modificaciones
+        FROM system_tabla_propiedades p
+        JOIN usuarios u ON p.id_usuario = u.id
+    """)
+    propiedades = cur.fetchall()
+    cur.close()
+    
+    return render_template('vista_propiedad.html', propiedades=propiedades)
+
 
 
 @app.route('/registrar_propiedad', methods=['POST'])
+@login_required  # Solo permitir a usuarios autenticados registrar propiedades
 def registrar_propiedad():
     direccion = request.form['direccion']
     comuna = request.form['comuna']
-    codigo_postal = request.form['codigo_postal']
-    url_imagen = request.form['url_imagen']
     
+    # Obtener el id del usuario de la sesión actual
+    id_usuario = current_user.id
     
-    # Insertar los datos en la base de datos
+    # Insertar los datos en la tabla system_tabla_propiedades
     cur = db.cursor()
-    cur.execute("INSERT INTO propiedades (direccion, comuna, codigo_postal, url_imagen) VALUES (%s, %s, %s, %s)",
-                (direccion, comuna, codigo_postal, url_imagen))
+    cur.execute("INSERT INTO system_tabla_propiedades (direccion, comuna, id_usuario, modificaciones) VALUES (%s, %s, %s, %s)",
+                (direccion, comuna, id_usuario, ""))
     db.commit()
     cur.close()
     
