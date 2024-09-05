@@ -62,18 +62,18 @@
                    </thead>
                    <tbody>
                     {% for empresa in empresas %}
-                    <tr>
-                        <td class="text-center" style="color: white;">{{ empresa.nombre }}</td>
-                        <td class="text-center"><img src="{{ empresa.logo }}" class="product-img" alt="product img"></td>
-                        <td class="text-center" style="color: white;">{{ empresa.cargo }}</td>
-                        <td class="text-center" style="color: white;">{{ empresa.fecha_ingreso }}</td>
-                        <td class="text-center"><a class="btn bsb-btn-xl btn-success">Ingresar</a></td>
-                        <td class="text-center"><a class="btn bsb-btn-xl btn-danger">Eliminar</a></td>
-                    </tr>
+                        <tr>
+                            <td class="text-center" style="color: white;">{{ empresa.nombre }}</td>
+                            <td class="text-center"><img src="{{ empresa.logo }}" class="product-img" alt="Logo de empresa"></td>
+                            <td class="text-center" style="color: white;">{{ empresa.cargo }}</td>
+                            <td class="text-center" style="color: white;">{{ empresa.fecha_ingreso }}</td>
+                            <td class="text-center"><a class="btn bsb-btn-xl btn-success">Ingresar</a></td>
+                            <td class="text-center"><a class="btn bsb-btn-xl btn-danger">Eliminar</a></td>
+                        </tr>
                     {% endfor %}
                 </tbody>
               </table>
-               </div>
+            </div>
 	   </div>
        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#formModal">
             Crear Empresa

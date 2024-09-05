@@ -84,8 +84,6 @@ class User(UserMixin):
         db.commit()
         cur.close()
 
-
-
 @login_manager.user_loader
 def load_user(user_id):
     return User.get_by_id(user_id)
@@ -201,7 +199,28 @@ def portal_propiedad():
     return render_template('portal_propiedad.html', propiedades=propiedades)
 
 
+@app.route('/crear_empresa', methods=['POST'])
+@login_required  # Solo usuarios autenticados pueden crear empresas
+def crear_empresa():
+    nombre_empresa = request.form['nombre_empresa']
+    
+    # Generar un código único para la empresa
+    codigo_empresa = Generacion_Codigo_Unico()
+    
+    # Obtener el id del usuario autenticado
+    id_usuario = current_user.id
+    
+    # Insertar la empresa en la base de datos y asociarla con el id del usuario
+    cur = db.cursor()
+    cur.execute("INSERT INTO empresas (codigo_empresa, nombre_empresa, id_usuario) VALUES (%s, %s, %s)", 
+                (codigo_empresa, nombre_empresa, id_usuario))
+    db.commit()
+    cur.close()
+    
+    # No se muestra en el HTML inmediatamente, se redirige a la página de empresas
+    return redirect(url_for('empresas'))
 
+"""
 @app.route('/crear_empresa', methods=['POST'])
 def crear_empresa():
     nombre_empresa = request.form['nombre_empresa']
@@ -217,7 +236,35 @@ def crear_empresa():
     
     # Redirige de vuelta a la página de empresas
     return redirect(url_for('empresas'))
+"""
+@app.route('/anadir_empresa', methods=['POST'])
+@login_required
+def anadir_empresa():
+    codigo_empresa = request.form['codigo_empresa']
+    
+    # Verifica si la empresa con ese código pertenece al usuario autenticado
+    cur = db.cursor()
+    cur.execute("""
+        SELECT codigo_empresa, nombre_empresa 
+        FROM empresas 
+        WHERE codigo_empresa = %s AND id_usuario = %s AND confirmada = False
+    """, (codigo_empresa, current_user.id))
+    empresa = cur.fetchone()
+    
+    if empresa:
+        # Actualiza la columna 'confirmada' para mostrar la empresa en el HTML
+        cur.execute("UPDATE empresas SET confirmada = True WHERE codigo_empresa = %s", (codigo_empresa,))
+        db.commit()
+        cur.close()
+        
+        # Redirigir a la página de empresas mostrando la empresa
+        return redirect(url_for('empresas', nombre_empresa=empresa[1]))
+    
+    cur.close()
+    # Si no se encuentra la empresa, redirigir sin cambios
+    return redirect(url_for('empresas'))
 
+"""
 @app.route('/anadir_empresa', methods=['POST'])
 def anadir_empresa():
     codigo_empresa = request.form['codigo_empresa']
@@ -234,7 +281,31 @@ def anadir_empresa():
         return redirect(url_for('empresas', nombre_empresa=empresa[0]))
     
     return redirect(url_for('empresas'))  # Si no se encuentra la empresa, redirige sin agregar
+"""
+@app.route('/empresas')
+@login_required
+def empresas():
+    # Obtener solo las empresas confirmadas que están asociadas con el usuario autenticado
+    cur = db.cursor()
+    cur.execute("""
+        SELECT codigo_empresa, nombre_empresa, 'Empleado', '24/10/2019' 
+        FROM empresas 
+        WHERE id_usuario = %s AND confirmada = True
+    """, (current_user.id,))
+    empresas = cur.fetchall()
+    cur.close()
+    
+    # Crear una lista de diccionarios para pasarla al template
+    empresas_lista = [{
+        'nombre': empresa[1], 
+        'logo': 'https://via.placeholder.com/110x110',
+        'cargo': empresa[2],  
+        'fecha_ingreso': empresa[3]
+    } for empresa in empresas]
+    
+    return render_template('empresas.html', empresas=empresas_lista)
 
+"""
 @app.route('/empresas')
 def empresas():
     nombre_empresa = request.args.get('nombre_empresa')
@@ -252,6 +323,7 @@ def empresas():
         })
     
     return render_template('empresas.html', empresas=empresas)
+"""
 
 @app.route('/vista_propiedad')
 def vista_propiedad():
