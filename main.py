@@ -271,7 +271,18 @@ def registrar_propiedad():
     if not codigo_empresa:
         return "No puedes registrar una propiedad porque no perteneces a ninguna empresa.", 403
 
-    # Insertar la propiedad sin el campo URL
+    # Verificar si ya existe una propiedad con la misma dirección y comuna
+    cur.execute("""
+        SELECT COUNT(*) FROM system_tabla_propiedades
+        WHERE direccion = %s AND comuna = %s
+    """, (direccion, comuna))
+    propiedad_existente = cur.fetchone()[0]
+    
+    if propiedad_existente > 0:
+        # Propiedad duplicada, devolver un mensaje de advertencia
+        return "Ya existe una propiedad con la misma dirección y comuna.", 409  # Código 409: Conflicto
+
+    # Insertar la propiedad
     cur.execute("""
         INSERT INTO system_tabla_propiedades (direccion, comuna, id_usuario, modificaciones, codigo_empresa) 
         VALUES (%s, %s, %s, %s, %s)
@@ -317,7 +328,7 @@ def portal_propiedad():
     # Obtener las propiedades que el usuario actual ha registrado
     cur = db.cursor()
     cur.execute("""
-        SELECT p.direccion, p.comuna, u.username
+        SELECT p.direccion, p.comuna, u.username, p.id_propiedad
         FROM system_tabla_propiedades p
         JOIN usuarios u ON p.id_usuario = u.id
         WHERE p.id_usuario = %s
@@ -326,6 +337,39 @@ def portal_propiedad():
     cur.close()
     
     return render_template('portal_propiedad.html', propiedades=propiedades)
+
+@app.route('/editar_propiedad/<int:propiedad_id>', methods=['POST'])
+@login_required
+def editar_propiedad(propiedad_id):
+    direccion = request.form['direccion']
+    comuna = request.form['comuna']
+
+    # Actualizar la propiedad en la base de datos
+    cur = db.cursor()
+    cur.execute("""
+        UPDATE system_tabla_propiedades
+        SET direccion = %s, comuna = %s
+        WHERE id_propiedad = %s AND id_usuario = %s
+    """, (direccion, comuna, propiedad_id, current_user.id))
+    db.commit()
+    cur.close()
+
+    return redirect(url_for('portal_propiedad'))
+
+@app.route('/eliminar_propiedad/<int:propiedad_id>', methods=['POST'])
+@login_required
+def eliminar_propiedad(propiedad_id):
+    # Verificar que la propiedad le pertenece al usuario autenticado
+    cur = db.cursor()
+    cur.execute("""
+        DELETE FROM system_tabla_propiedades 
+        WHERE id_propiedad = %s AND id_usuario = %s
+    """, (propiedad_id, current_user.id))
+    
+    db.commit()
+    cur.close()
+
+    return redirect(url_for('portal_propiedad'))
 
 
 if __name__ == '__main__':

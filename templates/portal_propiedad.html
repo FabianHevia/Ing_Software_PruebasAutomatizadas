@@ -83,7 +83,7 @@
                 <a class="dropdown-item" href="empresas">Cambiar de empresa</a>
               </li>
               <li>
-                <a class="dropdown-item" href="login">Cerrar sesión</a>
+                <a class="dropdown-item" href="{{ url_for('logout') }}">Cerrar sesión</a>
               </li>
             </ul>
           </li>
@@ -130,38 +130,60 @@
         </div>
         <!-- Botones debajo de la tabla -->
         <div class="d-flex justify-content-center mb-3">
-          <button type="button" class="btn btn-primary mt-1" data-bs-toggle="modal" data-bs-target="#formModal">
+          <button type="button" class="btn btn-primary mt-1" data-bs-toggle="modal" data-bs-target="#editModal{{ loop.index }}">
             Editar Información
         </button>
-            <button class="btn btn-danger mx-2 mt-1">Borrar Propiedad</button>
+            <!-- Botón para abrir el modal de confirmación de eliminación -->
+          <button type="button" class="btn btn-danger mx-2 mt-1" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal{{ loop.index }}">
+              Eliminar Propiedad
+          </button>
         </div>
     </div>
 </div>
-<!-- Modal -->
-<div class="modal fade" id="formModal" tabindex="-1" aria-labelledby="formModalLabel" aria-hidden="true">
+<!-- Modal para editar la propiedad -->
+<div class="modal fade" id="editModal{{ loop.index }}" tabindex="-1" aria-labelledby="formModalLabel" aria-hidden="true">
   <div class="modal-dialog">
       <div class="modal-content">
           <div class="modal-header">
-              <h5 class="modal-title" id="formModalLabel" style="color: rgb(0, 0, 0);">Crear Empresa</h5>
+              <h5 class="modal-title" id="formModalLabel" style="color: rgb(0, 0, 0);">Editar Propiedad</h5>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-              <!-- Formulario dentro del modal -->
-              <form method="post">
+              <!-- Formulario para actualizar los datos de la propiedad -->
+              <form action="{{ url_for('editar_propiedad', propiedad_id=propiedad[3]) }}" method="post">  <!-- propiedad_id es el id de la propiedad -->
                 <div class="mb-3">
-                    <label for="nombre" class="form-label" style="color: rgb(0, 0, 0);">Direccion</label>
-                    <input type="text" class="form-control border border-3" id="nombre" name="nombre_empresa" placeholder="Ingresa el nombre de la empresa" style="color: rgb(0, 0, 0);" required>
+                    <label for="direccion" class="form-label" style="color: rgb(0, 0, 0);">Dirección</label>
+                    <input type="text" class="form-control border border-3" id="direccion" name="direccion" value="{{ propiedad[0] }}" required>
                 </div>
                 <div class="mb-3">
-                  <label for="nombre" class="form-label" style="color: rgb(0, 0, 0);">Comuna</label>
-                  <input type="text" class="form-control border border-3" id="nombre" name="nombre_empresa" placeholder="Ingresa el nombre de la empresa" style="color: rgb(0, 0, 0);" required>
+                  <label for="comuna" class="form-label" style="color: rgb(0, 0, 0);">Comuna</label>
+                  <input type="text" class="form-control border border-3" id="comuna" name="comuna" value="{{ propiedad[1] }}" required>
               </div>
-              <div class="mb-3">
-                <label for="nombre" class="form-label" style="color: rgb(0, 0, 0);">Link URL</label>
-                <input type="text" class="form-control border border-3" id="nombre" name="nombre_empresa" placeholder="Ingresa el nombre de la empresa" style="color: rgb(0, 0, 0);" required>
-            </div>
-                <button type="submit" class="btn btn-primary">Crear</button>
+                <button type="submit" class="btn btn-primary">Actualizar</button>
             </form>
+          </div>
+      </div>
+  </div>
+</div>
+<!-- Modal de confirmación para eliminar propiedad -->
+<div class="modal fade" id="confirmDeleteModal{{ loop.index }}" tabindex="-1" aria-labelledby="confirmDeleteLabel{{ loop.index }}" aria-hidden="true">
+  <div class="modal-dialog">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title" id="confirmDeleteLabel{{ loop.index }}" style="color: rgb(0, 0, 0);">Confirmar Eliminación</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              <p style="color: rgb(0, 0, 0);">¿Estás seguro de que deseas eliminar esta propiedad?</p>
+          </div>
+          <div class="modal-footer">
+              <!-- Botón para cerrar el modal sin eliminar -->
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+              
+              <!-- Formulario para eliminar la propiedad -->
+              <form action="{{ url_for('eliminar_propiedad', propiedad_id=propiedad[3]) }}" method="POST" style="display: inline;">
+                  <button type="submit" class="btn btn-danger">Eliminar</button>
+              </form>
           </div>
       </div>
   </div>
