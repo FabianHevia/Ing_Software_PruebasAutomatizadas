@@ -131,10 +131,12 @@
       
       <!-- Botones debajo de la tabla -->
       <div class="d-flex justify-content-center mb-3">
-          <!-- Botón para crear una reunión -->
+           <!-- Mostrar el botón solo si el usuario es admin -->
+          {% if es_admin %}
           <button type="button" class="btn btn-primary mt-1" data-bs-toggle="modal" data-bs-target="#crearReunionModal">
             Crear Reunión
           </button>
+          {% endif %}
           <button type="button" class="btn btn-primary mt-1" data-bs-toggle="modal" data-bs-target="#editModal{{ propiedad[0] }}">
               Editar Información
           </button>

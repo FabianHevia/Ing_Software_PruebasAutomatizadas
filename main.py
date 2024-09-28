@@ -341,7 +341,7 @@ def portal_propiedad(id_propiedad):
         return "Propiedad no encontrada", 404
 
     # Pasar la propiedad seleccionada al template
-    return render_template('portal_propiedad.html', propiedad=propiedad)
+    return render_template('portal_propiedad.html', propiedad=propiedad, es_admin=current_user.is_admin)
 
 
 @app.route('/editar_propiedad/<int:propiedad_id>', methods=['POST'])
