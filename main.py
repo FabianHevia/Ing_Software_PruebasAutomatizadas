@@ -1,10 +1,12 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, jsonify
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 import MySQLdb
 import re
 import random
 import string
+import requests
+
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Necesario para manejar sesiones
@@ -295,7 +297,6 @@ def registrar_propiedad():
 @app.route('/vista_propiedad')
 @login_required
 def vista_propiedad():
-    # Obtener el id del usuario autenticado
     id_usuario = current_user.id
     
     # Verificar el código de empresa del usuario en la tabla usuarios_empresas
@@ -307,36 +308,41 @@ def vista_propiedad():
     codigo_empresa = cur.fetchone()
     
     if not codigo_empresa:
-        # Si el usuario no pertenece a ninguna empresa, redirigir o mostrar un mensaje de error
         return "No perteneces a ninguna empresa.", 403
 
     # Obtener las propiedades relacionadas con esa empresa
     cur.execute("""
-        SELECT direccion, comuna, modificaciones, usuarios.username 
-        FROM system_tabla_propiedades 
-        JOIN usuarios ON system_tabla_propiedades.id_usuario = usuarios.id
-        WHERE system_tabla_propiedades.codigo_empresa = %s
+        SELECT p.id_propiedad, p.direccion, p.comuna, p.modificaciones, u.username 
+        FROM system_tabla_propiedades p
+        JOIN usuarios u ON p.id_usuario = u.id
+        WHERE p.codigo_empresa = %s
     """, (codigo_empresa,))
     propiedades = cur.fetchall()
     cur.close()
     
     return render_template('vista_propiedad.html', propiedades=propiedades)
 
-@app.route('/portal_propiedad')
+
+@app.route('/portal_propiedad/<int:id_propiedad>')
 @login_required
-def portal_propiedad():
-    # Obtener las propiedades que el usuario actual ha registrado
+def portal_propiedad(id_propiedad):
+    # Obtener la propiedad seleccionada por el id_propiedad
     cur = db.cursor()
     cur.execute("""
-        SELECT p.direccion, p.comuna, u.username, p.id_propiedad
+        SELECT p.id_propiedad, p.direccion, p.comuna, u.username
         FROM system_tabla_propiedades p
         JOIN usuarios u ON p.id_usuario = u.id
-        WHERE p.id_usuario = %s
-    """, (current_user.id,))
-    propiedades = cur.fetchall()
+        WHERE p.id_propiedad = %s
+    """, (id_propiedad,))
+    propiedad = cur.fetchone()
     cur.close()
-    
-    return render_template('portal_propiedad.html', propiedades=propiedades)
+
+    if not propiedad:
+        return "Propiedad no encontrada", 404
+
+    # Pasar la propiedad seleccionada al template
+    return render_template('portal_propiedad.html', propiedad=propiedad)
+
 
 @app.route('/editar_propiedad/<int:propiedad_id>', methods=['POST'])
 @login_required
@@ -349,27 +355,114 @@ def editar_propiedad(propiedad_id):
     cur.execute("""
         UPDATE system_tabla_propiedades
         SET direccion = %s, comuna = %s
-        WHERE id_propiedad = %s AND id_usuario = %s
-    """, (direccion, comuna, propiedad_id, current_user.id))
+        WHERE id_propiedad = %s
+    """, (direccion, comuna, propiedad_id))
     db.commit()
     cur.close()
 
-    return redirect(url_for('portal_propiedad'))
+    return redirect(url_for('portal_propiedad', id_propiedad=propiedad_id))
+
 
 @app.route('/eliminar_propiedad/<int:propiedad_id>', methods=['POST'])
 @login_required
 def eliminar_propiedad(propiedad_id):
-    # Verificar que la propiedad le pertenece al usuario autenticado
+    # Verificar que la propiedad le pertenece al usuario autenticado o que es accesible
     cur = db.cursor()
     cur.execute("""
         DELETE FROM system_tabla_propiedades 
-        WHERE id_propiedad = %s AND id_usuario = %s
-    """, (propiedad_id, current_user.id))
+        WHERE id_propiedad = %s
+    """, (propiedad_id,))
     
     db.commit()
     cur.close()
 
-    return redirect(url_for('portal_propiedad'))
+    return redirect(url_for('vista_propiedad'))
+
+
+
+# Función para obtener el access token usando client_id y client_secret
+
+def obtener_access_token():
+    zoom_token_url = "https://zoom.us/oauth/token"
+    client_id = "ggJgqtaDSzyijA32f7GlBg"
+    client_secret = "5nSNBkaHTBEt3ty17rW6S9tb5wgOqXxD"
+    account_id = 'HjvAH6DfSd--ZpzDUZW_qw'
+
+    # Cabeceras para la autenticación
+    auth = (client_id, client_secret)
+    
+    data = {
+        'grant_type': 'account_credentials',
+        'account_id': account_id
+    }
+
+    # Hacer la solicitud para obtener el token de acceso
+    response = requests.post(zoom_token_url, headers={
+        'Content-Type': 'application/x-www-form-urlencoded'
+    }, auth=auth, data=data)
+    
+    # Imprimir la respuesta para depurar
+    print("Estado de respuesta:", response.status_code)
+    print("Contenido de la respuesta:", response.json())
+
+    if response.status_code == 200:
+        return response.json().get('access_token')
+    else:
+        raise Exception(f"Error al obtener el token de acceso: {response.status_code}, {response.text}")
+
+zoom_token_url = "https://zoom.us/oauth/token"
+zoom_meeting_url = "https://api.zoom.us/v2/users/me/meetings"
+    
+# Endpoint en Flask para crear una reunión en Zoom
+@app.route('/crear_reunion/<int:propiedad_id>', methods=['POST'])
+@login_required
+def crear_reunion(propiedad_id):
+    # Primero, puedes verificar si el usuario tiene acceso a la propiedad
+    cur = db.cursor()
+    cur.execute("""
+        SELECT id_usuario FROM system_tabla_propiedades
+        WHERE id_propiedad = %s
+    """, (propiedad_id,))
+    propiedad = cur.fetchone()
+
+    if not propiedad or propiedad[0] != current_user.id:
+        return "No tienes permiso para crear una reunión para esta propiedad.", 403
+
+    # Luego, puedes llamar a la función para obtener el access_token y crear la reunión en Zoom
+    access_token = obtener_access_token()
+
+    meeting_data = {
+        "topic": "Reunión para propiedad",
+        "type": 2,  # Reunión programada
+        "start_time": "2024-09-30T15:00:00",  # Cambiar a la fecha y hora deseada
+        "duration": 60,
+        "timezone": "America/Santiago",
+        "agenda": f"Reunión para discutir la propiedad ID {propiedad_id}",
+        "settings": {
+            "host_video": True,
+            "participant_video": True,
+            "join_before_host": False,
+            "mute_upon_entry": True,
+            "approval_type": 1,  # Aprobación automática
+            "audio": "voip"
+        }
+    }
+
+    # Hacer la solicitud a Zoom para crear la reunión
+    response = requests.post(zoom_meeting_url, headers={
+        "Authorization": f"Bearer {access_token}",
+        "Content-Type": "application/json"
+    }, json=meeting_data)
+
+    if response.status_code == 201:
+        meeting_info = response.json()
+        join_url = meeting_info['join_url']
+        start_url = meeting_info['start_url']
+
+        # Aquí puedes redirigir al usuario a la URL de la reunión o mostrarla en la página
+        return f"Reunión creada exitosamente: <a href='{join_url}'>Unirse a la reunión</a>"
+    else:
+        return f"Error al crear la reunión: {response.status_code}", response.text
 
 
 if __name__ == '__main__':
