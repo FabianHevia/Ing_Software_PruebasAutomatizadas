@@ -457,12 +457,111 @@ def crear_reunion(propiedad_id):
     if response.status_code == 201:
         meeting_info = response.json()
         join_url = meeting_info['join_url']
-        start_url = meeting_info['start_url']
+        # Redirigir a la página invite.html con el link de la reunión
+        return redirect(url_for('invite', join_url=join_url))
 
-        # Aquí puedes redirigir al usuario a la URL de la reunión o mostrarla en la página
-        return f"Reunión creada exitosamente: <a href='{join_url}'>Unirse a la reunión</a>"
     else:
         return f"Error al crear la reunión: {response.status_code}", response.text
+
+@app.route('/invite')
+@login_required
+def invite():
+    join_url = request.args.get('join_url')
+
+    # Verificar si join_url fue proporcionado
+    if not join_url:
+        return "No se encontró el enlace de la reunión.", 400
+
+    # Obtener el id del usuario actual (administrador)
+    admin_id = current_user.id
+
+    # Consultar el código de empresa del administrador
+    cur = db.cursor()
+    cur.execute("""
+        SELECT codigo_empresa 
+        FROM usuarios_empresas 
+        WHERE id_usuario = %s
+    """, (admin_id,))
+    codigo_empresa = cur.fetchone()
+
+    if not codigo_empresa:
+        return "No se pudo obtener el código de empresa del administrador.", 403
+
+    # Obtener todos los usuarios que pertenecen a la misma empresa (mismo codigo_empresa)
+    cur.execute("""
+        SELECT u.id, u.username, u.email 
+        FROM usuarios u
+        JOIN usuarios_empresas ue ON u.id = ue.id_usuario
+        WHERE ue.codigo_empresa = %s
+    """, (codigo_empresa[0],))
+    usuarios = cur.fetchall()
+    cur.close()
+
+    # Renderizar el template 'invite.html' pasando la lista de usuarios y el join_url
+    return render_template('invite.html', usuarios=usuarios, join_url=join_url)
+
+@app.route('/enviar_invitaciones', methods=['POST'])
+@login_required
+def enviar_invitaciones():
+    # Recibir correos seleccionados
+    correos = request.form.getlist('usuarios')
+    join_url = request.form['join_url']
+    
+    cur = db.cursor()
+
+    # Por cada correo seleccionado, buscamos al usuario y le creamos una notificación
+    for correo in correos:
+        cur.execute("SELECT id FROM usuarios WHERE email = %s", (correo,))
+        usuario = cur.fetchone()
+        
+        if usuario:
+            id_usuario = usuario[0]
+            mensaje = f"Has sido invitado a una reunión. Únete usando este enlace: {join_url}"
+            
+            # Guardar notificación en la base de datos
+            cur.execute("""
+                INSERT INTO notificaciones (id_usuario, mensaje) 
+                VALUES (%s, %s)
+            """, (id_usuario, mensaje))
+    
+    db.commit()
+    cur.close()
+
+    return f"Notificaciones enviadas a los usuarios seleccionados."
+
+@app.route('/notificaciones')
+@login_required
+def notificaciones():
+    cur = db.cursor()
+    
+    # Obtener las notificaciones no leídas para el usuario actual
+    cur.execute("""
+        SELECT id, mensaje, fecha FROM notificaciones 
+        WHERE id_usuario = %s AND leido = FALSE
+        ORDER BY fecha DESC
+    """, (current_user.id,))
+    
+    notificaciones = cur.fetchall()
+    cur.close()
+    
+    return render_template('notificaciones.html', notificaciones=notificaciones)
+
+@app.route('/marcar_leido/<int:id>', methods=['POST'])
+@login_required
+def marcar_leido(id):
+    cur = db.cursor()
+
+    # Marcar la notificación como leída
+    cur.execute("""
+        UPDATE notificaciones
+        SET leido = TRUE
+        WHERE id = %s AND id_usuario = %s
+    """, (id, current_user.id))
+    
+    db.commit()
+    cur.close()
+
+    return redirect(url_for('notificaciones'))
 
 
 if __name__ == '__main__':
