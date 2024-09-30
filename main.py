@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import datetime
+from pytz import timezone, utc
 import MySQLdb
 import re
 import random
@@ -404,14 +406,34 @@ def obtener_access_token():
     else:
         raise Exception(f"Error al obtener el token de acceso: {response.status_code}, {response.text}")
 
+# Crear el filtro personalizado
+@app.template_filter('tolocal')
+def tolocal(utc_time_str):
+    # Asumiendo que la fecha viene en formato ISO 8601 (2024-10-03T21:50:00Z)
+    utc_time = datetime.strptime(utc_time_str, '%Y-%m-%dT%H:%M:%SZ')
+    
+    # Convertir UTC a la zona horaria de Chile (America/Santiago)
+    local_tz = timezone('America/Santiago')
+    local_time = utc_time.replace(tzinfo=utc).astimezone(local_tz)
+    
+    # Formatear la fecha y hora a un formato legible
+    return local_time.strftime('%Y-%m-%d %H:%M')
+
 zoom_token_url = "https://zoom.us/oauth/token"
 zoom_meeting_url = "https://api.zoom.us/v2/users/me/meetings"
     
-# Endpoint en Flask para crear una reunión en Zoom
 @app.route('/crear_reunion/<int:propiedad_id>', methods=['POST'])
 @login_required
 def crear_reunion(propiedad_id):
-    # Primero, puedes verificar si el usuario tiene acceso a la propiedad
+    # Obtener la fecha y hora seleccionadas desde el formulario
+    fecha_hora_seleccionada = request.form.get('fecha_hora')  # Esto viene del campo oculto en el formulario
+    
+    print(f"Fecha y hora seleccionadas: {fecha_hora_seleccionada}")  # Verificar el valor recibido
+
+    if not fecha_hora_seleccionada:
+        return "Debe seleccionar una fecha y hora para la reunión.", 400
+
+    # Verificar si el usuario tiene acceso a la propiedad
     cur = db.cursor()
     cur.execute("""
         SELECT id_usuario FROM system_tabla_propiedades
@@ -422,14 +444,15 @@ def crear_reunion(propiedad_id):
     if not propiedad or propiedad[0] != current_user.id:
         return "No tienes permiso para crear una reunión para esta propiedad.", 403
 
-    # Luego, puedes llamar a la función para obtener el access_token y crear la reunión en Zoom
+    # Obtener el token de acceso de Zoom
     access_token = obtener_access_token()
 
+    # Configuración de la reunión
     meeting_data = {
         "topic": "Reunión para propiedad",
         "type": 2,  # Reunión programada
-        "start_time": "2024-09-30T15:00:00",  # Cambiar a la fecha y hora deseada
-        "duration": 60,
+        "start_time": fecha_hora_seleccionada,  # Usar la fecha y hora seleccionadas por el usuario
+        "duration": 40,  # Reunión de 40 minutos
         "timezone": "America/Santiago",
         "agenda": f"Reunión para discutir la propiedad ID {propiedad_id}",
         "settings": {
@@ -458,6 +481,10 @@ def crear_reunion(propiedad_id):
 
         # Redirigir a la página invite.html con los detalles de la reunión
         return redirect(url_for('invite', join_url=join_url, topic=topic, start_time=start_time, duration=duration, agenda=agenda))
+    else:
+        return f"Error al crear la reunión: {response.status_code}", response.text
+
+
 
 @app.route('/invite')
 @login_required
