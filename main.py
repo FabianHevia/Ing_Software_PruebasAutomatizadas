@@ -206,7 +206,6 @@ def crear_empresa():
     # Redirige de vuelta a la página de empresas
     return redirect(url_for('empresas'))
 
-
 @app.route('/anadir_empresa', methods=['POST'])
 @login_required
 def anadir_empresa():
@@ -322,7 +321,6 @@ def vista_propiedad():
     
     return render_template('vista_propiedad.html', propiedades=propiedades)
 
-
 @app.route('/portal_propiedad/<int:id_propiedad>')
 @login_required
 def portal_propiedad(id_propiedad):
@@ -343,7 +341,6 @@ def portal_propiedad(id_propiedad):
     # Pasar la propiedad seleccionada al template
     return render_template('portal_propiedad.html', propiedad=propiedad, es_admin=current_user.is_admin)
 
-
 @app.route('/editar_propiedad/<int:propiedad_id>', methods=['POST'])
 @login_required
 def editar_propiedad(propiedad_id):
@@ -362,7 +359,6 @@ def editar_propiedad(propiedad_id):
 
     return redirect(url_for('portal_propiedad', id_propiedad=propiedad_id))
 
-
 @app.route('/eliminar_propiedad/<int:propiedad_id>', methods=['POST'])
 @login_required
 def eliminar_propiedad(propiedad_id):
@@ -377,8 +373,6 @@ def eliminar_propiedad(propiedad_id):
     cur.close()
 
     return redirect(url_for('vista_propiedad'))
-
-
 
 # Función para obtener el access token usando client_id y client_secret
 
@@ -457,16 +451,22 @@ def crear_reunion(propiedad_id):
     if response.status_code == 201:
         meeting_info = response.json()
         join_url = meeting_info['join_url']
-        # Redirigir a la página invite.html con el link de la reunión
-        return redirect(url_for('invite', join_url=join_url))
+        topic = meeting_info['topic']
+        start_time = meeting_info['start_time']
+        duration = meeting_info['duration']
+        agenda = meeting_info.get('agenda', "Sin agenda")
 
-    else:
-        return f"Error al crear la reunión: {response.status_code}", response.text
+        # Redirigir a la página invite.html con los detalles de la reunión
+        return redirect(url_for('invite', join_url=join_url, topic=topic, start_time=start_time, duration=duration, agenda=agenda))
 
 @app.route('/invite')
 @login_required
 def invite():
     join_url = request.args.get('join_url')
+    topic = request.args.get('topic')
+    start_time = request.args.get('start_time')
+    duration = request.args.get('duration')
+    agenda = request.args.get('agenda')
 
     # Verificar si join_url fue proporcionado
     if not join_url:
@@ -497,8 +497,8 @@ def invite():
     usuarios = cur.fetchall()
     cur.close()
 
-    # Renderizar el template 'invite.html' pasando la lista de usuarios y el join_url
-    return render_template('invite.html', usuarios=usuarios, join_url=join_url)
+    # Renderizar el template 'invite.html' pasando los detalles de la reunión y la lista de usuarios
+    return render_template('invite.html', usuarios=usuarios, join_url=join_url, topic=topic, start_time=start_time, duration=duration, agenda=agenda)
 
 @app.route('/enviar_invitaciones', methods=['POST'])
 @login_required
