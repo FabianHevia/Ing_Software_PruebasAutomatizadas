@@ -28,6 +28,8 @@
  <link href="{{ url_for('static', filename='assets/css/app-style.css') }}" rel="stylesheet"/>
 <!-- FontAwesome CDN -->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+<!-- Flatpickr CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
 <style>
      .animacion-container {
@@ -150,7 +152,7 @@
       </div>
   </div>
 </div>
-<!-- Modal para confirmar la creación de la reunión -->
+<!-- Modal para confirmar la creación de la reunión con selección de fecha y hora -->
 <div class="modal fade" id="crearReunionModal" tabindex="-1" aria-labelledby="crearReunionLabel" aria-hidden="true">
   <div class="modal-dialog">
       <div class="modal-content">
@@ -159,12 +161,15 @@
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-              <p>¿Estás seguro de que deseas crear una reunión de Zoom para esta propiedad?</p>
+              <p>Seleccione fecha y hora de la reunión:</p>
+              <!-- Campo para seleccionar la fecha y hora -->
+              <input type="text" id="fechaHoraReunion" class="form-control" placeholder="Seleccionar fecha y hora" required>
           </div>
           <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
               <!-- Botón que realiza la solicitud POST para crear la reunión -->
               <form action="{{ url_for('crear_reunion', propiedad_id=propiedad[0]) }}" method="POST" style="display:inline;">
+                  <input type="hidden" id="fechaHoraInput" name="fecha_hora">
                   <button type="submit" class="btn btn-primary">Crear Reunión</button>
               </form>
           </div>
@@ -292,5 +297,23 @@
 <script src="{{ url_for('static', filename='assets/js/app-script.js') }}"></script>
 <!-- Index js -->
 <script src="{{ url_for('static', filename='assets/js/index.js') }}"></script>
+<!-- Flatpickr JS -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<!-- Calendario Flatpickr -->
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    flatpickr("#fechaHoraReunion", {
+      enableTime: true,
+      dateFormat: "Y-m-d H:i",
+      time_24hr: true,
+      minDate: "today", // Evitar fechas pasadas
+      defaultDate: new Date(), // Fecha y hora actuales
+      onChange: function(selectedDates, dateStr, instance) {
+        document.getElementById("fechaHoraInput").value = dateStr; // Actualizar campo oculto con la fecha y hora seleccionada
+      }
+    });
+  });
+</script>
+
 </body>
 </html>
