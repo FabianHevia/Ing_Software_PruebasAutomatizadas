@@ -1,13 +1,17 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
 from datetime import datetime
 from pytz import timezone, utc
+import os
 import MySQLdb
 import re
 import random
 import string
 import requests
+import cloudinary
+import cloudinary.uploader
 
 
 app = Flask(__name__)
@@ -21,6 +25,20 @@ db = MySQLdb.connect(
     db="railway",                      # Nombre de la base de datos proporcionado por Railway
     port=15660                         # Puerto proporcionado por Railway
 )
+
+cloudinary.config(
+    cloud_name = 'dzjp7l61z',
+    api_key = '678348253613332',
+    api_secret = 'DJ_y5npwR2qkobe69hHtyGW8ZKU'
+)
+
+# Configuraciones para manejar las imágenes
+UPLOAD_FOLDER = 'ruta/donde/guardar/imagenes'
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def Generacion_Codigo_Unico(length=20):
     caracteres = string.ascii_letters + string.digits
@@ -262,6 +280,15 @@ def registrar_propiedad():
     direccion = request.form['direccion']
     comuna = request.form['comuna']
     id_usuario = current_user.id
+    imagen = request.files['imagen']  # Obtener la imagen del formulario
+
+    # Verificar si se subió la imagen
+    if imagen:
+        # Subir la imagen a Cloudinary
+        result = cloudinary.uploader.upload(imagen)
+        imagen = result['secure_url']  # Obtener la URL segura de la imagen subida
+    else:
+        imagen = None  # Si no se sube imagen, dejar el campo vacío o usar una predeterminada
     
     # Obtener el código de empresa del usuario desde la tabla usuarios_empresas
     cur = db.cursor()
@@ -285,11 +312,11 @@ def registrar_propiedad():
         # Propiedad duplicada, devolver un mensaje de advertencia
         return "Ya existe una propiedad con la misma dirección y comuna.", 409  # Código 409: Conflicto
 
-    # Insertar la propiedad
+    # Insertar la propiedad junto con la URL de la imagen en la base de datos
     cur.execute("""
-        INSERT INTO system_tabla_propiedades (direccion, comuna, id_usuario, modificaciones, codigo_empresa) 
-        VALUES (%s, %s, %s, %s, %s)
-    """, (direccion, comuna, id_usuario, "", codigo_empresa))
+        INSERT INTO system_tabla_propiedades (direccion, comuna, id_usuario, modificaciones, codigo_empresa, imagen) 
+        VALUES (%s, %s, %s, %s, %s, %s)
+    """, (direccion, comuna, id_usuario, "", codigo_empresa, imagen))
     db.commit()
     cur.close()
     
@@ -311,9 +338,9 @@ def vista_propiedad():
     if not codigo_empresa:
         return "No perteneces a ninguna empresa.", 403
 
-    # Obtener las propiedades relacionadas con esa empresa
+    # Obtener las propiedades relacionadas con esa empresa, incluyendo la URL de la imagen
     cur.execute("""
-        SELECT p.id_propiedad, p.direccion, p.comuna, p.modificaciones, u.username 
+        SELECT p.id_propiedad, p.direccion, p.comuna, p.modificaciones, u.username, p.imagen 
         FROM system_tabla_propiedades p
         JOIN usuarios u ON p.id_usuario = u.id
         WHERE p.codigo_empresa = %s
@@ -323,25 +350,30 @@ def vista_propiedad():
     
     return render_template('vista_propiedad.html', propiedades=propiedades)
 
+
 @app.route('/portal_propiedad/<int:id_propiedad>')
 @login_required
 def portal_propiedad(id_propiedad):
     # Obtener la propiedad seleccionada por el id_propiedad
     cur = db.cursor()
     cur.execute("""
-        SELECT p.id_propiedad, p.direccion, p.comuna, u.username
+        SELECT p.id_propiedad, p.direccion, p.comuna, u.username, p.imagen
         FROM system_tabla_propiedades p
         JOIN usuarios u ON p.id_usuario = u.id
         WHERE p.id_propiedad = %s
     """, (id_propiedad,))
     propiedad = cur.fetchone()
+    
+    # Verificar si la propiedad es favorita
+    cur.execute("""
+        SELECT id FROM favoritos WHERE id_usuario = %s AND id_propiedad = %s
+    """, (current_user.id, id_propiedad))
+    es_favorito = cur.fetchone() is not None
+
     cur.close()
 
-    if not propiedad:
-        return "Propiedad no encontrada", 404
+    return render_template('portal_propiedad.html', propiedad=propiedad, es_favorito=es_favorito, es_admin=current_user.is_admin)
 
-    # Pasar la propiedad seleccionada al template
-    return render_template('portal_propiedad.html', propiedad=propiedad, es_admin=current_user.is_admin)
 
 @app.route('/editar_propiedad/<int:propiedad_id>', methods=['POST'])
 @login_required
@@ -378,6 +410,67 @@ def eliminar_propiedad(propiedad_id):
 
 # Función para obtener el access token usando client_id y client_secret
 
+@app.route('/agregar_favorito', methods=['POST'])
+@login_required
+def agregar_favorito():
+    data = request.get_json()
+    id_propiedad = data.get('id_propiedad')
+
+    # Verificar si la propiedad ya está en favoritos
+    cur = db.cursor()
+    cur.execute("""
+        SELECT id FROM favoritos WHERE id_usuario = %s AND id_propiedad = %s
+    """, (current_user.id, id_propiedad))
+    favorito = cur.fetchone()
+
+    if favorito:
+        return jsonify(success=False, message="La propiedad ya está en favoritos."), 400
+
+    # Agregar la propiedad a la tabla de favoritos
+    cur.execute("""
+        INSERT INTO favoritos (id_usuario, id_propiedad) VALUES (%s, %s)
+    """, (current_user.id, id_propiedad))
+    db.commit()
+    cur.close()
+
+    return jsonify(success=True, message="Propiedad agregada a favoritos.")
+
+@app.route('/quitar_favorito', methods=['DELETE'])
+@login_required
+def quitar_favorito():
+    data = request.get_json()
+    id_propiedad = data.get('id_propiedad')
+
+    # Eliminar la propiedad de la tabla de favoritos
+    cur = db.cursor()
+    cur.execute("""
+        DELETE FROM favoritos WHERE id_usuario = %s AND id_propiedad = %s
+    """, (current_user.id, id_propiedad))
+    db.commit()
+    cur.close()
+
+    return jsonify(success=True, message="Propiedad eliminada de favoritos.")
+
+@app.route('/favoritos')
+@login_required
+def favoritos():
+    cur = db.cursor()
+
+    # Obtener los favoritos del usuario actual
+    cur.execute("""
+        SELECT p.id_propiedad, p.direccion, p.comuna
+        FROM favoritos f
+        JOIN system_tabla_propiedades p ON f.id_propiedad = p.id_propiedad
+        WHERE f.id_usuario = %s
+    """, (current_user.id,))
+    favoritos = cur.fetchall()
+
+    cur.close()
+
+    # Renderizar la plantilla favoritos.html pasando los favoritos
+    return render_template('favoritos.html', favoritos=favoritos)
+
+
 def obtener_access_token():
     zoom_token_url = "https://zoom.us/oauth/token"
     client_id = "ggJgqtaDSzyijA32f7GlBg"
@@ -406,7 +499,7 @@ def obtener_access_token():
     else:
         raise Exception(f"Error al obtener el token de acceso: {response.status_code}, {response.text}")
 
-# Crear el filtro personalizado
+# Crear el filtro de hora personalizado
 @app.template_filter('tolocal')
 def tolocal(utc_time_str):
     # Asumiendo que la fecha viene en formato ISO 8601 (2024-10-03T21:50:00Z)
@@ -421,7 +514,8 @@ def tolocal(utc_time_str):
 
 zoom_token_url = "https://zoom.us/oauth/token"
 zoom_meeting_url = "https://api.zoom.us/v2/users/me/meetings"
-    
+
+# Endpoint en Flask para crear una reunión en Zoom    
 @app.route('/crear_reunion/<int:propiedad_id>', methods=['POST'])
 @login_required
 def crear_reunion(propiedad_id):
@@ -441,7 +535,8 @@ def crear_reunion(propiedad_id):
     """, (propiedad_id,))
     propiedad = cur.fetchone()
 
-    if not propiedad or propiedad[0] != current_user.id:
+    # Si no es administrador, verificar que sea el dueño de la propiedad
+    if not current_user.is_admin and (not propiedad or propiedad[0] != current_user.id):
         return "No tienes permiso para crear una reunión para esta propiedad.", 403
 
     # Obtener el token de acceso de Zoom
@@ -483,8 +578,6 @@ def crear_reunion(propiedad_id):
         return redirect(url_for('invite', join_url=join_url, topic=topic, start_time=start_time, duration=duration, agenda=agenda))
     else:
         return f"Error al crear la reunión: {response.status_code}", response.text
-
-
 
 @app.route('/invite')
 @login_required
@@ -554,7 +647,17 @@ def enviar_invitaciones():
     db.commit()
     cur.close()
 
-    return f"Notificaciones enviadas a los usuarios seleccionados."
+    # Redirigir después de 5 segundos a invite.html usando JavaScript
+    return '''
+        <html>
+        <head>
+            <meta http-equiv="refresh" content="5;url={}"> <!-- Redirige en 5 segundos -->
+        </head>
+        <body>
+            <p>Notificaciones enviadas a los usuarios seleccionados. Serás redirigido a la página de invitaciones en 5 segundos...</p>
+        </body>
+        </html>
+    '''.format(url_for('vista_propiedad'))
 
 @app.route('/notificaciones')
 @login_required

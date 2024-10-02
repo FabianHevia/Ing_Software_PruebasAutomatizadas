@@ -99,6 +99,9 @@
                     <a class="dropdown-item" href="{{ url_for('notificaciones') }}">Notificaciones</a> <!-- Nueva opción -->
                   </li>
                   <li>
+                    <a class="dropdown-item" href="{{ url_for('favoritos') }}">Favoritos</a> <!-- Botón de Favoritos dentro del dropdown -->
+                  </li>
+                  <li>
                     <a class="dropdown-item" href="empresas">Cambiar de empresa</a>
                   </li>
                   <li>
@@ -134,7 +137,11 @@
                     <table class="table align-items-center table-flush table-borderless">
                         <tbody>
                             <tr>
-                                <img class="mx-auto object-fit-cover" style="min-width: 100%; max-width: 100%; max-height:500px; min-height: 500px" src="https://lajoya.ec/wp-content/uploads/2015/02/LJ-CONDOMINIO-2-SALA-COMEDOR-1108x960.png" alt="Imagen de la propiedad">
+                                <!-- Mostrar la imagen de Cloudinary si existe, sino la predeterminada -->
+                                <img class="mx-auto object-fit-cover" 
+                                     style="min-width: 100%; max-width: 100%; max-height:500px; min-height: 500px" 
+                                     src="{{ propiedad[5] if propiedad[5] else 'https://lajoya.ec/wp-content/uploads/2015/02/LJ-CONDOMINIO-2-SALA-COMEDOR-1108x960.png' }}" 
+                                     alt="Imagen de la propiedad">
                                 <td style="font-weight:bold; text-align: justify;">
                                     <p>Dirección: {{ propiedad[1] }}</p> <!-- Dirección -->
                                     <p>Comuna: {{ propiedad[2] }}</p> <!-- Comuna -->
@@ -148,7 +155,8 @@
             </div>
         </a>
     </div>
-{% endfor %}
+    {% endfor %}
+
 
     <div class="modal fade" id="formModal" tabindex="-1" aria-labelledby="formModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -159,7 +167,7 @@
                 </div>
                 <div class="modal-body">
                     <!-- Formulario dentro del modal -->
-                    <form action="{{ url_for('registrar_propiedad') }}" method="post">
+                    <form action="{{ url_for('registrar_propiedad') }}" method="post" enctype="multipart/form-data">
                         <div class="mb-3">
                             <label for="direccion" class="form-label" style="color: rgb(0, 0, 0);">Dirección</label>
                             <input type="text" class="form-control border border-3 text-input-black" id="direccion" name="direccion" placeholder="Ingresa la dirección de la propiedad" required>
@@ -167,6 +175,10 @@
                         <div class="mb-3">
                             <label for="comuna" class="form-label" style="color: rgb(0, 0, 0);">Comuna</label>
                             <input type="text" class="form-control border border-3 text-input-black" id="comuna" name="comuna" placeholder="Ingresa la Comuna" required>
+                        </div>
+                        <div class="mb-3">
+                          <label for="imagen" class="form-label" style="color: rgb(0, 0, 0);">Subir Imagen de la propiedad</label>
+                          <input type="file" class="form-control border border-3 text-input-black" id="imagen" name="imagen" required>
                         </div>
                         <button type="submit" class="btn btn-primary mt-1">Registrar</button>
                     </form>

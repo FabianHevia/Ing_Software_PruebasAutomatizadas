@@ -54,6 +54,7 @@
     border: none !important;
 }
 
+
 /* Cambiar el color de los números y las letras del calendario a blanco */
 .bootstrap-datetimepicker-widget .day,
 .bootstrap-datetimepicker-widget .month,
@@ -116,6 +117,9 @@
                 <a class="dropdown-item" href="{{ url_for('notificaciones') }}">Notificaciones</a> <!-- Nueva opción -->
               </li>
               <li>
+                <a class="dropdown-item" href="{{ url_for('favoritos') }}">Favoritos</a> <!-- Botón de Favoritos dentro del dropdown -->
+              </li>
+              <li>
                 <a class="dropdown-item" href="empresas">Cambiar de empresa</a>
               </li>
               <li>
@@ -140,29 +144,39 @@
 
 <div class="row col-12 mt-5 p-5 text-center" style="text-align:center; max-width: 100%;">
   <div class="card mx-auto rounded rounded-3 col-10 mx-auto">
-      <div class="card-header">Propiedad Seleccionada</div>
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <!-- Título centrado -->
+      <h5 class="mx-auto" style="position: absolute; left: 50%; transform: translateX(-50%);">Propiedad Seleccionada</h5>
+      <!-- Botón de favoritos -->
+      <button id="favoritoBtn" class="btn ms-auto" style="font-size: 24px; color: {% if es_favorito %}yellow{% else %}#ccc{% endif %};" onclick="toggleFavorito({{ propiedad[0] }})">
+        <i class="{% if es_favorito %}fas{% else %}far{% endif %} fa-star" id="estrellaFavorito"></i> <!-- Estrella -->
+    </button>
+    </div>
       <div class="table-responsive">
-          <table class="table align-items-center table-flush table-borderless">
-              <thead>
-                  <tr>
-                      <th class="text-center" style="color:white"></th>
-                      <th class="text-center" style="color:white"></th>
-                  </tr>
-              </thead>
-              <tbody>
-                  <tr>
-                      <td style="font-weight:bold; text-align: justify;">
-                          <img class="mx-auto" style="min-width: 100%; max-width: 100%; max-height:1000px; min-height: 400px;" src="https://lajoya.ec/wp-content/uploads/2015/02/LJ-CONDOMINIO-2-SALA-COMEDOR-1108x960.png" alt="Imagen de la propiedad">
-                      </td>
-                      <td style="font-weight:bold; text-align: justify;">
-                          <p>Dirección: {{ propiedad[1] }}</p> <!-- Dirección de la propiedad -->
-                          <p>Comuna: {{ propiedad[2] }}</p> <!-- Comuna de la propiedad -->
-                          <p>Subido por: {{ propiedad[3] }}</p> <!-- Nombre del usuario -->
-                          <p>Estado: <strong style="color: rgb(7, 206, 7)">Inspeccionada</strong></p>
-                      </td>
-                  </tr>
-              </tbody>
-          </table>
+        <table class="table align-items-center table-flush table-borderless">
+            <thead>
+                <tr>
+                    <th class="text-center" style="color:white"></th>
+                    <th class="text-center" style="color:white"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="font-weight:bold; text-align: justify;">
+                        <!-- Mostrar la imagen de la propiedad o una imagen predeterminada si no hay imagen -->
+                        <img class="mx-auto" style="min-width: 100%; max-width: 100%; max-height:1000px; min-height: 400px;"
+                             src="{{ propiedad[4] or 'https://lajoya.ec/wp-content/uploads/2015/02/LJ-CONDOMINIO-2-SALA-COMEDOR-1108x960.png' }}" 
+                             alt="Imagen de la propiedad">
+                    </td>
+                    <td style="font-weight:bold; text-align: justify;">
+                        <p>Dirección: {{ propiedad[1] }}</p> <!-- Dirección de la propiedad -->
+                        <p>Comuna: {{ propiedad[2] }}</p> <!-- Comuna de la propiedad -->
+                        <p>Subido por: {{ propiedad[3] }}</p> <!-- Nombre del usuario -->
+                        <p>Estado: <strong style="color: rgb(7, 206, 7)">Inspeccionada</strong></p>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
       </div>
       
       <!-- Botones debajo de la tabla -->
@@ -217,8 +231,6 @@
     </div>
   </div>
 </div>
-
-
 
 <!-- Modal para editar la propiedad -->
 <div class="modal fade" id="editModal{{ propiedad[0] }}" tabindex="-1" aria-labelledby="formModalLabel{{ propiedad[0] }}" aria-hidden="true">
@@ -340,8 +352,7 @@
 <script src="{{ url_for('static', filename='assets/js/app-script.js') }}"></script>
 <!-- Index js -->
 <script src="{{ url_for('static', filename='assets/js/index.js') }}"></script>
-<!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 <!-- Datetime Picker JS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.39.0/js/tempusdominus-bootstrap-4.min.js"></script>
@@ -364,7 +375,40 @@
     });
   });
 </script>
+<script>
+  // Función para marcar/desmarcar favoritos
+  function toggleFavorito(idPropiedad) {
+      const estrella = document.getElementById('estrellaFavorito');
+      const esFavorito = estrella.classList.contains('fas'); // Si ya es favorito
 
+      const url = esFavorito ? '/quitar_favorito' : '/agregar_favorito';
+      const method = esFavorito ? 'DELETE' : 'POST';
+
+      fetch(url, {
+          method: method,
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ id_propiedad: idPropiedad })
+      })
+      .then(response => response.json())
+      .then(data => {
+          if (data.success) {
+              // Cambiar el estado visual del botón
+              if (esFavorito) {
+                  estrella.classList.remove('fas');
+                  estrella.classList.add('far'); // Estrella vacía
+                  estrella.style.color = '#ccc';
+              } else {
+                  estrella.classList.remove('far');
+                  estrella.classList.add('fas'); // Estrella llena
+                  estrella.style.color = 'yellow';
+              }
+          }
+      })
+      .catch(error => console.error('Error:', error));
+  }
+</script>
 
 </body>
 </html>
