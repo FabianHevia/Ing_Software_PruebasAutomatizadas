@@ -390,7 +390,6 @@ def portal_propiedad(id_propiedad):
 
     return render_template('portal_propiedad.html', propiedad=propiedad, es_favorito=es_favorito, es_admin=current_user.is_admin, total_visitas=propiedad[-1])
 
-
 @app.route('/editar_propiedad/<int:propiedad_id>', methods=['POST'])
 @login_required
 def editar_propiedad(propiedad_id):
@@ -404,6 +403,26 @@ def editar_propiedad(propiedad_id):
         SET direccion = %s, comuna = %s
         WHERE id_propiedad = %s
     """, (direccion, comuna, propiedad_id))
+    db.commit()
+
+    # Obtener los usuarios que tienen la propiedad en favoritos
+    cur.execute("""
+        SELECT id_usuario FROM favoritos
+        WHERE id_propiedad = %s
+    """, (propiedad_id,))
+    usuarios_favoritos = cur.fetchall()
+
+    # Crear mensaje de notificación
+    mensaje = f"La propiedad en {direccion}, {comuna} ha sido actualizada."
+
+    # Enviar notificación a cada usuario con el campo `leido` como no leído (0)
+    for usuario in usuarios_favoritos:
+        id_usuario = usuario[0]
+        cur.execute("""
+            INSERT INTO notificaciones (id_usuario, mensaje, leido)
+            VALUES (%s, %s, 0)
+        """, (id_usuario, mensaje))
+
     db.commit()
     cur.close()
 
