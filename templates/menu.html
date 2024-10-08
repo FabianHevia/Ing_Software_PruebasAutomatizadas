@@ -58,10 +58,10 @@
       </li>
   
       <li>
-        <a href="icons.html">
-          <i class="zmdi zmdi-format-list-bulleted"></i> <span>Tab desplegable</span>
+        <a href="javascript:void(0);" onclick="loadSeguimientoContent()">
+          <i class="zmdi zmdi-format-list-bulleted"></i> <span>Seguimiento</span>
         </a>
-      </li>
+      </li>      
 
       <li>
         <a href="forms.html">
@@ -278,7 +278,17 @@
       .catch(error => console.log('Error al cargar el contenido del dashboard:', error));
   }
 </script>
-  
+<script>
+  function loadSeguimientoContent() {
+    fetch('/seguimiento-content') // Ruta para cargar el contenido de Seguimiento
+      .then(response => response.text())
+      .then(html => {
+        document.getElementById('dynamic-content').innerHTML = html;
+      })
+      .catch(error => console.log('Error al cargar el contenido de Seguimiento:', error));
+  }
+</script>
+
   
 </body>
 </html>

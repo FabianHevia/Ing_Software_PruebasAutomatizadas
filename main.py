@@ -711,6 +711,8 @@ def marcar_leido(id):
 
 #DESDE ACA COMIENZA LAS RUTAS DEL CRM
 
+#BOTON DASHBOARD DEL SIDEBAR
+
 @app.route('/dashboard-content')
 @login_required
 def dashboard_content():
@@ -748,6 +750,28 @@ def dashboard_content():
         recent_orders=recent_orders
     )
 
+#BOTON SEGUIMIENTO DEL SIDE BAR
+
+@app.route('/seguimiento-content')
+@login_required
+def seguimiento_content():
+    # Filtrar las propiedades por el código de empresa del usuario autenticado
+    cur = db.cursor()
+    cur.execute("""
+        SELECT p.id_propiedad, p.direccion, p.comuna, u.username 
+        FROM system_tabla_propiedades p
+        JOIN usuarios u ON p.id_usuario = u.id
+        JOIN usuarios_empresas ue ON u.id = ue.id_usuario
+        WHERE ue.codigo_empresa = (
+            SELECT codigo_empresa 
+            FROM usuarios_empresas 
+            WHERE id_usuario = %s
+        )
+    """, (current_user.id,))
+    propiedades = cur.fetchall()
+    cur.close()
+
+    return render_template('seguimiento_content.html', propiedades=propiedades)
 
 
 if __name__ == '__main__':

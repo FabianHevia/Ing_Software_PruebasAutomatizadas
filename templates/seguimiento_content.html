@@ -1,0 +1,34 @@
+<div class="container-fluid">
+    <div class="card">
+      <div class="card-header">Seguimiento de Propiedades</div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-bordered table-hover">
+            <thead>
+              <tr>
+                <th>ID de Propiedad</th>
+                <th>Dirección</th>
+                <th>Comuna</th>
+                <th>Publicado por</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for propiedad in propiedades %}
+              <tr>
+                <td>{{ propiedad[0] }}</td>
+                <td>{{ propiedad[1] }}</td>
+                <td>{{ propiedad[2] }}</td>
+                <td>{{ propiedad[3] }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- JavaScript y Plugins -->
+  <script src="{{ url_for('static', filename='assets/js/jquery.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='assets/js/popper.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='assets/js/bootstrap.min.js') }}"></script>
