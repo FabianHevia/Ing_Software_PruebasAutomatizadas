@@ -350,20 +350,36 @@ def vista_propiedad():
     
     return render_template('vista_propiedad.html', propiedades=propiedades)
 
-
 @app.route('/portal_propiedad/<int:id_propiedad>')
 @login_required
 def portal_propiedad(id_propiedad):
-    # Obtener la propiedad seleccionada por el id_propiedad
+    # Verificar si ya existe una visita para este usuario y propiedad
     cur = db.cursor()
     cur.execute("""
-        SELECT p.id_propiedad, p.direccion, p.comuna, u.username, p.imagen
+        SELECT COUNT(*) FROM visitas_propiedad 
+        WHERE id_propiedad = %s AND id_usuario = %s
+    """, (id_propiedad, current_user.id))
+    
+    visita_existente = cur.fetchone()[0]
+
+    # Solo insertar la visita si no existe
+    if visita_existente == 0:
+        cur.execute("""
+            INSERT INTO visitas_propiedad (id_propiedad, id_usuario, fecha_visita)
+            VALUES (%s, %s, NOW())
+        """, (id_propiedad, current_user.id))
+        db.commit()
+
+    # Obtener la propiedad y otros detalles, como el conteo de visitas si es necesario
+    cur.execute("""
+        SELECT p.id_propiedad, p.direccion, p.comuna, u.username, p.imagen,
+               (SELECT COUNT(*) FROM visitas_propiedad WHERE id_propiedad = %s) AS total_visitas
         FROM system_tabla_propiedades p
         JOIN usuarios u ON p.id_usuario = u.id
         WHERE p.id_propiedad = %s
-    """, (id_propiedad,))
+    """, (id_propiedad, id_propiedad))
     propiedad = cur.fetchone()
-    
+
     # Verificar si la propiedad es favorita
     cur.execute("""
         SELECT id FROM favoritos WHERE id_usuario = %s AND id_propiedad = %s
@@ -372,7 +388,7 @@ def portal_propiedad(id_propiedad):
 
     cur.close()
 
-    return render_template('portal_propiedad.html', propiedad=propiedad, es_favorito=es_favorito, es_admin=current_user.is_admin)
+    return render_template('portal_propiedad.html', propiedad=propiedad, es_favorito=es_favorito, es_admin=current_user.is_admin, total_visitas=propiedad[-1])
 
 
 @app.route('/editar_propiedad/<int:propiedad_id>', methods=['POST'])
@@ -692,6 +708,46 @@ def marcar_leido(id):
     cur.close()
 
     return redirect(url_for('notificaciones'))
+
+#DESDE ACA COMIENZA LAS RUTAS DEL CRM
+
+@app.route('/dashboard-content')
+@login_required
+def dashboard_content():
+    # Consulta para obtener todas las propiedades de la empresa y sus visitas (0 si no existen)
+    cur = db.cursor()
+    cur.execute("""
+        SELECT p.id_propiedad, p.direccion, COUNT(v.id_visita) AS total_visitas
+        FROM system_tabla_propiedades p
+        LEFT JOIN visitas_propiedad v ON p.id_propiedad = v.id_propiedad
+        JOIN usuarios u ON p.id_usuario = u.id
+        WHERE u.empresa = %s  -- Filtra por la empresa actual del usuario
+        GROUP BY p.id_propiedad
+    """, (current_user.empresa,))
+    propiedades_trafico = cur.fetchall()
+    cur.close()
+
+    # Datos de ejemplo para otras secciones
+    weekly_sales = [
+        {'type': 'Direct', 'amount': 5856, 'percentage': 55},
+        {'type': 'Affiliate', 'amount': 2602, 'percentage': 25},
+        {'type': 'Email', 'amount': 1802, 'percentage': 15},
+        {'type': 'Other', 'amount': 1105, 'percentage': 5}
+    ]
+    
+    recent_orders = [
+        {'product': 'Iphone 5', 'photo': 'https://via.placeholder.com/110x110', 'product_id': '#9405822', 'amount': 1250, 'date': '03 Aug 2017', 'shipping': 90},
+        {'product': 'Earphone GL', 'photo': 'https://via.placeholder.com/110x110', 'product_id': '#9405820', 'amount': 1500, 'date': '03 Aug 2017', 'shipping': 60},
+        # Más pedidos si es necesario
+    ]
+
+    return render_template(
+        'dashboard_content.html', 
+        propiedades_trafico=propiedades_trafico,
+        weekly_sales=weekly_sales, 
+        recent_orders=recent_orders
+    )
+
 
 
 if __name__ == '__main__':

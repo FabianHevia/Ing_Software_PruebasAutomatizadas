@@ -1,0 +1,125 @@
+<div class="clearfix"></div>
+  <div>
+    <div class="container-fluid">
+  
+      <!-- Start Dashboard Content -->
+      <div class="row">
+       <!-- Property Traffic Card -->
+       <div class="col-12 col-lg-8 col-xl-8">
+        <div class="card">
+          <div class="card-header">Property Traffic</div>
+          <div class="card-body">
+            <ul class="list-inline">
+              {% for propiedad in propiedades_trafico %}
+              <li class="list-inline-item">
+                <i class="fa fa-circle mr-2 text-white"></i> 
+                {{ propiedad[1] }}: {{ propiedad[2] }} visitas
+              </li>
+              {% endfor %}
+            </ul>
+          </div>
+          <div class="row m-0 row-group text-center border-top border-light-3">
+            <div class="col-12 col-lg-6">
+              <div class="p-3">
+                <h5 class="mb-0">{{ propiedades_trafico | length }} propiedades</h5>
+                <small class="mb-0">Propiedades subidas <span> <i class="fa fa-home"></i></span></small>
+              </div>
+            </div>
+            <div class="col-12 col-lg-6">
+              <div class="p-3">
+                <h5 class="mb-0">
+                  {{ propiedades_trafico | sum(attribute=2) }} visitas totales
+                </h5>
+                <small class="mb-0">Total de visitas <span> <i class="fa fa-eye"></i></span></small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+        <div class="col-12 col-lg-4 col-xl-4">
+          <div class="card">
+            <div class="card-header">Weekly sales</div>
+            <div class="card-body">
+              <div class="chart-container-2">
+                <canvas id="chart2"></canvas>
+              </div>
+              <div class="table-responsive">
+                <table class="table align-items-center">
+                  <tbody>
+                    {% for sale in weekly_sales %}
+                    <tr>
+                      <td><i class="fa fa-circle text-white mr-2"></i> {{ sale.type }}</td>
+                      <td>${{ sale.amount }}</td>
+                      <td>+{{ sale.percentage }}%</td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div><!-- End Row -->
+
+      <div class="row">
+        <div class="col-12 col-lg-12">
+          <div class="card">
+            <div class="card-header">Recent Order Tables</div>
+            <div class="table-responsive">
+              <table class="table align-items-center table-flush table-borderless">
+                <thead>
+                  <tr>
+                    <th>Product</th>
+                    <th>Photo</th>
+                    <th>Product ID</th>
+                    <th>Amount</th>
+                    <th>Date</th>
+                    <th>Shipping</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for order in recent_orders %}
+                  <tr>
+                    <td>{{ order.product }}</td>
+                    <td><img src="{{ order.photo }}" class="product-img" alt="product img"></td>
+                    <td>{{ order.product_id }}</td>
+                    <td>$ {{ order.amount }}</td>
+                    <td>{{ order.date }}</td>
+                    <td>
+                      <div class="progress shadow" style="height: 3px;">
+                        <div class="progress-bar" role="progressbar" style="width: {{ order.shipping }}%"></div>
+                      </div>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div><!-- End Row -->
+
+      <!-- End Dashboard Content -->
+
+    </div><!-- End container-fluid -->
+  </div><!-- End content-wrapper -->
+</div><!-- End wrapper -->
+
+<!-- Bootstrap core JavaScript-->
+<script src="{{ url_for('static', filename='assets/js/jquery.min.js') }}"></script>
+<script src="{{ url_for('static', filename='assets/js/popper.min.js') }}"></script>
+<script src="{{ url_for('static', filename='assets/js/bootstrap.min.js') }}"></script>
+
+<!-- simplebar js -->
+<script src="{{ url_for('static', filename='assets/plugins/simplebar/js/simplebar.js') }}"></script>
+<!-- sidebar-menu js -->
+<script src="{{ url_for('static', filename='assets/js/sidebar-menu.js') }}"></script>
+<!-- Chart js -->
+<script src="{{ url_for('static', filename='assets/plugins/Chart.js/Chart.min.js') }}"></script>
+<!-- Custom scripts -->
+<script src="{{ url_for('static', filename='assets/js/app-script.js') }}"></script>
+<!-- Chart js -->
+<script src="{{ url_for('static', filename='assets/plugins/Chart.js/Chart.min.js') }}"></script>
+<!-- Index js -->
+<script src="{{ url_for('static', filename='assets/js/index.js') }}"></script>
