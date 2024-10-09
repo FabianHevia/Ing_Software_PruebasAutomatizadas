@@ -64,10 +64,10 @@
       </li>      
 
       <li>
-        <a href="forms.html">
-          <i  class="zmdi zmdi-shape"></i> <span>Herramientas</span>
+        <a href="javascript:void(0);" onclick="loadEditCompanyContent()">
+          <i class="zmdi zmdi-edit"></i> <span>Editar Empresa</span>
         </a>
-      </li>
+      </li>      
 
       <li>
         <a href="tables.html">
@@ -286,6 +286,39 @@
         document.getElementById('dynamic-content').innerHTML = html;
       })
       .catch(error => console.log('Error al cargar el contenido de Seguimiento:', error));
+  }
+</script>
+<script>
+  function loadEditCompanyContent() {
+    fetch('/edit_company')
+      .then(response => response.text())
+      .then(html => {
+        document.getElementById('dynamic-content').innerHTML = html;
+      })
+      .catch(error => console.log('Error al cargar el contenido de edición de empresa:', error));
+  }
+</script>
+<script>
+  function updateCompany() {
+    const nombreEmpresa = document.getElementById('nombre_empresa').value;
+
+    fetch('/update_company', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ nombre_empresa: nombreEmpresa })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        document.getElementById('successMessage').style.display = 'block';
+        setTimeout(() => {
+          document.getElementById('successMessage').style.display = 'none';
+        }, 3000); // Oculta el mensaje después de 3 segundos
+      }
+    })
+    .catch(error => console.error('Error al actualizar el nombre de la empresa:', error));
   }
 </script>
 

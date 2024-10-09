@@ -792,6 +792,35 @@ def seguimiento_content():
 
     return render_template('seguimiento_content.html', propiedades=propiedades)
 
+#BOTON DE EDITAR EMPRESA
+
+@app.route('/edit_company')
+@login_required
+def edit_company():
+    # Obtener el nombre actual de la empresa
+    cur = db.cursor()
+    cur.execute("SELECT nombre_empresa FROM empresas WHERE id_usuario = %s", (current_user.id,))
+    empresa = cur.fetchone()
+    cur.close()
+
+    return render_template('edit_company.html', empresa=empresa)
+
+@app.route('/update_company', methods=['POST'])
+@login_required
+def update_company():
+    data = request.get_json()
+    nuevo_nombre = data.get('nombre_empresa')
+
+    cur = db.cursor()
+    cur.execute("""
+        UPDATE empresas 
+        SET nombre_empresa = %s 
+        WHERE id_usuario = %s
+    """, (nuevo_nombre, current_user.id))
+    db.commit()
+    cur.close()
+
+    return jsonify({'success': True})
 
 if __name__ == '__main__':
     app.run(debug=True)

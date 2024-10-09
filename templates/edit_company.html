@@ -1,0 +1,42 @@
+<div class="container-fluid">
+    <div class="card">
+      <div class="card-header">Editar Empresa</div>
+      <div class="card-body">
+        <form id="editCompanyForm">
+          <div class="mb-3">
+            <label for="nombre_empresa" class="form-label">Nombre de la Empresa</label>
+            <input type="text" class="form-control" id="nombre_empresa" name="nombre_empresa" value="{{ empresa[0] }}" required>
+          </div>
+          <button type="button" class="btn btn-primary" onclick="updateCompany()">Guardar Cambios</button>
+        </form>
+        <!-- Mensaje de confirmación -->
+        <div id="successMessage" class="alert alert-success mt-3" style="display: none;">
+          Nombre de la empresa actualizado exitosamente.
+        </div>
+      </div>
+    </div>
+</div>
+<script>
+    function updateCompany() {
+      const nombreEmpresa = document.getElementById('nombre_empresa').value;
+  
+      fetch('/update_company', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ nombre_empresa: nombreEmpresa })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          document.getElementById('successMessage').style.display = 'block';
+          setTimeout(() => {
+            document.getElementById('successMessage').style.display = 'none';
+          }, 3000); // Oculta el mensaje después de 3 segundos
+        }
+      })
+      .catch(error => console.error('Error al actualizar el nombre de la empresa:', error));
+    }
+  </script>
+    
