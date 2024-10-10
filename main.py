@@ -5,7 +5,8 @@ from werkzeug.utils import secure_filename
 from datetime import datetime
 from pytz import timezone, utc
 import os
-import MySQLdb
+import psycopg2
+
 import re
 import random
 import string
@@ -17,13 +18,14 @@ import cloudinary.uploader
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Necesario para manejar sesiones
 
-# Configurar la conexión a la base de datos
-db = MySQLdb.connect(
-    host="autorack.proxy.rlwy.net",    # Host proporcionado por Railway
-    user="root",                       # Usuario proporcionado por Railway
-    passwd="fzRHqqgyogtYsSpkOqpjBpcfqIowFdzg",  # Contraseña proporcionada por Railway
-    db="railway",                      # Nombre de la base de datos proporcionado por Railway
-    port=15660                         # Puerto proporcionado por Railway
+
+# Configurar la conexión a PostgreSQL
+db = psycopg2.connect(
+    host="junction.proxy.rlwy.net",  # Host proporcionado
+    user="postgres",        # Usuario proporcionado
+    password="PSAvFkexmBPkcdoCreyJKlOvNdCQsDre", # Contraseña proporcionada
+    dbname="railway",# Nombre de la base de datos
+    port=54209                 # Puerto de PostgreSQL, normalmente 5432
 )
 
 cloudinary.config(
@@ -344,6 +346,7 @@ def vista_propiedad():
         FROM system_tabla_propiedades p
         JOIN usuarios u ON p.id_usuario = u.id
         WHERE p.codigo_empresa = %s
+        ORDER BY p.id_propiedad ASC
     """, (codigo_empresa,))
     propiedades = cur.fetchall()
     cur.close()
@@ -431,8 +434,15 @@ def editar_propiedad(propiedad_id):
 @app.route('/eliminar_propiedad/<int:propiedad_id>', methods=['POST'])
 @login_required
 def eliminar_propiedad(propiedad_id):
-    # Verificar que la propiedad le pertenece al usuario autenticado o que es accesible
     cur = db.cursor()
+
+    # Eliminar las visitas asociadas a la propiedad
+    cur.execute("""
+        DELETE FROM visitas_propiedad 
+        WHERE id_propiedad = %s
+    """, (propiedad_id,))
+    
+    # Luego eliminar la propiedad
     cur.execute("""
         DELETE FROM system_tabla_propiedades 
         WHERE id_propiedad = %s
@@ -442,6 +452,7 @@ def eliminar_propiedad(propiedad_id):
     cur.close()
 
     return redirect(url_for('vista_propiedad'))
+
 
 # Función para obtener el access token usando client_id y client_secret
 
@@ -694,6 +705,7 @@ def enviar_invitaciones():
         </html>
     '''.format(url_for('vista_propiedad'))
 
+
 @app.route('/notificaciones')
 @login_required
 def notificaciones():
@@ -702,14 +714,15 @@ def notificaciones():
     # Obtener las notificaciones no leídas para el usuario actual
     cur.execute("""
         SELECT id, mensaje, fecha FROM notificaciones 
-        WHERE id_usuario = %s AND leido = FALSE
+        WHERE id_usuario = %s AND leido = %s
         ORDER BY fecha DESC
-    """, (current_user.id,))
+    """, (current_user.id, 0))  # Aquí, `0` representa `FALSE`
     
     notificaciones = cur.fetchall()
     cur.close()
     
     return render_template('notificaciones.html', notificaciones=notificaciones)
+
 
 @app.route('/marcar_leido/<int:id>', methods=['POST'])
 @login_required
@@ -719,7 +732,7 @@ def marcar_leido(id):
     # Marcar la notificación como leída
     cur.execute("""
         UPDATE notificaciones
-        SET leido = TRUE
+        SET leido = 1
         WHERE id = %s AND id_usuario = %s
     """, (id, current_user.id))
     
@@ -742,7 +755,7 @@ def dashboard_content():
         FROM system_tabla_propiedades p
         LEFT JOIN visitas_propiedad v ON p.id_propiedad = v.id_propiedad
         JOIN usuarios u ON p.id_usuario = u.id
-        WHERE u.empresa = %s  -- Filtra por la empresa actual del usuario
+        WHERE u.empresa = 0  -- Filtra por la empresa actual del usuario, usa 0 o 1
         GROUP BY p.id_propiedad
     """, (current_user.empresa,))
     propiedades_trafico = cur.fetchall()

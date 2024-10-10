@@ -16,27 +16,5 @@
       </div>
     </div>
 </div>
-<script>
-    function updateCompany() {
-      const nombreEmpresa = document.getElementById('nombre_empresa').value;
-  
-      fetch('/update_company', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ nombre_empresa: nombreEmpresa })
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          document.getElementById('successMessage').style.display = 'block';
-          setTimeout(() => {
-            document.getElementById('successMessage').style.display = 'none';
-          }, 3000); // Oculta el mensaje después de 3 segundos
-        }
-      })
-      .catch(error => console.error('Error al actualizar el nombre de la empresa:', error));
-    }
-  </script>
+
     
