@@ -7,11 +7,11 @@
   <meta name="description" content=""/>
   <meta name="author" content=""/>
   <title>Invitar Usuarios a Reunión</title>
- <!-- Bootstrap core CSS-->
- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
- <!-- Custom Style-->
- <link href="{{ url_for('static', filename='assets/css/app-style.css') }}" rel="stylesheet"/>
- <style>
+  <!-- Bootstrap core CSS-->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Custom Style-->
+  <link href="{{ url_for('static', filename='assets/css/app-style.css') }}" rel="stylesheet"/>
+  <style>
     .bg-theme {
         background-color: #343a40; /* Colores de fondo */
     }
@@ -26,12 +26,12 @@
     .text-white {
         color: white;
     }
- </style>
+  </style>
 </head>
 
 <body class="bg-theme">
   <!-- Start wrapper-->
-   <div id="wrapper">
+  <div id="wrapper">
   
   <div class="clearfix"></div>
   
@@ -46,21 +46,21 @@
           <p class="text-white"><a href="{{ join_url }}" target="_blank">{{ join_url }}</a></p>
         </div>
   
-      <!-- Detalles de la reunión -->
-      <div class="card-header text-white">Ver Detalles de la Reunión</div>
-      <div class="card-body">
-        <h6 class="text-white">Tema:</h6>
-        <p class="text-white">{{ topic }}</p>
+        <!-- Detalles de la reunión -->
+        <div class="card-header text-white">Ver Detalles de la Reunión</div>
+        <div class="card-body">
+          <h6 class="text-white">Tema:</h6>
+          <p class="text-white">{{ topic }}</p>
 
-        <h6 class="text-white">Fecha y Hora de Inicio:</h6>
-        <p class="text-white">{{ start_time | tolocal }}</p>
+          <h6 class="text-white">Fecha y Hora de Inicio:</h6>
+          <p class="text-white">{{ start_time | tolocal }}</p>
 
-        <h6 class="text-white">Duración:</h6>
-        <p class="text-white">{{ duration }} minutos</p>
+          <h6 class="text-white">Duración:</h6>
+          <p class="text-white">{{ duration }} minutos</p>
 
-        <h6 class="text-white">Agenda:</h6>
-        <p class="text-white">{{ agenda }}</p>
-      </div>
+          <h6 class="text-white">Agenda:</h6>
+          <p class="text-white">{{ agenda }}</p>
+        </div>
   
         <div class="card-header text-white">Seleccionar Usuarios para Invitar</div>
         <div class="table-responsive" style="background-color: transparent;">
@@ -79,10 +79,10 @@
                 {% for usuario in usuarios %}
                 <tr>
                   <td class="text-center">
-                    <input type="checkbox" name="usuarios" value="{{ usuario[2] }}">
+                    <input type="checkbox" name="usuarios" value="{{ usuario.email }}">
                   </td>
-                  <td class="text-center text-white">{{ usuario[1] }}</td>
-                  <td class="text-center text-white">{{ usuario[2] }}</td>
+                  <td class="text-center text-white">{{ usuario.username }}</td>
+                  <td class="text-center text-white">{{ usuario.email }}</td>
                 </tr>
                 {% endfor %}
               </tbody>

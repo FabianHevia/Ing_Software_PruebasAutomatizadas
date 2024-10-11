@@ -130,7 +130,7 @@
     {% for propiedad in propiedades %}
     <div class="col-6 col-lg-6">
         <!-- Toda la tarjeta es un enlace que redirige al portal de la propiedad -->
-        <a href="{{ url_for('portal_propiedad', id_propiedad=propiedad[0]) }}" class="text-decoration-none text-dark">
+        <a href="{{ url_for('portal_propiedad', id_propiedad=propiedad['id_propiedad']) }}" class="text-decoration-none text-dark">
             <div class="card animacion-container mx-auto rounded-3" style="height:100%;width:90%">
                 <div class="card-header">Propiedad {{ loop.index }}</div>
                 <div class="table-responsive">
@@ -140,13 +140,13 @@
                                 <!-- Mostrar la imagen de Cloudinary si existe, sino la predeterminada -->
                                 <img class="mx-auto object-fit-cover" 
                                      style="min-width: 100%; max-width: 100%; max-height:500px; min-height: 500px" 
-                                     src="{{ propiedad[5] if propiedad[5] else 'https://lajoya.ec/wp-content/uploads/2015/02/LJ-CONDOMINIO-2-SALA-COMEDOR-1108x960.png' }}" 
+                                     src="{{ propiedad['imagen'] if propiedad['imagen'] else 'https://lajoya.ec/wp-content/uploads/2015/02/LJ-CONDOMINIO-2-SALA-COMEDOR-1108x960.png' }}" 
                                      alt="Imagen de la propiedad">
                                 <td style="font-weight:bold; text-align: justify;">
-                                    <p>Dirección: {{ propiedad[1] }}</p> <!-- Dirección -->
-                                    <p>Comuna: {{ propiedad[2] }}</p> <!-- Comuna -->
-                                    <p>Modificaciones: {{ propiedad[3] }}</p> <!-- Modificaciones -->
-                                    <p>Subido por: {{ propiedad[4] }}</p> <!-- Nombre del usuario -->
+                                    <p>Dirección: {{ propiedad['direccion'] }}</p> <!-- Dirección -->
+                                    <p>Comuna: {{ propiedad['comuna'] }}</p> <!-- Comuna -->
+                                    <p>Modificaciones: {{ propiedad['modificaciones'] }}</p> <!-- Modificaciones -->
+                                    <p>Subido por: {{ propiedad['username'] }}</p> <!-- Nombre del usuario -->
                                 </td>
                             </tr>
                         </tbody>
@@ -156,7 +156,6 @@
         </a>
     </div>
     {% endfor %}
-
 
     <div class="modal fade" id="formModal" tabindex="-1" aria-labelledby="formModalLabel" aria-hidden="true">
         <div class="modal-dialog">

@@ -148,9 +148,9 @@
       <!-- Título centrado -->
       <h5 class="mx-auto" style="position: absolute; left: 50%; transform: translateX(-50%);">Propiedad Seleccionada</h5>
       <!-- Botón de favoritos -->
-      <button id="favoritoBtn" class="btn ms-auto" style="font-size: 24px; color: {% if es_favorito %}yellow{% else %}#ccc{% endif %};" onclick="toggleFavorito({{ propiedad[0] }})">
+      <button id="favoritoBtn" class="btn ms-auto" style="font-size: 24px; color: {% if es_favorito %}yellow{% else %}#ccc{% endif %};" onclick="toggleFavorito({{ propiedad['id_propiedad'] }})">
         <i class="{% if es_favorito %}fas{% else %}far{% endif %} fa-star" id="estrellaFavorito"></i> <!-- Estrella -->
-    </button>
+      </button>
     </div>
       <div class="table-responsive">
         <table class="table align-items-center table-flush table-borderless">
@@ -165,13 +165,13 @@
                     <td style="font-weight:bold; text-align: justify;">
                         <!-- Mostrar la imagen de la propiedad o una imagen predeterminada si no hay imagen -->
                         <img class="mx-auto" style="min-width: 100%; max-width: 100%; max-height:1000px; min-height: 400px;"
-                             src="{{ propiedad[4] or 'https://lajoya.ec/wp-content/uploads/2015/02/LJ-CONDOMINIO-2-SALA-COMEDOR-1108x960.png' }}" 
-                             alt="Imagen de la propiedad">
+                            src="{{ propiedad['imagen'] or 'https://lajoya.ec/wp-content/uploads/2015/02/LJ-CONDOMINIO-2-SALA-COMEDOR-1108x960.png' }}" 
+                            alt="Imagen de la propiedad">
                     </td>
                     <td style="font-weight:bold; text-align: justify;">
-                        <p>Dirección: {{ propiedad[1] }}</p> <!-- Dirección de la propiedad -->
-                        <p>Comuna: {{ propiedad[2] }}</p> <!-- Comuna de la propiedad -->
-                        <p>Subido por: {{ propiedad[3] }}</p> <!-- Nombre del usuario -->
+                        <p>Dirección: {{ propiedad['direccion'] }}</p>
+                        <p>Comuna: {{ propiedad['comuna'] }}</p>
+                        <p>Subido por: {{ propiedad['username'] }}</p>
                         <p>Estado: <strong style="color: rgb(7, 206, 7)">Inspeccionada</strong></p>
                     </td>
                 </tr>
@@ -187,12 +187,12 @@
             Crear Reunión
           </button>
           {% endif %}
-          <button type="button" class="btn btn-primary mt-1" data-bs-toggle="modal" data-bs-target="#editModal{{ propiedad[0] }}">
-              Editar Información
+          <button type="button" class="btn btn-primary mt-1" data-bs-toggle="modal" data-bs-target="#editModal{{ propiedad['id_propiedad'] }}">
+            Editar Información
           </button>
           <!-- Botón para abrir el modal de confirmación de eliminación -->
-          <button type="button" class="btn btn-danger mx-2 mt-1" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal{{ propiedad[0] }}">
-              Eliminar Propiedad
+          <button type="button" class="btn btn-danger mx-2 mt-1" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal{{ propiedad['id_propiedad'] }}">
+            Eliminar Propiedad
           </button>
       </div>
   </div>
@@ -223,7 +223,7 @@
       <div class="modal-footer" style="border-top: 1px solid #666;">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
         <!-- Botón que realiza la solicitud POST para crear la reunión -->
-        <form action="{{ url_for('crear_reunion', propiedad_id=propiedad[0]) }}" method="POST" style="display:inline;">
+        <form action="{{ url_for('crear_reunion', propiedad_id=propiedad['id_propiedad']) }}" method="POST" style="display:inline;">
           <input type="hidden" id="fechaHoraInput" name="fecha_hora">
           <button type="submit" class="btn btn-primary">Crear Reunión</button>
         </form>
@@ -233,23 +233,23 @@
 </div>
 
 <!-- Modal para editar la propiedad -->
-<div class="modal fade" id="editModal{{ propiedad[0] }}" tabindex="-1" aria-labelledby="formModalLabel{{ propiedad[0] }}" aria-hidden="true">
+<div class="modal fade" id="editModal{{ propiedad['id_propiedad'] }}" tabindex="-1" aria-labelledby="formModalLabel{{ propiedad['id_propiedad'] }}" aria-hidden="true">
   <div class="modal-dialog">
       <div class="modal-content">
           <div class="modal-header">
-              <h5 class="modal-title" id="formModalLabel{{ propiedad[0] }}" style="color: rgb(0, 0, 0);">Editar Propiedad</h5>
+              <h5 class="modal-title" id="formModalLabel{{ propiedad['id_propiedad'] }}" style="color: rgb(0, 0, 0);">Editar Propiedad</h5>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
               <!-- Formulario para actualizar los datos de la propiedad -->
-              <form action="{{ url_for('editar_propiedad', propiedad_id=propiedad[0]) }}" method="post">
+              <form action="{{ url_for('editar_propiedad', propiedad_id=propiedad['id_propiedad']) }}" method="post">
                 <div class="mb-3">
                     <label for="direccion" class="form-label" style="color: rgb(0, 0, 0);">Dirección</label>
-                    <input type="text" class="form-control border border-3" id="direccion" name="direccion" value="{{ propiedad[1] }}" required>
+                    <input type="text" class="form-control border border-3" id="direccion" name="direccion" value="{{ propiedad['direccion'] }}" required>
                 </div>
                 <div class="mb-3">
                   <label for="comuna" class="form-label" style="color: rgb(0, 0, 0);">Comuna</label>
-                  <input type="text" class="form-control border border-3" id="comuna" name="comuna" value="{{ propiedad[2] }}" required>
+                  <input type="text" class="form-control border border-3" id="comuna" name="comuna" value="{{ propiedad['comuna'] }}" required>
               </div>
                 <button type="submit" class="btn btn-primary">Actualizar</button>
             </form>
@@ -259,11 +259,11 @@
 </div>
 
 <!-- Modal de confirmación para eliminar propiedad -->
-<div class="modal fade" id="confirmDeleteModal{{ propiedad[0] }}" tabindex="-1" aria-labelledby="confirmDeleteLabel{{ propiedad[0] }}" aria-hidden="true">
+<div class="modal fade" id="confirmDeleteModal{{ propiedad['id_propiedad'] }}" tabindex="-1" aria-labelledby="confirmDeleteLabel{{ propiedad['id_propiedad'] }}" aria-hidden="true">
   <div class="modal-dialog">
       <div class="modal-content">
           <div class="modal-header">
-              <h5 class="modal-title" id="confirmDeleteLabel{{ propiedad[0] }}" style="color: rgb(0, 0, 0);">Confirmar Eliminación</h5>
+              <h5 class="modal-title" id="confirmDeleteLabel{{ propiedad['id_propiedad'] }}" style="color: rgb(0, 0, 0);">Confirmar Eliminación</h5>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
@@ -274,7 +274,7 @@
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
               
               <!-- Formulario para eliminar la propiedad -->
-              <form action="{{ url_for('eliminar_propiedad', propiedad_id=propiedad[0]) }}" method="POST" style="display: inline;">
+              <form action="{{ url_for('eliminar_propiedad', propiedad_id=propiedad['id_propiedad']) }}" method="POST" style="display: inline;">
                   <button type="submit" class="btn btn-danger">Eliminar</button>
               </form>
           </div>
@@ -282,8 +282,7 @@
   </div>
 </div>
 
-
-        <!--End Row-->
+      <!--End Row-->
 	  
 	<!--start overlay-->
 		  <div class="overlay toggle-menu"></div>
