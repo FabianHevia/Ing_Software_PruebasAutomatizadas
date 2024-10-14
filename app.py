@@ -345,7 +345,7 @@ def portal_propiedad(id_propiedad):
 
     # Obtener la propiedad y el total de visitas
     propiedad = (
-        db.session.query(Propiedad, Usuario.username)
+        db.session.query(Propiedad, Usuario.username, Usuario.id.label("id_usuario"))
         .join(Usuario, Propiedad.id_usuario == Usuario.id)
         .filter(Propiedad.id_propiedad == id_propiedad)
         .first()
@@ -363,6 +363,7 @@ def portal_propiedad(id_propiedad):
         'direccion': propiedad.Propiedad.direccion,
         'comuna': propiedad.Propiedad.comuna,
         'username': propiedad.username,
+        'id_usuario': propiedad.id_usuario,
         'imagen': propiedad.Propiedad.imagen
     }
     
@@ -419,6 +420,11 @@ def editar_propiedad(propiedad_id):
 @app.route('/eliminar_propiedad/<int:propiedad_id>', methods=['POST'])
 @login_required
 def eliminar_propiedad(propiedad_id):
+    
+    # Eliminar los favoritos asociados a la propiedad
+    favoritos = Favorito.query.filter_by(id_propiedad=propiedad_id).all()
+    for favorito in favoritos:
+        db.session.delete(favorito)
     # Eliminar las visitas asociadas a la propiedad
     visitas = VisitaPropiedad.query.filter_by(id_propiedad=propiedad_id).all()
     for visita in visitas:

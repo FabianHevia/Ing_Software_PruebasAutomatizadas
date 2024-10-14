@@ -187,13 +187,15 @@
             Crear Reunión
           </button>
           {% endif %}
+          <!-- Mostrar los botones de Editar y Eliminar solo si el usuario es admin o si es el dueño de la propiedad -->
+          {% if es_admin or propiedad['id_usuario'] == current_user.id %}
           <button type="button" class="btn btn-primary mt-1" data-bs-toggle="modal" data-bs-target="#editModal{{ propiedad['id_propiedad'] }}">
-            Editar Información
+              Editar Información
           </button>
-          <!-- Botón para abrir el modal de confirmación de eliminación -->
           <button type="button" class="btn btn-danger mx-2 mt-1" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal{{ propiedad['id_propiedad'] }}">
-            Eliminar Propiedad
+              Eliminar Propiedad
           </button>
+          {% endif %}
       </div>
   </div>
 </div>
