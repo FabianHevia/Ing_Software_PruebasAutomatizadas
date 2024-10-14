@@ -70,9 +70,8 @@
       </li>      
 
       <li>
-        <a href="tables.html">
-          <i class="zmdi zmdi-grid"></i> <span>Gestion Web</span>
-          <small class="badge float-right badge-light">New</small>
+        <a href="javascript:void(0);" onclick="loadGestionUsuariosContent()">
+          <i class="zmdi zmdi-grid"></i> <span>Gestión de Usuarios</span>
         </a>
       </li>
 
@@ -320,6 +319,17 @@
     })
     .catch(error => console.error('Error al actualizar el nombre de la empresa:', error));
   }
+</script>
+
+<script>
+function loadGestionUsuariosContent() {
+  fetch('/gestion_usuarios') // Ruta para cargar el historial de acciones
+    .then(response => response.text())
+    .then(html => {
+      document.getElementById('dynamic-content').innerHTML = html;
+    })
+    .catch(error => console.log('Error al cargar el contenido de Gestión de Usuarios:', error));
+}
 </script>
 
   

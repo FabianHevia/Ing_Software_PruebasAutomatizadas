@@ -1,0 +1,28 @@
+<div class="container mt-5">
+    <h3 class="text-white">Gestión de Usuarios - Historial de Acciones</h3>
+    
+    {% if actividades %}
+    <table class="table table-bordered table-hover mt-3 bg-light">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">Usuario</th>
+                <th scope="col">Acción</th>
+                <th scope="col">Detalle</th>
+                <th scope="col">Fecha y Hora</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for actividad in actividades %}
+            <tr>
+                <td>{{ actividad.usuario }}</td>
+                <td>{{ actividad.accion }}</td>
+                <td>{{ actividad.detalle }}</td>
+                <td>{{ actividad.fecha_hora }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+        <p class="text-white">No hay actividades registradas en el sistema.</p>
+    {% endif %}
+</div>

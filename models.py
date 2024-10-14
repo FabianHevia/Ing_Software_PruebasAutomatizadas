@@ -1,6 +1,8 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import datetime
+
 db = SQLAlchemy()
 
 class Empresa(db.Model):
@@ -121,3 +123,14 @@ class VisitaPropiedad(db.Model):
         self.id_propiedad = id_propiedad
         self.id_usuario = id_usuario
         self.fecha_visita = fecha_visita
+
+class LogActividad(db.Model):
+    __tablename__ = 'log_actividad'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    id_usuario = db.Column(db.Integer, db.ForeignKey('usuarios.id'))
+    accion = db.Column(db.String(255), nullable=False)
+    detalle = db.Column(db.String(255), nullable=True)
+    fecha_hora = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    usuario = db.relationship('Usuario', backref='actividades')

@@ -6,7 +6,6 @@ from datetime import datetime
 from pytz import timezone, utc
 import os
 import psycopg2
-
 import re
 import random
 import string
@@ -453,7 +452,6 @@ def eliminar_propiedad(propiedad_id):
 
     return redirect(url_for('vista_propiedad'))
 
-
 # Función para obtener el access token usando client_id y client_secret
 
 @app.route('/agregar_favorito', methods=['POST'])
@@ -705,7 +703,6 @@ def enviar_invitaciones():
         </html>
     '''.format(url_for('vista_propiedad'))
 
-
 @app.route('/notificaciones')
 @login_required
 def notificaciones():
@@ -722,7 +719,6 @@ def notificaciones():
     cur.close()
     
     return render_template('notificaciones.html', notificaciones=notificaciones)
-
 
 @app.route('/marcar_leido/<int:id>', methods=['POST'])
 @login_required

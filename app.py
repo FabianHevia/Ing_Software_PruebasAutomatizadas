@@ -7,7 +7,7 @@ from pytz import timezone, utc
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func
 from config import Config
-from models import db, Empresa, Favorito, Notificacion, Propiedad, Usuario, UsuarioEmpresa, VisitaPropiedad
+from models import db, Empresa, Favorito, Notificacion, Propiedad, Usuario, UsuarioEmpresa, VisitaPropiedad, LogActividad
 import os
 import re
 import random
@@ -286,6 +286,14 @@ def registrar_propiedad():
     )
 
     db.session.add(nueva_propiedad)
+    
+    # Registrar la acción del usuario en la tabla de actividades
+    log_actividad = LogActividad(
+        id_usuario=current_user.id,
+        accion="Registrar propiedad",
+        detalle=f"Propiedad en {direccion}, {comuna} registrada"
+    )
+    db.session.add(log_actividad)
     db.session.commit()
     
     return redirect(url_for('vista_propiedad'))
@@ -390,6 +398,17 @@ def editar_propiedad(propiedad_id):
             notificacion = Notificacion(id_usuario=usuario.id_usuario, mensaje=mensaje, leido=0)
             db.session.add(notificacion)
 
+        # Añadir el registro al Log de Actividad
+        accion = f"Edición de propiedad"
+        detalle = f"Propiedad en {direccion}, {comuna} actualizada por el usuario {current_user.username}."
+        log_actividad = LogActividad(
+            id_usuario=current_user.id, 
+            accion=accion,
+            detalle=detalle,
+            fecha_hora=datetime.utcnow()
+        )
+        db.session.add(log_actividad)
+        
         db.session.commit()
         flash("La propiedad ha sido actualizada y se ha notificado a los usuarios correspondientes.")
     else:
@@ -409,6 +428,17 @@ def eliminar_propiedad(propiedad_id):
     propiedad = Propiedad.query.get(propiedad_id)
     if propiedad:
         db.session.delete(propiedad)
+        db.session.commit()
+        # Registrar la acción en el Log de Actividad
+        accion = "Eliminación de propiedad"
+        detalle = f"Propiedad {propiedad_id} eliminada por el usuario {current_user.username}."
+        log_actividad = LogActividad(
+            id_usuario=current_user.id,
+            accion=accion,
+            detalle=detalle,
+            fecha_hora=datetime.utcnow()
+        )
+        db.session.add(log_actividad)
         db.session.commit()
         flash("Propiedad eliminada correctamente.")
     else:
@@ -670,6 +700,10 @@ def marcar_leido(id):
     
     return redirect(url_for('notificaciones'))
 
+#DESDE ACA COMIENZA LAS RUTAS DEL CRM
+
+#BOTON DASHBOARD DEL SIDEBAR
+
 @app.route('/dashboard-content')
 @login_required
 def dashboard_content():
@@ -708,6 +742,8 @@ def dashboard_content():
         recent_orders=recent_orders
     )
 
+#BOTON SEGUIMIENTO DEL SIDE BAR
+
 @app.route('/seguimiento-content')
 @login_required
 def seguimiento_content():
@@ -728,6 +764,8 @@ def seguimiento_content():
     )
 
     return render_template('seguimiento_content.html', propiedades=propiedades)
+
+#BOTON DE EDITAR EMPRESA
 
 @app.route('/edit_company')
 @login_required
@@ -757,3 +795,24 @@ def update_company():
         return jsonify({'success': True})
     else:
         return jsonify({'success': False, 'message': 'Empresa no encontrada'}), 404
+
+#BOTON GESTION DE USUARIOS
+ 
+@app.route('/gestion_usuarios')
+@login_required
+def gestion_usuarios():
+    # Consultar las actividades registradas en el log
+    actividades = LogActividad.query.order_by(LogActividad.fecha_hora.desc()).all()
+    
+    # Formatear la lista de actividades para la plantilla
+    actividades_lista = [
+        {
+            'usuario': actividad.usuario.username,
+            'accion': actividad.accion,
+            'detalle': actividad.detalle,
+            'fecha_hora': actividad.fecha_hora.strftime('%Y-%m-%d %H:%M')
+        }
+        for actividad in actividades
+    ]
+    
+    return render_template('gestion_usuarios.html', actividades=actividades_lista)
