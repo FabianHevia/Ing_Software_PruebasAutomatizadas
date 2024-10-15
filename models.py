@@ -129,8 +129,10 @@ class LogActividad(db.Model):
     
     id = db.Column(db.Integer, primary_key=True)
     id_usuario = db.Column(db.Integer, db.ForeignKey('usuarios.id'))
+    codigo_empresa = db.Column(db.String, nullable=False) 
     accion = db.Column(db.String(255), nullable=False)
     detalle = db.Column(db.String(255), nullable=True)
     fecha_hora = db.Column(db.DateTime, default=datetime.utcnow)
     
     usuario = db.relationship('Usuario', backref='actividades')
+

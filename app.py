@@ -290,6 +290,7 @@ def registrar_propiedad():
     # Registrar la acción del usuario en la tabla de actividades
     log_actividad = LogActividad(
         id_usuario=current_user.id,
+        codigo_empresa=empresa_usuario.codigo_empresa,
         accion="Registrar propiedad",
         detalle=f"Propiedad en {direccion}, {comuna} registrada"
     )
@@ -393,6 +394,9 @@ def editar_propiedad(propiedad_id):
 
         # Obtener los usuarios que tienen la propiedad en favoritos
         usuarios_favoritos = Favorito.query.filter_by(id_propiedad=propiedad_id).all()
+        
+        # Obtener el código de empresa del usuario desde la tabla usuarios_empresas
+        empresa_usuario = UsuarioEmpresa.query.filter_by(id_usuario=current_user.id).first()
 
         # Enviar notificación a cada usuario con el campo `leido` como no leído (0)
         for usuario in usuarios_favoritos:
@@ -401,9 +405,10 @@ def editar_propiedad(propiedad_id):
 
         # Añadir el registro al Log de Actividad
         accion = f"Edición de propiedad"
-        detalle = f"Propiedad en {direccion}, {comuna} actualizada por el usuario {current_user.username}."
+        detalle = f"Propiedad {propiedad_id} en {direccion}, {comuna} actualizada por el usuario {current_user.username}."
         log_actividad = LogActividad(
-            id_usuario=current_user.id, 
+            id_usuario=current_user.id,
+            codigo_empresa=empresa_usuario.codigo_empresa, 
             accion=accion,
             detalle=detalle,
             fecha_hora=datetime.utcnow()
@@ -429,7 +434,8 @@ def eliminar_propiedad(propiedad_id):
     visitas = VisitaPropiedad.query.filter_by(id_propiedad=propiedad_id).all()
     for visita in visitas:
         db.session.delete(visita)
-
+    # Obtener el código de empresa del usuario desde la tabla usuarios_empresas
+    empresa_usuario = UsuarioEmpresa.query.filter_by(id_usuario=current_user.id).first()
     # Eliminar la propiedad
     propiedad = Propiedad.query.get(propiedad_id)
     if propiedad:
@@ -440,6 +446,7 @@ def eliminar_propiedad(propiedad_id):
         detalle = f"Propiedad {propiedad_id} eliminada por el usuario {current_user.username}."
         log_actividad = LogActividad(
             id_usuario=current_user.id,
+            codigo_empresa=empresa_usuario.codigo_empresa, 
             accion=accion,
             detalle=detalle,
             fecha_hora=datetime.utcnow()
@@ -807,10 +814,12 @@ def update_company():
 @app.route('/gestion_usuarios')
 @login_required
 def gestion_usuarios():
-    # Consultar las actividades registradas en el log
-    actividades = LogActividad.query.order_by(LogActividad.fecha_hora.desc()).all()
+    # Obtener el código de la empresa del usuario autenticado
+    codigo_empresa = UsuarioEmpresa.query.filter_by(id_usuario=current_user.id).first().codigo_empresa
+
+    # Consultar las actividades de los usuarios de la misma empresa
+    actividades = LogActividad.query.filter_by(codigo_empresa=codigo_empresa).order_by(LogActividad.fecha_hora.desc()).all()
     
-    # Formatear la lista de actividades para la plantilla
     actividades_lista = [
         {
             'usuario': actividad.usuario.username,
@@ -822,3 +831,5 @@ def gestion_usuarios():
     ]
     
     return render_template('gestion_usuarios.html', actividades=actividades_lista)
+
+
