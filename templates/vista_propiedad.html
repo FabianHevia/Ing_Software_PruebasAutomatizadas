@@ -31,7 +31,6 @@
 
  <style>
      .animacion-container {
-            border-radius: 20px; /* Bordes redondeados */
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* Sombra sutil */
             transition: transform 0.3s ease;
     }
@@ -72,7 +71,7 @@
 </head>
 
 <body class="bg-theme bg-theme1">
-    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom mx-auto" style="width: 100vw;">
         <div class="container-fluid">
           <!-- Logo que redirige a vista_propiedad -->
           <a class="navbar-brand" href="vista_propiedad">
@@ -118,7 +117,7 @@
 
 <div class="clearfix"></div>
 	
-    <div class="row mt-5 p-5 text-center" style="text-align:center;">
+    <div class="row p-5 text-center" style="text-align:center;">
     <div class="col-6 mx-auto mb-5 p-2 pt-3" style="text-align:center; background-color: rgba(0, 0, 0, 0.05);">
         <h6 class="mb-1 text-center" style="text-align:center; font-weight: bold;" >Vista de Propiedades</h6>
     </div>
@@ -131,10 +130,10 @@
     <div class="col-6 col-lg-6">
         <!-- Toda la tarjeta es un enlace que redirige al portal de la propiedad -->
         <a href="{{ url_for('portal_propiedad', id_propiedad=propiedad['id_propiedad']) }}" class="text-decoration-none text-dark">
-            <div class="card animacion-container mx-auto rounded-3" style="height:100%;width:90%">
+            <div class="card animacion-container mx-auto" style="height:auto;width:90%">
                 <div class="card-header">Propiedad {{ loop.index }}</div>
                 <div class="table-responsive">
-                    <table class="table align-items-center table-flush table-borderless">
+                    <table class="table align-items-center table-flush table-borderless" style="width: 100%; border-collapse: collapse;">
                         <tbody>
                             <tr>
                                 <!-- Mostrar la imagen de Cloudinary si existe, sino la predeterminada -->
@@ -142,12 +141,40 @@
                                      style="min-width: 100%; max-width: 100%; max-height:500px; min-height: 500px" 
                                      src="{{ propiedad['imagen'] if propiedad['imagen'] else 'https://lajoya.ec/wp-content/uploads/2015/02/LJ-CONDOMINIO-2-SALA-COMEDOR-1108x960.png' }}" 
                                      alt="Imagen de la propiedad">
-                                <td style="font-weight:bold; text-align: justify;">
-                                    <p>Dirección: {{ propiedad['direccion'] }}</p> <!-- Dirección -->
-                                    <p>Comuna: {{ propiedad['comuna'] }}</p> <!-- Comuna -->
-                                    <p>Modificaciones: {{ propiedad['modificaciones'] }}</p> <!-- Modificaciones -->
-                                    <p>Subido por: {{ propiedad['username'] }}</p> <!-- Nombre del usuario -->
-                                </td>
+                                <section style="font-weight:bold; text-align: justify;">
+                                  <tr style="background-color: rgba(0, 0, 0, 0.25);">
+                                    <td style="font-weight: bold;text-align: left;color: #dddddd; 
+                                    border-right: 2px solid rgba(0, 0, 0, 0.25) !important; 
+                                    border-bottom: 2px solid rgba(0, 0, 0, 0.15) !important;" 
+                                    class="col-3">Dirección</td>
+                                    <td style="text-align: left;color: #eeeeee; 
+                                    border-bottom: 2px solid rgba(0, 0, 0, 0.15) !important;" class="col-9">{{ propiedad['direccion'] }}</td>
+                                  </tr>
+                                  <tr style="background-color: rgba(0, 0, 0, 0.40);">
+                                      <td style="font-weight: bold;text-align: left;color: #dddddd; 
+                                      border-right: 2px solid rgba(0, 0, 0, 0.25) !important; 
+                                      border-bottom: 2px solid rgba(0, 0, 0, 0.15) !important;" 
+                                      class="col-3">Comuna</td>
+                                      <td style="text-align: left;color: #eeeeee;
+                                      border-bottom: 2px solid rgba(0, 0, 0, 0.15) !important;" class="col-9">{{ propiedad['comuna'] }}</td>
+                                  </tr>
+                                  <tr style="background-color: rgba(0, 0, 0, 0.25);">
+                                      <td style="font-weight: bold;text-align: left;color: #dddddd; 
+                                      border-right: 2px solid rgba(0, 0, 0, 0.25) !important; 
+                                      border-bottom: 2px solid rgba(0, 0, 0, 0.15) !important;" 
+                                      class="col-3">Modificaciones</td>
+                                      <td style="text-align: left;color: #eeeeee;
+                                      border-bottom: 2px solid rgba(0, 0, 0, 0.15) !important;" class="col-9">{{ propiedad['modificaciones'] }}</td>
+                                  </tr>
+                                  <tr style="background-color: rgba(0, 0, 0, 0.40);">
+                                    <td style="font-weight: bold; text-align: left; color: #dddddd; 
+                                    border-right: 2px solid rgba(0, 0, 0, 0.25) !important; 
+                                    border-bottom: 2px solid rgba(0, 0, 0, 0.15) !important;" 
+                                    class="col-3">Subido por</td>
+                                      <td style="text-align: left;color: #eeeeee;
+                                      border-bottom: 2px solid rgba(0, 0, 0, 0.15) !important;" class="col-9">{{ propiedad['username'] }}</td>
+                                  </tr>
+                                </section>
                             </tr>
                         </tbody>
                     </table>
