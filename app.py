@@ -145,11 +145,10 @@ def login():
             if user and check_password_hash(user.password, password):
                 print("Contraseña correcta")
                 login_user(user)
-                if user.admin:  # Verifica si es admin
+                if user.admin or user.acceso_crm:  # acceso_crm es el campo de permiso
                     return redirect(url_for('duality'))
                 else:
                     return redirect(url_for('empresas'))
-
             else:
                 print("Contraseña incorrecta")
         else:
@@ -829,7 +828,13 @@ def gestion_usuarios():
         }
         for actividad in actividades
     ]
-    
-    return render_template('gestion_usuarios.html', actividades=actividades_lista)
+    # Obtener los usuarios que son miembros de la misma empresa
+    usuarios_empresa = (
+        db.session.query(Usuario)
+        .join(UsuarioEmpresa, Usuario.id == UsuarioEmpresa.id_usuario)
+        .filter(UsuarioEmpresa.codigo_empresa == codigo_empresa)
+        .all()
+    )
+    return render_template('gestion_usuarios.html', actividades=actividades_lista, usuarios=usuarios_empresa)
 
 
