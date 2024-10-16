@@ -838,3 +838,18 @@ def gestion_usuarios():
     return render_template('gestion_usuarios.html', actividades=actividades_lista, usuarios=usuarios_empresa)
 
 
+#CHECKBOX PARA OTORGAR ACCESO AL CRM A LOS USUARIOS DE LA EMPRESA QUE NO SEAN ADMINS
+
+@app.route('/modificar_permiso_crm', methods=['POST'])
+@login_required
+def modificar_permiso_crm():
+    usuario_id = request.form.get('usuario_id')
+    acceso_crm = request.form.get('acceso_crm') == 'true'
+    usuario = Usuario.query.get(usuario_id)
+    if usuario:
+        usuario.acceso_crm = acceso_crm
+        db.session.commit()
+        flash(f"Permiso de acceso al CRM para {usuario.username} actualizado.")
+    else:
+        flash("Usuario no encontrado.", "error")
+    return redirect(url_for('menu'))

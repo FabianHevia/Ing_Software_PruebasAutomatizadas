@@ -73,6 +73,9 @@ class Usuario(UserMixin, db.Model):
     email = db.Column(db.String(255), nullable=False, unique=True)
     admin = db.Column(db.SmallInteger, default=0)
     empresa = db.Column(db.SmallInteger, default=0)
+    acceso_crm = db.Column(db.Boolean, default=False)
+    editar_propiedades = db.Column(db.Boolean, default=False)
+    crear_reuniones = db.Column(db.Boolean, default=False)
 
     def __init__(self, username, email, password, admin=False, empresa=False):
         self.username = username
