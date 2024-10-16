@@ -45,12 +45,7 @@
       <li class="sidebar-header">Side Menu</li>
       {% if current_user.is_authenticated %}
         <li class="sidebar-header">Bienvenido, {{ current_user.username }}!</li>
-        <li>
-            <a href="{{ url_for('logout') }}">
-                <i class="zmdi zmdi-power"></i> <span>Cerrar sesión</span>
-            </a>
-        </li>
-    {% endif %}
+      {% endif %}
       <li>
         <a href="javascript:void(0);" onclick="loadDashboardContent()">
           <i class="zmdi zmdi-view-dashboard"></i> <span>Dashboard</span>
@@ -76,26 +71,20 @@
       </li>
 
       <li>
-        <a href="calendar.html">
+        <a href="#">
           <i class="zmdi zmdi-calendar-check"></i> <span>Calendario</span>
         </a>
       </li>
 
       <li>
-        <a href="profile.html">
-          <i class="zmdi zmdi-face"></i> <span>Clientes</span>
-        </a>
-      </li>
-
-      <li>
-        <a href="login.html" target="_blank">
+        <a href="#" target="_blank">
           <i class="zmdi zmdi-lock"></i> <span>Seguridad</span>
         </a>
       </li>
 
        <li>
-        <a href="register.html" target="_blank">
-          <i class="zmdi zmdi-account-circle"></i> <span>Iniciar Sesión</span>
+        <a href="#" target="_blank">
+          <i class="zmdi zmdi-account-circle"></i> <span>Cuenta</span>
         </a>
       </li>
 
@@ -134,16 +123,6 @@
     <li class="nav-item dropdown-lg">
       <a class="nav-link dropdown-toggle dropdown-toggle-nocaret waves-effect" data-toggle="dropdown" href="javascript:void();">
       <i class="fa fa-bell-o"></i></a>
-    </li>
-    <li class="nav-item language">
-      <a class="nav-link dropdown-toggle dropdown-toggle-nocaret waves-effect" data-toggle="dropdown" href="javascript:void();"><i class="fa fa-flag"></i></a>
-      <ul class="dropdown-menu dropdown-menu-right">
-          <li class="dropdown-item"> <i class="flag-icon flag-icon-gb mr-2"></i> English</li>
-          <li class="dropdown-item"> <i class="flag-icon flag-icon-fr mr-2"></i> French</li>
-          <li class="dropdown-item"> <i class="flag-icon flag-icon-cn mr-2"></i> Chinese</li>
-          <li class="dropdown-item"> <i class="flag-icon flag-icon-de mr-2"></i> German</li>
-        </ul>
-    </li>
     <li class="nav-item">
       <a class="nav-link dropdown-toggle dropdown-toggle-nocaret" data-toggle="dropdown" href="#">
         <span class="user-profile"><img src="https://via.placeholder.com/110x110" class="img-circle" alt="user avatar"></span>
@@ -167,7 +146,7 @@
         <li class="dropdown-divider"></li>
         <li class="dropdown-item"><i class="icon-settings mr-2"></i> Setting</li>
         <li class="dropdown-divider"></li>
-        <li class="dropdown-item"><i class="icon-power mr-2"></i> Logout</li>
+        <li class="dropdown-item"><a href="{{ url_for('logout') }}"><i class="icon-power mr-2"></i><span>Cerrar sesión</span></a></li>
       </ul>
     </li>
   </ul>
