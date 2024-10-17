@@ -57,6 +57,33 @@
               </label>
             </div>
           </form>
+          <!-- Checkbox para Editar Propiedades -->
+          <form action="{{ url_for('modificar_permiso_editar') }}" method="POST" style="display: inline;">
+            <input type="hidden" name="usuario_id" value="{{ usuario.id }}">
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" 
+                       name="editar_propiedades" 
+                       value="true" 
+                       {% if usuario.editar_propiedades %}checked{% endif %}
+                       onchange="this.form.submit()">
+                <label class="form-check-label" for="editarPropiedades{{ usuario.id }}">
+                    Editar Todas las Propiedades
+                </label>
+            </div>
+        </form>
+        <form action="{{ url_for('modificar_permiso_reuniones') }}" method="POST" style="display: inline;">
+          <input type="hidden" name="usuario_id" value="{{ usuario.id }}">
+          <div class="form-check form-check-inline">
+              <input class="form-check-input" type="checkbox" 
+                     name="crear_reuniones" 
+                     value="true" 
+                     {% if usuario.crear_reuniones %}checked{% endif %}
+                     onchange="this.form.submit()">
+              <label class="form-check-label" for="crearReuniones{{ usuario.id }}">
+                  Crear Reuniones en las Propiedades
+              </label>
+          </div>
+        </form>
         </td>
       </tr>
       {% endfor %}

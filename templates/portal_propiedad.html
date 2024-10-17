@@ -212,14 +212,14 @@
           </div>
           <div class="col-12 mx-auto">
             <div class="row">
-              {% if es_admin %}
+              {% if es_admin or current_user.crear_reuniones %}
               <div class="col-md-12 col-lg-4 col-sm-12 col-xs-12 mx-auto p-1">
                 <button type="button" class="btn btn-info mt-1" data-bs-toggle="modal" data-bs-target="#crearReunionModal">
                   Crear Reunión
                 </button>
               </div>
               {% endif %}
-              {% if es_admin or propiedad['id_usuario'] == current_user.id %}
+              {% if es_admin or propiedad['id_usuario'] == current_user.id or current_user.editar_propiedades %}
               <div class="col-md-12 col-lg-4 col-sm-12 col-xs-12 mx-auto p-1">
                 <button type="button" class="btn btn-primary mt-1" data-bs-toggle="modal" data-bs-target="#editModal{{ propiedad['id_propiedad'] }}">
                   Editar Información

@@ -389,7 +389,7 @@ def editar_propiedad(propiedad_id):
         db.session.commit()
 
         # Crear mensaje de notificación
-        mensaje = f"La propiedad en {direccion}, {comuna} ha sido actualizada."
+        mensaje = f"La propiedad {propiedad_id} en {direccion}, {comuna} ha sido actualizada."
 
         # Obtener los usuarios que tienen la propiedad en favoritos
         usuarios_favoritos = Favorito.query.filter_by(id_propiedad=propiedad_id).all()
@@ -571,8 +571,8 @@ def crear_reunion(propiedad_id):
     if not propiedad:
         return "Propiedad no encontrada.", 404
 
-    # Si no es administrador, verificar que sea el dueño de la propiedad
-    if not current_user.is_admin and propiedad.id_usuario != current_user.id:
+    # Si no es administrador, ni tiene el permiso de crear reuniones, verificar que sea el dueño de la propiedad
+    if not (current_user.is_admin or current_user.crear_reuniones or propiedad.id_usuario == current_user.id):
         return "No tienes permiso para crear una reunión para esta propiedad.", 403
 
     # Obtener el token de acceso de Zoom
@@ -852,4 +852,44 @@ def modificar_permiso_crm():
         flash(f"Permiso de acceso al CRM para {usuario.username} actualizado.")
     else:
         flash("Usuario no encontrado.", "error")
+    return redirect(url_for('menu'))
+
+#CHECKBOX PARA OTORGAR PERMISOS PARA EDITAR CUALQUIER PROPIEDAD AL USUARIO
+
+@app.route('/modificar_permiso_editar', methods=['POST'])
+@login_required
+def modificar_permiso_editar():
+    # Obtener el ID del usuario y el valor del permiso desde el formulario
+    usuario_id = request.form.get('usuario_id')
+    editar_propiedades = request.form.get('editar_propiedades') == 'true'  # Convertir a booleano
+
+    # Buscar el usuario y actualizar el campo editar_propiedades
+    usuario = Usuario.query.get(usuario_id)
+    if usuario:
+        usuario.editar_propiedades = editar_propiedades
+        db.session.commit()
+        flash(f"Permiso de editar todas las propiedades para {usuario.username} actualizado.")
+    else:
+        flash("Usuario no encontrado.", "error")
+
+    return redirect(url_for('menu'))
+
+#CHECKBOX PARA OTORGAR PERMISOS PARA CREAR REUNIONES ZOOM EN CUALQUIER PROPIEDAD AL USUARIO
+
+@app.route('/modificar_permiso_reuniones', methods=['POST'])
+@login_required
+def modificar_permiso_reuniones():
+    # Obtener el ID del usuario y el valor del permiso desde el formulario
+    usuario_id = request.form.get('usuario_id')
+    crear_reuniones = request.form.get('crear_reuniones') == 'true'  # Convertir a booleano
+
+    # Buscar el usuario y actualizar el campo crear_reuniones
+    usuario = Usuario.query.get(usuario_id)
+    if usuario:
+        usuario.crear_reuniones = crear_reuniones
+        db.session.commit()
+        flash(f"Permiso de crear reuniones para {usuario.username} actualizado.")
+    else:
+        flash("Usuario no encontrado.", "error")
+
     return redirect(url_for('menu'))
