@@ -138,7 +138,7 @@ class LogActividad(db.Model):
     fecha_hora = db.Column(db.DateTime, default=datetime.utcnow)
     
     usuario = db.relationship('Usuario', backref='actividades')
-
+"""
 class ComentariosPropiedad(db.Model):
     __tablename__ = 'comentarios_propiedad'
 
@@ -153,3 +153,4 @@ class ComentariosPropiedad(db.Model):
     respuestas = db.relationship('ComentarioPropiedad', backref=db.backref('comentario_padre', remote_side=[id_comentario]))
     usuario = db.relationship('Usuario', backref='comentarios')
     propiedad = db.relationship('Propiedad', backref='comentarios')
+"""
