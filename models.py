@@ -138,19 +138,17 @@ class LogActividad(db.Model):
     fecha_hora = db.Column(db.DateTime, default=datetime.utcnow)
     
     usuario = db.relationship('Usuario', backref='actividades')
-"""
-class ComentariosPropiedad(db.Model):
-    __tablename__ = 'comentarios_propiedad'
 
-    id_comentario = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    id_propiedad = db.Column(db.Integer, db.ForeignKey('system_tabla_propiedades.id_propiedad'), nullable=False)
+class ComentarioPropiedad(db.Model):
+    __tablename__ = 'comentarios_propiedades'
+
+    id = db.Column(db.Integer, primary_key=True)
     id_usuario = db.Column(db.Integer, db.ForeignKey('usuarios.id'), nullable=False)
-    comentario = db.Column(db.Text, nullable=False)
+    id_propiedad = db.Column(db.Integer, db.ForeignKey('system_tabla_propiedades.id_propiedad'), nullable=False)  # Cambiado a system_tabla_propiedades
+    texto = db.Column(db.Text, nullable=False)
     fecha_hora = db.Column(db.DateTime, default=datetime.utcnow)
-    id_comentario_padre = db.Column(db.Integer, db.ForeignKey('comentarios_propiedad.id_comentario'), nullable=True)
+    id_comentario_padre = db.Column(db.Integer, db.ForeignKey('comentarios_propiedades.id'), nullable=True)
 
-    # Relaciones para comentarios jerárquicos
-    respuestas = db.relationship('ComentarioPropiedad', backref=db.backref('comentario_padre', remote_side=[id_comentario]))
     usuario = db.relationship('Usuario', backref='comentarios')
-    propiedad = db.relationship('Propiedad', backref='comentarios')
-"""
+    respuestas = db.relationship('ComentarioPropiedad', backref=db.backref('padre', remote_side=[id]), lazy='dynamic')
+

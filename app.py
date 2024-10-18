@@ -7,7 +7,7 @@ from pytz import timezone, utc
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func
 from config import Config
-from models import db, Empresa, Favorito, Notificacion, Propiedad, Usuario, UsuarioEmpresa, VisitaPropiedad, LogActividad
+from models import db, Empresa, Favorito, Notificacion, Propiedad, Usuario, UsuarioEmpresa, VisitaPropiedad, LogActividad, ComentarioPropiedad
 import os
 import re
 import random
@@ -357,6 +357,9 @@ def portal_propiedad(id_propiedad):
     # Verificar si la propiedad es favorita
     es_favorito = Favorito.query.filter_by(id_usuario=current_user.id, id_propiedad=id_propiedad).first() is not None
 
+    # Obtener solo los comentarios principales (sin padre)
+    comentarios = ComentarioPropiedad.query.filter_by(id_propiedad=id_propiedad, id_comentario_padre=None).all()
+
     # Preparar los datos para la plantilla
     propiedad_data = {
         'id_propiedad': propiedad.Propiedad.id_propiedad,
@@ -372,7 +375,8 @@ def portal_propiedad(id_propiedad):
         propiedad=propiedad_data, 
         es_favorito=es_favorito, 
         es_admin=current_user.is_admin, 
-        total_visitas=total_visitas
+        total_visitas=total_visitas,
+        comentarios=comentarios  # Pasar los comentarios al template
     )
     
 @app.route('/editar_propiedad/<int:propiedad_id>', methods=['POST'])
@@ -893,3 +897,45 @@ def modificar_permiso_reuniones():
         flash("Usuario no encontrado.", "error")
 
     return redirect(url_for('menu'))
+
+@app.route('/agregar_comentario/<int:propiedad_id>', methods=['POST'])
+@login_required
+def agregar_comentario(propiedad_id):
+    comentario_texto = request.form.get('comentario')
+    
+    # Crear un nuevo comentario
+    nuevo_comentario = ComentarioPropiedad(
+        id_usuario=current_user.id,
+        id_propiedad=propiedad_id,
+        texto=comentario_texto,
+        fecha_hora=datetime.utcnow()
+    )
+    
+    db.session.add(nuevo_comentario)
+    db.session.commit()
+    
+    flash('Comentario agregado correctamente.')
+    return redirect(url_for('portal_propiedad', id_propiedad=propiedad_id))
+
+@app.route('/responder_comentario/<int:comentario_id>', methods=['POST'])
+@login_required
+def responder_comentario(comentario_id):
+    respuesta_texto = request.form.get('respuesta')
+    
+    # Obtener el comentario padre
+    comentario_padre = ComentarioPropiedad.query.get_or_404(comentario_id)
+    
+    # Crear la respuesta
+    respuesta = ComentarioPropiedad(
+        id_usuario=current_user.id,
+        id_propiedad=comentario_padre.id_propiedad,
+        texto=respuesta_texto,
+        fecha_hora=datetime.utcnow(),
+        id_comentario_padre=comentario_padre.id
+    )
+    
+    db.session.add(respuesta)
+    db.session.commit()
+    
+    flash('Respuesta agregada correctamente.')
+    return redirect(url_for('portal_propiedad', id_propiedad=comentario_padre.id_propiedad))
