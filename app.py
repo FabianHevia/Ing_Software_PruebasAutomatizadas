@@ -828,24 +828,26 @@ def gestion_usuarios():
     # Obtener el código de la empresa del usuario autenticado
     codigo_empresa = UsuarioEmpresa.query.filter_by(id_usuario=current_user.id).first().codigo_empresa
 
-    # Consultar las actividades de los usuarios de la misma empresa, incluyendo el nombre del usuario
+    # Consultar las actividades de los usuarios de la misma empresa
     actividades = (
         db.session.query(LogActividad, Usuario.username)
-        .join(Usuario, LogActividad.id_usuario == Usuario.id)  # Hacemos el join para obtener el username
+        .join(Usuario, LogActividad.id_usuario == Usuario.id)
         .filter(LogActividad.codigo_empresa == codigo_empresa)
         .order_by(LogActividad.fecha_hora.desc())
         .all()
     )
 
-    # Obtener los usuarios que son miembros de la misma empresa junto con el estado de 'bloqueado'
+    # Obtener los usuarios que son miembros de la misma empresa y que no son administradores
     usuarios_empresa = (
         db.session.query(Usuario, UsuarioEmpresa.bloqueado)
         .join(UsuarioEmpresa, Usuario.id == UsuarioEmpresa.id_usuario)
         .filter(UsuarioEmpresa.codigo_empresa == codigo_empresa)
+        .filter(Usuario.admin == 0)
         .all()
     )
 
     return render_template('gestion_usuarios.html', actividades=actividades, usuarios_empresa=usuarios_empresa)
+
 
 #CHECKBOX PARA OTORGAR ACCESO AL CRM A LOS USUARIOS DE LA EMPRESA QUE NO SEAN ADMINS
 
