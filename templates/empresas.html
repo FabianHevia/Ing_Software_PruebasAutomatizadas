@@ -100,23 +100,34 @@
             </div>
 	   </div>
     </div>
-     <div class="row col-4 mx-auto">
+    <div class="row col-4 mx-auto">
+      {% if current_user.is_admin %}
+        <!-- Mostrar solo a los administradores -->
         <div class="col-6 p-1">
           <button type="button" class="btn btn-primary shadow-lg border-5" 
           style="width:100%;"
-           data-bs-toggle="modal" data-bs-target="#formModal">
+          data-bs-toggle="modal" data-bs-target="#formModal">
               Crear Empresa
           </button>
         </div>
         <div class="col-6 p-1">
           <button type="button" class="btn btn-danger shadow-lg border-5" 
           style="width:100%;"
-           data-bs-toggle="modal" data-bs-target="#formModal2">
+          data-bs-toggle="modal" data-bs-target="#formModal2">
               Añadir Empresa
           </button>
         </div>
-      </div>
-   
+      {% else %}
+        <!-- Mostrar solo a los no administradores, ocupando todo el ancho -->
+        <div class="col-8 mx-auto p-1">
+          <button type="button" class="btn btn-danger shadow-lg border-5" 
+          style="width:100%;"
+          data-bs-toggle="modal" data-bs-target="#formModal2">
+              Añadir Empresa
+          </button>
+        </div>
+      {% endif %}
+    </div>    
 
 	</div><!--End Row-->
 

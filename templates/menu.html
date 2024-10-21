@@ -65,9 +65,11 @@
       </li>      
 
       <li>
+        {% if current_user.is_admin%}
         <a href="javascript:void(0);" onclick="loadGestionUsuariosContent()">
           <i class="zmdi zmdi-grid"></i> <span>Gestión de Usuarios</span>
         </a>
+        {% endif %}
       </li>
 
       <li>

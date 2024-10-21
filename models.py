@@ -109,7 +109,8 @@ class UsuarioEmpresa(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     id_usuario = db.Column(db.Integer, db.ForeignKey('usuarios.id'), nullable=True)
     codigo_empresa = db.Column(db.String(255), db.ForeignKey('empresas.codigo_empresa'), nullable=True)
-
+    bloqueado = db.Column(db.Boolean, default=False)  
+    
     def __init__(self, id_usuario, codigo_empresa):
         self.id_usuario = id_usuario
         self.codigo_empresa = codigo_empresa

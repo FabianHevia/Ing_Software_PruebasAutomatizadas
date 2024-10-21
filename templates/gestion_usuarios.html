@@ -1,44 +1,45 @@
 <div class="container mt-5">
-    <h3 class="text-white">Gestión de Usuarios - Historial de Acciones</h3>
-    
-    {% if actividades %}
-    <table class="table table-bordered mt-3 bg-light">
-        <thead class="thead">
-            <tr>
-                <th scope="col">Usuario</th>
-                <th scope="col">Acción</th>
-                <th scope="col">Detalle</th>
-                <th scope="col">Fecha y Hora</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for actividad in actividades %}
-            <tr>
-                <td>{{ actividad.usuario }}</td>
-                <td>{{ actividad.accion }}</td>
-                <td>{{ actividad.detalle }}</td>
-                <td>{{ actividad.fecha_hora }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    {% else %}
-        <p class="text-white">No hay actividades registradas en el sistema.</p>
-    {% endif %}
+  <h3 class="text-white">Gestión de Usuarios - Historial de Acciones</h3>
+  
+  {% if actividades %}
+  <table class="table table-bordered mt-3 bg-light">
+      <thead class="thead">
+          <tr>
+              <th scope="col">Usuario</th>
+              <th scope="col">Acción</th>
+              <th scope="col">Detalle</th>
+              <th scope="col">Fecha y Hora</th>
+          </tr>
+      </thead>
+      <tbody>
+          {% for actividad, username in actividades %}
+          <tr>
+              <td>{{ username }}</td>  <!-- Mostrar el nombre de usuario en lugar del ID -->
+              <td>{{ actividad.accion }}</td>
+              <td>{{ actividad.detalle }}</td>
+              <td>{{ actividad.fecha_hora }}</td>
+          </tr>
+          {% endfor %}
+      </tbody>
+  </table>
+  {% else %}
+      <p class="text-white">No hay actividades registradas en el sistema.</p>
+  {% endif %}
 </div>
 <div class="container mt-5">
   <!-- Tabla de Modificación de Permisos -->
   <h3 class="text-white mt-5">Modificar Permisos de Usuarios</h3>
   <table class="table table-bordered mt-3 bg-light">
-    <thead >
+    <thead>
       <tr>
         <th scope="col">Usuario</th>
         <th scope="col">Correo</th>
         <th scope="col">Permisos</th>
+        <th scope="col">Gestión</th> <!-- Nueva columna "Gestión" -->
       </tr>
     </thead>
     <tbody>
-      {% for usuario in usuarios %}
+      {% for usuario, bloqueado in usuarios_empresa %}
       <tr>
         <td>{{ usuario.username }}</td>
         <td>{{ usuario.email }}</td>
@@ -84,6 +85,22 @@
               </label>
           </div>
         </form>
+        </td>
+        <td>
+          <!-- Checkbox para bloquear usuario -->
+          <form action="{{ url_for('bloquear_usuario') }}" method="POST" style="display: inline;">
+            <input type="hidden" name="usuario_id" value="{{ usuario.id }}">
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="checkbox" 
+                     name="bloqueado" 
+                     value="true" 
+                     {% if bloqueado %}checked{% endif %}
+                     onchange="this.form.submit()">
+              <label class="form-check-label" for="bloquearUsuario{{ usuario.id }}">
+                  Bloquear
+              </label>
+            </div>
+          </form>
         </td>
       </tr>
       {% endfor %}

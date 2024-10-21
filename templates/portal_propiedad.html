@@ -123,6 +123,11 @@
                 <a class="dropdown-item" href="{{ url_for('empresas') }}">Cambiar de empresa</a>
               </li>
               <li>
+                {% if current_user.is_admin or current_user.acceso_crm %}
+                  <a class="dropdown-item" href="{{ url_for('menu') }}">Ir al CRM</a>
+                {% endif %}
+              </li>              
+              <li>
                 <a class="dropdown-item" href="{{ url_for('logout') }}">Cerrar sesión</a>
               </li>
             </ul>
@@ -353,7 +358,7 @@
         {% endif %}
       </div>
       <!-- Texto del comentario -->
-      <p class="card-text mt-2">{{ comentario.texto }}</p> <!-- Margen superior para dar espacio después del nombre -->
+      <p class="card-text mt-2" style="color: white;">{{ comentario.texto }}</p> <!-- Margen superior para dar espacio después del nombre -->
 
       <!-- Responder a un comentario -->
       <form action="{{ url_for('responder_comentario', comentario_id=comentario.id) }}" method="POST" class="mt-3">
@@ -378,7 +383,7 @@
                 <span class="badge bg-primary ms-2">Administrador</span>
               {% endif %}
             </div>
-            <p class="mt-2">{{ respuesta.texto }}</p> <!-- Margen superior para dar espacio después del nombre -->
+            <p class="mt-2" style="color: white;">{{ respuesta.texto }}</p> <!-- Margen superior para dar espacio después del nombre -->
           </div>
         </div>
         {% endfor %}

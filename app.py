@@ -228,11 +228,12 @@ def anadir_empresa():
 @app.route('/empresas')
 @login_required
 def empresas():
-    # Obtener las empresas en las que el usuario es miembro
+    # Obtener las empresas en las que el usuario es miembro y no está bloqueado
     empresas_usuario = (
         db.session.query(Empresa.codigo_empresa, Empresa.nombre_empresa)
         .join(UsuarioEmpresa, Empresa.codigo_empresa == UsuarioEmpresa.codigo_empresa)
         .filter(UsuarioEmpresa.id_usuario == current_user.id)
+        .filter(UsuarioEmpresa.bloqueado == False)  # Filtrar empresas donde el usuario no esté bloqueado
         .all()
     )
 
@@ -245,6 +246,7 @@ def empresas():
     } for empresa in empresas_usuario]
     
     return render_template('empresas.html', empresas=empresas_lista)
+
 
 @app.route('/registrar_propiedad', methods=['POST'])
 @login_required
@@ -303,15 +305,17 @@ def registrar_propiedad():
 def vista_propiedad():
     # Verificar el código de empresa del usuario en la tabla usuarios_empresas
     empresa_usuario = UsuarioEmpresa.query.filter_by(id_usuario=current_user.id).first()
-    
+
     if not empresa_usuario:
         return "No perteneces a ninguna empresa.", 403
 
-    # Obtener las propiedades relacionadas con esa empresa, incluyendo la URL de la imagen y el nombre del usuario
+    # Obtener las propiedades relacionadas con esa empresa, excluyendo las de usuarios bloqueados
     propiedades = (
         db.session.query(Propiedad, Usuario.username)
         .join(Usuario, Propiedad.id_usuario == Usuario.id)
+        .join(UsuarioEmpresa, Usuario.id == UsuarioEmpresa.id_usuario)
         .filter(Propiedad.codigo_empresa == empresa_usuario.codigo_empresa)
+        .filter(UsuarioEmpresa.bloqueado == False)  # Excluir propiedades de usuarios bloqueados
         .order_by(Propiedad.id_propiedad.asc())
         .all()
     )
@@ -328,7 +332,7 @@ def vista_propiedad():
         }
         for propiedad, username in propiedades
     ]
-    
+
     return render_template('vista_propiedad.html', propiedades=propiedades_lista)
 
 @app.route('/portal_propiedad/<int:id_propiedad>')
@@ -437,6 +441,10 @@ def eliminar_propiedad(propiedad_id):
     visitas = VisitaPropiedad.query.filter_by(id_propiedad=propiedad_id).all()
     for visita in visitas:
         db.session.delete(visita)
+    # Eliminar los comentarios asociados a la propiedad
+    comentarios = ComentarioPropiedad.query.filter_by(id_propiedad=propiedad_id).all()
+    for comentario in comentarios:
+        db.session.delete(comentario)
     # Obtener el código de empresa del usuario desde la tabla usuarios_empresas
     empresa_usuario = UsuarioEmpresa.query.filter_by(id_usuario=current_user.id).first()
     # Eliminar la propiedad
@@ -820,27 +828,24 @@ def gestion_usuarios():
     # Obtener el código de la empresa del usuario autenticado
     codigo_empresa = UsuarioEmpresa.query.filter_by(id_usuario=current_user.id).first().codigo_empresa
 
-    # Consultar las actividades de los usuarios de la misma empresa
-    actividades = LogActividad.query.filter_by(codigo_empresa=codigo_empresa).order_by(LogActividad.fecha_hora.desc()).all()
-    
-    actividades_lista = [
-        {
-            'usuario': actividad.usuario.username,
-            'accion': actividad.accion,
-            'detalle': actividad.detalle,
-            'fecha_hora': actividad.fecha_hora.strftime('%Y-%m-%d %H:%M')
-        }
-        for actividad in actividades
-    ]
-    # Obtener los usuarios que son miembros de la misma empresa
+    # Consultar las actividades de los usuarios de la misma empresa, incluyendo el nombre del usuario
+    actividades = (
+        db.session.query(LogActividad, Usuario.username)
+        .join(Usuario, LogActividad.id_usuario == Usuario.id)  # Hacemos el join para obtener el username
+        .filter(LogActividad.codigo_empresa == codigo_empresa)
+        .order_by(LogActividad.fecha_hora.desc())
+        .all()
+    )
+
+    # Obtener los usuarios que son miembros de la misma empresa junto con el estado de 'bloqueado'
     usuarios_empresa = (
-        db.session.query(Usuario)
+        db.session.query(Usuario, UsuarioEmpresa.bloqueado)
         .join(UsuarioEmpresa, Usuario.id == UsuarioEmpresa.id_usuario)
         .filter(UsuarioEmpresa.codigo_empresa == codigo_empresa)
         .all()
     )
-    return render_template('gestion_usuarios.html', actividades=actividades_lista, usuarios=usuarios_empresa)
 
+    return render_template('gestion_usuarios.html', actividades=actividades, usuarios_empresa=usuarios_empresa)
 
 #CHECKBOX PARA OTORGAR ACCESO AL CRM A LOS USUARIOS DE LA EMPRESA QUE NO SEAN ADMINS
 
@@ -939,3 +944,21 @@ def responder_comentario(comentario_id):
     
     flash('Respuesta agregada correctamente.')
     return redirect(url_for('portal_propiedad', id_propiedad=comentario_padre.id_propiedad))
+
+@app.route('/bloquear_usuario', methods=['POST'])
+@login_required
+def bloquear_usuario():
+    usuario_id = request.form.get('usuario_id')
+
+    # Obtener la relación UsuarioEmpresa para este usuario
+    usuario_empresa = UsuarioEmpresa.query.filter_by(id_usuario=usuario_id).first()
+
+    if usuario_empresa:
+        # Alternar el estado de bloqueado
+        usuario_empresa.bloqueado = not usuario_empresa.bloqueado
+        db.session.commit()
+        flash(f"El estado de bloqueo del usuario {usuario_id} ha sido actualizado.")
+    else:
+        flash("No se pudo encontrar la relación del usuario con la empresa.", "error")
+
+    return redirect(url_for('menu'))
