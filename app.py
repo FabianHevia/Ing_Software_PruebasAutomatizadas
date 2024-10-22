@@ -7,7 +7,7 @@ from pytz import timezone, utc
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func
 from config import Config
-from models import db, Empresa, Favorito, Notificacion, Propiedad, Usuario, UsuarioEmpresa, VisitaPropiedad, LogActividad, ComentarioPropiedad
+from models import db, Empresa, Favorito, Notificacion, Propiedad, Usuario, UsuarioEmpresa, VisitaPropiedad, LogActividad, ComentarioPropiedad, ReunionesPresenciales, InvitacionesReunionPresencial
 import os
 import re
 import random
@@ -927,28 +927,6 @@ def bloquear_usuario():
 
 #BOTON CALENDARIO
 
-@app.route('/calendario-content')
-@login_required
-def calendario_content():
-    # Obtener el código de la empresa del usuario autenticado
-    empresa_usuario = UsuarioEmpresa.query.filter_by(id_usuario=current_user.id).first()
-    
-    if not empresa_usuario:
-        flash("No perteneces a ninguna empresa.", "error")
-        return redirect(url_for('menu'))
-
-    # Obtener las propiedades de la empresa
-    propiedades = Propiedad.query.filter_by(codigo_empresa=empresa_usuario.codigo_empresa).all()
-
-    # Crear una lista con las propiedades formateadas
-    propiedades_lista = [
-        {'id': propiedad.id_propiedad, 'direccion': propiedad.direccion, 'comuna': propiedad.comuna}
-        for propiedad in propiedades
-    ]
-
-    # Renderizar la plantilla parcial del calendario y pasarle las propiedades
-    return render_template('calendario_content.html', propiedades=propiedades_lista)
-
 @app.route('/calendario')
 @login_required
 def calendario():
@@ -959,8 +937,25 @@ def calendario():
         flash("No perteneces a ninguna empresa.", "error")
         return redirect(url_for('menu'))
 
-    # Obtener las propiedades de la empresa
-    propiedades = Propiedad.query.filter_by(codigo_empresa=empresa_usuario.codigo_empresa).all()
+    codigo_empresa = empresa_usuario.codigo_empresa
+
+    # Obtener los usuarios que son miembros de la misma empresa y que no son administradores
+    usuarios_empresa = (
+        db.session.query(Usuario)
+        .join(UsuarioEmpresa, Usuario.id == UsuarioEmpresa.id_usuario)
+        .filter(UsuarioEmpresa.codigo_empresa == codigo_empresa)
+        .filter(Usuario.admin == 0)  # Asegúrate de que admin sea un booleano
+        .all()
+    )
+
+    # Filtrar las propiedades que pertenecen a la misma empresa
+    propiedades = (
+        db.session.query(Propiedad.id_propiedad, Propiedad.direccion, Propiedad.comuna)
+        .join(Usuario, Propiedad.id_usuario == Usuario.id)
+        .join(UsuarioEmpresa, Usuario.id == UsuarioEmpresa.id_usuario)
+        .filter(UsuarioEmpresa.codigo_empresa == codigo_empresa)
+        .all()
+    )
 
     # Crear una lista con las propiedades formateadas
     propiedades_lista = [
@@ -968,8 +963,45 @@ def calendario():
         for propiedad in propiedades
     ]
 
-    # Renderiza la página calendario.html con la lista de propiedades
-    return render_template('calendario.html', propiedades=propiedades_lista)
+    # Renderiza la página calendario.html con la lista de propiedades y usuarios
+    return render_template('calendario.html', propiedades=propiedades_lista, usuarios_empresa=usuarios_empresa)
+
+@app.route('/crear_reunion_presencial', methods=['POST'])
+@login_required
+def crear_reunion_presencial():
+    # Obtener los datos del formulario enviados
+    propiedad_id = request.form.get('propiedad_id')  # Aquí debería llegar correctamente el ID de la propiedad seleccionada
+    fecha_hora = request.form.get('fecha_hora')  # Aquí llega la fecha y hora seleccionada
+    invitados_ids = request.form.getlist('invitados')  # Lista de IDs de los usuarios invitados
+    
+    # Validar si la propiedad existe
+    propiedad = Propiedad.query.filter_by(id_propiedad=propiedad_id).first()
+    if not propiedad:
+        flash('Propiedad no encontrada', 'error')
+        return redirect(url_for('calendario'))
+
+    # Crear una nueva instancia de la reunión presencial
+    nueva_reunion = ReunionesPresenciales(
+    id_propiedad=propiedad.id_propiedad,
+    id_usuario_propiedad=propiedad.id_usuario,  # El dueño de la propiedad
+    fecha_hora=datetime.strptime(fecha_hora, '%Y-%m-%dT%H:%M')  # Ajustamos para que acepte el formato con 'T'
+    )
+    
+    db.session.add(nueva_reunion)
+    db.session.commit()
+
+    # Guardar los invitados en la tabla intermedia
+    for invitado_id in invitados_ids:
+        invitacion = InvitacionesReunionPresencial(
+            id_reunion=nueva_reunion.id,
+            id_usuario_invitado=invitado_id
+        )
+        db.session.add(invitacion)
+
+    db.session.commit()
+
+    flash('Reunión presencial creada exitosamente', 'success')
+    return redirect(url_for('calendario'))
 
 
 

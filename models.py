@@ -153,3 +153,18 @@ class ComentarioPropiedad(db.Model):
     usuario = db.relationship('Usuario', backref='comentarios')
     respuestas = db.relationship('ComentarioPropiedad', backref=db.backref('padre', remote_side=[id]), lazy='dynamic')
 
+class ReunionesPresenciales(db.Model):
+    __tablename__ = 'reuniones_presenciales'
+
+    id = db.Column(db.Integer, primary_key=True)
+    id_propiedad = db.Column(db.Integer, db.ForeignKey('system_tabla_propiedades.id_propiedad'), nullable=False)
+    id_usuario_propiedad = db.Column(db.Integer, db.ForeignKey('usuarios.id'), nullable=False)
+    fecha_hora = db.Column(db.DateTime, nullable=False)
+    invitados = db.relationship('Usuario', secondary='invitaciones_reunion_presencial', backref='reuniones_presenciales')
+
+class InvitacionesReunionPresencial(db.Model):
+    __tablename__ = 'invitaciones_reunion_presencial'
+
+    id = db.Column(db.Integer, primary_key=True)
+    id_reunion = db.Column(db.Integer, db.ForeignKey('reuniones_presenciales.id'), nullable=False)
+    id_usuario_invitado = db.Column(db.Integer, db.ForeignKey('usuarios.id'), nullable=False)

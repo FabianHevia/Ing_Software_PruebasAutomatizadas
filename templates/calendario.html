@@ -147,6 +147,43 @@
           <p id="fechaHoraSeleccionada" class="text-info">No has seleccionado una fecha y hora.</p>
         </div>
 
+        <!-- Zona para seleccionar los usuarios invitados -->
+       
+        <h3 class="text-white mt-5">Seleccionar Usuarios Invitados</h3>
+          
+          <form action="{{ url_for('crear_reunion_presencial') }}" method="POST">
+            <input type="hidden" name="propiedad_id" id="propiedadSeleccionada">
+            <input type="hidden" name="fecha_hora" id="fechaHoraInput"> <!-- Aquí se asignará la fecha y hora seleccionada -->
+
+            <!-- Tabla de selección de usuarios -->
+            <table class="table table-bordered mt-3 bg-light">
+              <thead>
+                <tr>
+                  <th scope="col">Seleccionar</th>
+                  <th scope="col">Usuario</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for usuario in usuarios_empresa %}
+                <tr>
+                  <td>
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" name="invitados" value="{{ usuario.id }}" id="usuario{{ usuario.id }}">
+                    </div>
+                  </td>
+                  <td>{{ usuario.username }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+
+            <!-- Botón para crear la reunión -->
+            <div class="mt-4">
+              <button type="submit" class="btn btn-primary">Crear Reunión</button>
+            </div>
+          </form>
+        
+
     <!-- Footer -->
     <footer class="footer">
       <div class="container">
@@ -162,8 +199,17 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.39.0/js/tempusdominus-bootstrap-4.min.js"></script>
+
   <script type="text/javascript">
     $(function () {
+
+      // Cuando cambia la propiedad seleccionada
+      $('#propiedadSelect').on('change', function () {
+        const propiedadId = $(this).val();
+        console.log("Propiedad seleccionada: " + propiedadId); // Para depurar
+        $('#propiedadSeleccionada').val(propiedadId);
+      });
+
       $('#datetimepicker').datetimepicker({
         format: 'YYYY-MM-DDTHH:mm',  // Formato compatible con ISO 8601
         stepping: 1  // Permitir la selección minuto a minuto
