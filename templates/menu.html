@@ -73,10 +73,10 @@
       </li>
 
       <li>
-        <a href="#">
+        <a href="javascript:void(0);" onclick="loadCalendarioContent()">
           <i class="zmdi zmdi-calendar-check"></i> <span>Calendario</span>
         </a>
-      </li>
+      </li>      
 
        <li>
         <a href="#" target="_blank">
@@ -85,8 +85,7 @@
       </li>
 
       <li class="sidebar-header">LABELS</li>
-      <li><a href="javaScript:void();"><i class="zmdi zmdi-coffee text-danger"></i> <span>Importante</span></a></li>
-      <li><a href="javaScript:void();"><i class="zmdi zmdi-chart-donut text-success"></i> <span>Reiniciar</span></a></li>
+      <li><a href="{{ url_for('calendario') }}"><i class="zmdi zmdi-calendar-check text-success"></i> <span>Reunión Presencial</span></a></li>
       <li><a href="javaScript:void();"><i class="zmdi zmdi-share text-info"></i> <span>Información</span></a></li>
 
     </ul>
@@ -304,6 +303,16 @@ function loadGestionUsuariosContent() {
 }
 </script>
 
-  
+<script>
+  function loadCalendarioContent() {
+    fetch('/calendario-content')  // Llamamos a la ruta que devuelve el contenido del calendario
+      .then(response => response.text())
+      .then(html => {
+        document.getElementById('dynamic-content').innerHTML = html;
+      })
+      .catch(error => console.log('Error al cargar el contenido del calendario:', error));
+  }
+</script>
+
 </body>
 </html>

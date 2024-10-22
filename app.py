@@ -905,6 +905,102 @@ def modificar_permiso_reuniones():
 
     return redirect(url_for('menu'))
 
+#CHECKBOX PARA BLOQUEAR A UN USUARIO DE LA EMPRESA
+
+@app.route('/bloquear_usuario', methods=['POST'])
+@login_required
+def bloquear_usuario():
+    usuario_id = request.form.get('usuario_id')
+
+    # Obtener la relación UsuarioEmpresa para este usuario
+    usuario_empresa = UsuarioEmpresa.query.filter_by(id_usuario=usuario_id).first()
+
+    if usuario_empresa:
+        # Alternar el estado de bloqueado
+        usuario_empresa.bloqueado = not usuario_empresa.bloqueado
+        db.session.commit()
+        flash(f"El estado de bloqueo del usuario {usuario_id} ha sido actualizado.")
+    else:
+        flash("No se pudo encontrar la relación del usuario con la empresa.", "error")
+
+    return redirect(url_for('menu'))
+
+#BOTON CALENDARIO
+
+@app.route('/calendario-content')
+@login_required
+def calendario_content():
+    # Obtener el código de la empresa del usuario autenticado
+    empresa_usuario = UsuarioEmpresa.query.filter_by(id_usuario=current_user.id).first()
+    
+    if not empresa_usuario:
+        flash("No perteneces a ninguna empresa.", "error")
+        return redirect(url_for('menu'))
+
+    # Obtener las propiedades de la empresa
+    propiedades = Propiedad.query.filter_by(codigo_empresa=empresa_usuario.codigo_empresa).all()
+
+    # Crear una lista con las propiedades formateadas
+    propiedades_lista = [
+        {'id': propiedad.id_propiedad, 'direccion': propiedad.direccion, 'comuna': propiedad.comuna}
+        for propiedad in propiedades
+    ]
+
+    # Renderizar la plantilla parcial del calendario y pasarle las propiedades
+    return render_template('calendario_content.html', propiedades=propiedades_lista)
+
+@app.route('/calendario')
+@login_required
+def calendario():
+    # Obtener el código de la empresa del usuario autenticado
+    empresa_usuario = UsuarioEmpresa.query.filter_by(id_usuario=current_user.id).first()
+    
+    if not empresa_usuario:
+        flash("No perteneces a ninguna empresa.", "error")
+        return redirect(url_for('menu'))
+
+    # Obtener las propiedades de la empresa
+    propiedades = Propiedad.query.filter_by(codigo_empresa=empresa_usuario.codigo_empresa).all()
+
+    # Crear una lista con las propiedades formateadas
+    propiedades_lista = [
+        {'id': propiedad.id_propiedad, 'direccion': propiedad.direccion, 'comuna': propiedad.comuna}
+        for propiedad in propiedades
+    ]
+
+    # Renderiza la página calendario.html con la lista de propiedades
+    return render_template('calendario.html', propiedades=propiedades_lista)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 @app.route('/agregar_comentario/<int:propiedad_id>', methods=['POST'])
 @login_required
 def agregar_comentario(propiedad_id):
@@ -947,20 +1043,3 @@ def responder_comentario(comentario_id):
     flash('Respuesta agregada correctamente.')
     return redirect(url_for('portal_propiedad', id_propiedad=comentario_padre.id_propiedad))
 
-@app.route('/bloquear_usuario', methods=['POST'])
-@login_required
-def bloquear_usuario():
-    usuario_id = request.form.get('usuario_id')
-
-    # Obtener la relación UsuarioEmpresa para este usuario
-    usuario_empresa = UsuarioEmpresa.query.filter_by(id_usuario=usuario_id).first()
-
-    if usuario_empresa:
-        # Alternar el estado de bloqueado
-        usuario_empresa.bloqueado = not usuario_empresa.bloqueado
-        db.session.commit()
-        flash(f"El estado de bloqueo del usuario {usuario_id} ha sido actualizado.")
-    else:
-        flash("No se pudo encontrar la relación del usuario con la empresa.", "error")
-
-    return redirect(url_for('menu'))
