@@ -93,7 +93,7 @@
   <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
     <div class="container-fluid">
       <!-- Logo que redirige a vista_propiedad -->
-      <a class="navbar-brand" href="{{ url_for('vista_propiedad') }}">
+      <a class="navbar-brand" href="{{ url_for('vista_propiedad', codigo_empresa=session['codigo_empresa_activa']) }}">
         <img src="{{ url_for('static', filename='assets/images/brokersyncdibujo_rbg.png') }}" alt="Logo" width="30" height="30" class="d-inline-block align-text-top">
       </a>
   
@@ -196,7 +196,7 @@
                             <td style="font-weight: bold; text-align: left; color: #dddddd; 
                             border-right: 2px solid rgba(0, 0, 0, 0.25) !important; 
                             border-bottom: 2px solid rgba(0, 0, 0, 0.15) !important;" 
-                            class="col-3">Subido por</td>
+                            class="col-3">Subido por </td>
                               <td style="text-align: left;color: #eeeeee;
                               border-bottom: 2px solid rgba(0, 0, 0, 0.15) !important;" 
                               class="col-9">{{ propiedad['username'] }}</td>
@@ -289,8 +289,8 @@
           </div>
           <div class="modal-body">
               <!-- Formulario para actualizar los datos de la propiedad -->
-              <form action="{{ url_for('editar_propiedad', propiedad_id=propiedad['id_propiedad']) }}" method="post">
-                <div class="mb-3">
+              <form action="{{ url_for('editar_propiedad', propiedad_id=propiedad['id_propiedad'], codigo_empresa=session['codigo_empresa_activa']) }}" method="post">
+                <div class="mb-3"> 
                     <label for="direccion" class="form-label" style="color: rgb(0, 0, 0);">Dirección</label>
                     <input type="text" class="form-control border border-3" id="direccion" name="direccion" value="{{ propiedad['direccion'] }}" required>
                 </div>

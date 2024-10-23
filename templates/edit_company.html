@@ -1,19 +1,18 @@
 <div class="container-fluid">
-    <div class="card">
+  <div class="card">
       <div class="card-header">Editar Empresa</div>
       <div class="card-body">
-        <form id="editCompanyForm">
-          <div class="mb-3">
-            <label for="nombre_empresa" class="form-label">Nombre de la Empresa</label>
-            <input type="text" class="form-control" id="nombre_empresa" name="nombre_empresa" value="{{ empresa[0] }}" required>
+          <form id="editCompanyForm" action="{{ url_for('edit_company') }}" method="POST">
+              <div class="mb-3">
+                  <label for="nombre_empresa" class="form-label">Nombre de la Empresa</label>
+                  <input type="text" class="form-control" id="nombre_empresa" name="nombre_empresa" value="{{ empresa.nombre_empresa }}" required>
+              </div>
+              <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+          </form>
+          <!-- Mensaje de confirmación -->
+          <div id="successMessage" class="alert alert-success mt-3" style="display: none;">
+              Nombre de la empresa actualizado exitosamente.
           </div>
-          <button type="button" class="btn btn-primary" onclick="updateCompany()">Guardar Cambios</button>
-        </form>
-        <!-- Mensaje de confirmación -->
-        <div id="successMessage" class="alert alert-success mt-3" style="display: none;">
-          Nombre de la empresa actualizado exitosamente.
-        </div>
       </div>
-    </div>
+  </div>
 </div>
-    

@@ -1,31 +1,27 @@
 <div class="container mt-5">
-  <h3 class="text-white">Gestión de Usuarios - Historial de Acciones</h3>
+  <h3 class="text-white">Gestión de Usuarios - Historial de Actividades</h3>
   
   {% if actividades %}
-  <table class="table table-bordered mt-3 bg-light">
-      <thead class="thead">
-          <tr>
-              <th scope="col">Usuario</th>
-              <th scope="col">Acción</th>
-              <th scope="col">Detalle</th>
-              <th scope="col">Fecha y Hora</th>
-          </tr>
-      </thead>
-      <tbody>
-          {% for actividad, username in actividades %}
-          <tr>
-              <td>{{ username }}</td>  <!-- Mostrar el nombre de usuario en lugar del ID -->
-              <td>{{ actividad.accion }}</td>
-              <td>{{ actividad.detalle }}</td>
-              <td>{{ actividad.fecha_hora }}</td>
-          </tr>
-          {% endfor %}
-      </tbody>
-  </table>
+  <!-- Contenedor con scroll vertical si es necesario -->
+  <div style="max-height: 400px; overflow-y: auto;">
+    {% for actividad, username in actividades %}
+    <div class="card mb-3 bg-light">
+      <div class="card-header">
+        <strong>{{ username }}</strong> realizó la siguiente acción:
+      </div>
+      <div class="card-body">
+        <h5 class="card-title">{{ actividad.accion }}</h5>
+        <p class="card-text">{{ actividad.detalle }}</p>
+        <p class="card-text"><small class="text-white">Fecha y hora: {{ actividad.fecha_hora|restar_3_horas }}</small></p>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
   {% else %}
       <p class="text-white">No hay actividades registradas en el sistema.</p>
   {% endif %}
 </div>
+
 <div class="container mt-5">
   <!-- Tabla de Modificación de Permisos -->
   <h3 class="text-white mt-5">Modificar Permisos de Usuarios</h3>

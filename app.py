@@ -1,13 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify, flash
-from flask_login import LoginManager, login_user, login_required, logout_user, current_user
-from werkzeug.security import generate_password_hash, check_password_hash
-from werkzeug.utils import secure_filename
-from datetime import datetime
-from pytz import timezone, utc
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import func
-from config import Config
-from models import db, Empresa, Favorito, Notificacion, Propiedad, Usuario, UsuarioEmpresa, VisitaPropiedad, LogActividad, ComentarioPropiedad, ReunionesPresenciales, InvitacionesReunionPresencial
+import pytz
 import os
 import re
 import random
@@ -16,6 +7,17 @@ import requests
 import cloudinary
 import cloudinary.uploader
 import config
+from flask import Flask, render_template, request, redirect, url_for, jsonify, flash, session
+from flask_login import LoginManager, login_user, login_required, logout_user, current_user
+from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
+from datetime import datetime, timedelta
+from pytz import timezone, utc
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import func
+from config import Config
+from models import db, Empresa, Favorito, Notificacion, Propiedad, Usuario, UsuarioEmpresa, VisitaPropiedad, LogActividad, ComentarioPropiedad, ReunionesPresenciales, InvitacionesReunionPresencial
+
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Necesario para manejar sesiones
@@ -239,7 +241,8 @@ def empresas():
 
     # Crear una lista de diccionarios para pasarla al template
     empresas_lista = [{
-        'nombre': empresa[1], 
+        'nombre': empresa[1],
+        'codigo_empresa': empresa[0],
         'logo': 'https://via.placeholder.com/110x110',
         'cargo': 'Empleado',
         'fecha_ingreso': '24/10/2019'  # Puede ajustarse si tienes una fecha real
@@ -247,74 +250,18 @@ def empresas():
     
     return render_template('empresas.html', empresas=empresas_lista)
 
-
-@app.route('/registrar_propiedad', methods=['POST'])
+@app.route('/vista_propiedad/<codigo_empresa>')
 @login_required
-def registrar_propiedad():
-    direccion = request.form['direccion']
-    comuna = request.form['comuna']
-    imagen = request.files['imagen']  # Obtener la imagen del formulario
-
-    # Verificar si se subió la imagen
-    if imagen:
-        # Subir la imagen a Cloudinary
-        result = cloudinary.uploader.upload(imagen)
-        imagen_url = result['secure_url']  # Obtener la URL segura de la imagen subida
-    else:
-        imagen_url = None  # Si no se sube imagen, dejar el campo vacío o usar una predeterminada
-
-    # Obtener el código de empresa del usuario desde la tabla usuarios_empresas
-    empresa_usuario = UsuarioEmpresa.query.filter_by(id_usuario=current_user.id).first()
-    
-    if not empresa_usuario:
-        return "No puedes registrar una propiedad porque no perteneces a ninguna empresa.", 403
-
-    # Verificar si ya existe una propiedad con la misma dirección y comuna
-    propiedad_existente = Propiedad.query.filter_by(direccion=direccion, comuna=comuna).count()
-    
-    if propiedad_existente > 0:
-        # Propiedad duplicada, devolver un mensaje de advertencia
-        return "Ya existe una propiedad con la misma dirección y comuna.", 409  # Código 409: Conflicto
-
-    # Crear e insertar la nueva propiedad
-    nueva_propiedad = Propiedad(
-        direccion=direccion,
-        comuna=comuna,
-        id_usuario=current_user.id,
-        modificaciones="",
-        codigo_empresa=empresa_usuario.codigo_empresa,
-        imagen=imagen_url
-    )
-
-    db.session.add(nueva_propiedad)
-    
-    # Registrar la acción del usuario en la tabla de actividades
-    log_actividad = LogActividad(
-        id_usuario=current_user.id,
-        codigo_empresa=empresa_usuario.codigo_empresa,
-        accion="Registrar propiedad",
-        detalle=f"Propiedad en {direccion}, {comuna} registrada"
-    )
-    db.session.add(log_actividad)
-    db.session.commit()
-    
-    return redirect(url_for('vista_propiedad'))
-
-@app.route('/vista_propiedad')
-@login_required
-def vista_propiedad():
-    # Verificar el código de empresa del usuario en la tabla usuarios_empresas
-    empresa_usuario = UsuarioEmpresa.query.filter_by(id_usuario=current_user.id).first()
-
-    if not empresa_usuario:
-        return "No perteneces a ninguna empresa.", 403
+def vista_propiedad(codigo_empresa):
+    # Guardar el código de empresa en la sesión
+    session['codigo_empresa_activa'] = codigo_empresa
 
     # Obtener las propiedades relacionadas con esa empresa, excluyendo las de usuarios bloqueados
     propiedades = (
         db.session.query(Propiedad, Usuario.username)
         .join(Usuario, Propiedad.id_usuario == Usuario.id)
         .join(UsuarioEmpresa, Usuario.id == UsuarioEmpresa.id_usuario)
-        .filter(Propiedad.codigo_empresa == empresa_usuario.codigo_empresa)
+        .filter(Propiedad.codigo_empresa == codigo_empresa)
         .filter(UsuarioEmpresa.bloqueado == False)  # Excluir propiedades de usuarios bloqueados
         .order_by(Propiedad.id_propiedad.asc())
         .all()
@@ -335,9 +282,53 @@ def vista_propiedad():
 
     return render_template('vista_propiedad.html', propiedades=propiedades_lista)
 
-@app.route('/portal_propiedad/<int:id_propiedad>')
+@app.route('/registrar_propiedad', methods=['POST'])
 @login_required
-def portal_propiedad(id_propiedad):
+def registrar_propiedad():
+    direccion = request.form['direccion']
+    comuna = request.form['comuna']
+    imagen = request.files['imagen']
+
+    # Subir la imagen si es proporcionada
+    imagen_url = cloudinary.uploader.upload(imagen)['secure_url'] if imagen else None
+
+    # Obtener el código de empresa activo desde la sesión
+    codigo_empresa_activa = session.get('codigo_empresa_activa')
+    
+    if not codigo_empresa_activa:
+        return "No puedes registrar una propiedad porque no seleccionaste ninguna empresa.", 403
+
+    # Verificar si ya existe una propiedad con la misma dirección y comuna
+    if Propiedad.query.filter_by(direccion=direccion, comuna=comuna).count() > 0:
+        return "Ya existe una propiedad con la misma dirección y comuna.", 409  # Código 409: Conflicto
+
+    # Crear e insertar la nueva propiedad
+    nueva_propiedad = Propiedad(
+        direccion=direccion,
+        comuna=comuna,
+        id_usuario=current_user.id,
+        modificaciones="",
+        codigo_empresa=codigo_empresa_activa,
+        imagen=imagen_url
+    )
+
+    db.session.add(nueva_propiedad)
+
+    # Registrar la acción en el log de actividades
+    log_actividad = LogActividad(
+        id_usuario=current_user.id,
+        codigo_empresa=codigo_empresa_activa,
+        accion="Registrar propiedad",
+        detalle=f"Propiedad en {direccion}, {comuna} registrada"
+    )
+    db.session.add(log_actividad)
+    db.session.commit()
+
+    return redirect(url_for('vista_propiedad', codigo_empresa=codigo_empresa_activa))
+
+@app.route('/portal_propiedad/<int:id_propiedad>/<codigo_empresa>')
+@login_required
+def portal_propiedad(id_propiedad, codigo_empresa):
     # Verificar si ya existe una visita para este usuario y propiedad
     visita_existente = VisitaPropiedad.query.filter_by(id_propiedad=id_propiedad, id_usuario=current_user.id).count()
 
@@ -347,14 +338,19 @@ def portal_propiedad(id_propiedad):
         db.session.add(nueva_visita)
         db.session.commit()
 
-    # Obtener la propiedad y el total de visitas
+    # Obtener la propiedad, asegurándonos de que pertenece a la empresa activa
     propiedad = (
         db.session.query(Propiedad, Usuario.username, Usuario.id.label("id_usuario"))
         .join(Usuario, Propiedad.id_usuario == Usuario.id)
         .filter(Propiedad.id_propiedad == id_propiedad)
+        .filter(Propiedad.codigo_empresa == codigo_empresa)  # Filtrar por código de empresa
         .first()
     )
     
+    if not propiedad:
+        flash("La propiedad no pertenece a esta empresa o no existe.", "error")
+        return redirect(url_for('vista_propiedad', codigo_empresa=codigo_empresa))
+
     # Total de visitas a la propiedad
     total_visitas = VisitaPropiedad.query.filter_by(id_propiedad=id_propiedad).count()
 
@@ -383,14 +379,15 @@ def portal_propiedad(id_propiedad):
         comentarios=comentarios  # Pasar los comentarios al template
     )
     
-@app.route('/editar_propiedad/<int:propiedad_id>', methods=['POST'])
+@app.route('/editar_propiedad/<int:propiedad_id>/<string:codigo_empresa>', methods=['POST'])
 @login_required
-def editar_propiedad(propiedad_id):
+def editar_propiedad(propiedad_id, codigo_empresa):
     direccion = request.form['direccion']
     comuna = request.form['comuna']
 
     # Actualizar la propiedad en la base de datos
-    propiedad = Propiedad.query.get(propiedad_id)
+    propiedad = Propiedad.query.filter_by(id_propiedad=propiedad_id, codigo_empresa=codigo_empresa).first()
+    
     if propiedad:
         propiedad.direccion = direccion
         propiedad.comuna = comuna
@@ -400,14 +397,16 @@ def editar_propiedad(propiedad_id):
         mensaje = f"La propiedad {propiedad_id} en {direccion}, {comuna} ha sido actualizada."
 
         # Obtener los usuarios que tienen la propiedad en favoritos
-        usuarios_favoritos = Favorito.query.filter_by(id_propiedad=propiedad_id).all()
+        usuarios_favoritos = (
+            db.session.query(Favorito)
+            .join(UsuarioEmpresa, Favorito.id_usuario == UsuarioEmpresa.id_usuario)
+            .filter(Favorito.id_propiedad == propiedad_id, UsuarioEmpresa.codigo_empresa == codigo_empresa)
+            .all()
+        )
         
-        # Obtener el código de empresa del usuario desde la tabla usuarios_empresas
-        empresa_usuario = UsuarioEmpresa.query.filter_by(id_usuario=current_user.id).first()
-
         # Enviar notificación a cada usuario con el campo `leido` como no leído (0)
-        for usuario in usuarios_favoritos:
-            notificacion = Notificacion(id_usuario=usuario.id_usuario, mensaje=mensaje, leido=0)
+        for favorito in usuarios_favoritos:
+            notificacion = Notificacion(id_usuario=favorito.id_usuario, mensaje=mensaje, leido=0)
             db.session.add(notificacion)
 
         # Añadir el registro al Log de Actividad
@@ -415,7 +414,7 @@ def editar_propiedad(propiedad_id):
         detalle = f"Propiedad {propiedad_id} en {direccion}, {comuna} actualizada por el usuario {current_user.username}."
         log_actividad = LogActividad(
             id_usuario=current_user.id,
-            codigo_empresa=empresa_usuario.codigo_empresa, 
+            codigo_empresa=codigo_empresa,  # Utilizar el código de empresa correcto
             accion=accion,
             detalle=detalle,
             fecha_hora=datetime.utcnow()
@@ -427,48 +426,59 @@ def editar_propiedad(propiedad_id):
     else:
         flash("La propiedad no fue encontrada.")
 
-    return redirect(url_for('portal_propiedad', id_propiedad=propiedad_id))
+    return redirect(url_for('portal_propiedad', id_propiedad=propiedad_id, codigo_empresa=codigo_empresa))
+
 
 @app.route('/eliminar_propiedad/<int:propiedad_id>', methods=['POST'])
 @login_required
 def eliminar_propiedad(propiedad_id):
-    
+    # Obtener el código de empresa activo desde la sesión
+    codigo_empresa_activa = session.get('codigo_empresa_activa')
+
+    if not codigo_empresa_activa:
+        flash("No tienes una empresa activa seleccionada.", "error")
+        return redirect(url_for('empresas'))
+
     # Eliminar los favoritos asociados a la propiedad
     favoritos = Favorito.query.filter_by(id_propiedad=propiedad_id).all()
     for favorito in favoritos:
         db.session.delete(favorito)
+
     # Eliminar las visitas asociadas a la propiedad
     visitas = VisitaPropiedad.query.filter_by(id_propiedad=propiedad_id).all()
     for visita in visitas:
         db.session.delete(visita)
+
     # Eliminar los comentarios asociados a la propiedad
     comentarios = ComentarioPropiedad.query.filter_by(id_propiedad=propiedad_id).all()
     for comentario in comentarios:
         db.session.delete(comentario)
-    # Obtener el código de empresa del usuario desde la tabla usuarios_empresas
-    empresa_usuario = UsuarioEmpresa.query.filter_by(id_usuario=current_user.id).first()
-    # Eliminar la propiedad
-    propiedad = Propiedad.query.get(propiedad_id)
+
+    # Obtener la propiedad asegurándose de que pertenece a la empresa activa
+    propiedad = Propiedad.query.filter_by(id_propiedad=propiedad_id, codigo_empresa=codigo_empresa_activa).first()
+
     if propiedad:
         db.session.delete(propiedad)
         db.session.commit()
+
         # Registrar la acción en el Log de Actividad
         accion = "Eliminación de propiedad"
         detalle = f"Propiedad {propiedad_id} eliminada por el usuario {current_user.username}."
         log_actividad = LogActividad(
             id_usuario=current_user.id,
-            codigo_empresa=empresa_usuario.codigo_empresa, 
+            codigo_empresa=codigo_empresa_activa, 
             accion=accion,
             detalle=detalle,
             fecha_hora=datetime.utcnow()
         )
         db.session.add(log_actividad)
         db.session.commit()
+
         flash("Propiedad eliminada correctamente.")
     else:
-        flash("La propiedad no fue encontrada.")
+        flash("La propiedad no fue encontrada o no pertenece a la empresa activa.", "error")
 
-    return redirect(url_for('vista_propiedad'))
+    return redirect(url_for('vista_propiedad', codigo_empresa=codigo_empresa_activa))
 
 @app.route('/agregar_favorito', methods=['POST'])
 @login_required
@@ -508,16 +518,66 @@ def quitar_favorito():
 @app.route('/favoritos')
 @login_required
 def favoritos():
-    # Obtener las propiedades favoritas del usuario actual
+    # Obtener el código de la empresa activa desde la sesión
+    codigo_empresa_activa = session.get('codigo_empresa_activa')
+
+    if not codigo_empresa_activa:
+        flash("No tienes una empresa activa seleccionada.", "error")
+        return redirect(url_for('empresas'))
+
+    # Obtener las propiedades favoritas del usuario actual dentro de la empresa activa
     favoritos = (
         db.session.query(Propiedad.id_propiedad, Propiedad.direccion, Propiedad.comuna)
         .join(Favorito, Favorito.id_propiedad == Propiedad.id_propiedad)
         .filter(Favorito.id_usuario == current_user.id)
+        .filter(Propiedad.codigo_empresa == codigo_empresa_activa)  # Filtrar por empresa activa
         .all()
     )
 
-    # Renderizar la plantilla favoritos.html pasando los favoritos
-    return render_template('favoritos.html', favoritos=favoritos)
+    # Renderizar la plantilla favoritos.html pasando los favoritos y el código de empresa activa
+    return render_template('favoritos.html', favoritos=favoritos, codigo_empresa=codigo_empresa_activa)
+
+@app.route('/agregar_comentario/<int:propiedad_id>', methods=['POST'])
+@login_required
+def agregar_comentario(propiedad_id):
+    comentario_texto = request.form.get('comentario')
+    
+    # Crear un nuevo comentario
+    nuevo_comentario = ComentarioPropiedad(
+        id_usuario=current_user.id,
+        id_propiedad=propiedad_id,
+        texto=comentario_texto,
+        fecha_hora=datetime.utcnow()
+    )
+    
+    db.session.add(nuevo_comentario)
+    db.session.commit()
+    
+    flash('Comentario agregado correctamente.')
+    return redirect(url_for('portal_propiedad', id_propiedad=propiedad_id))
+
+@app.route('/responder_comentario/<int:comentario_id>', methods=['POST'])
+@login_required
+def responder_comentario(comentario_id):
+    respuesta_texto = request.form.get('respuesta')
+    
+    # Obtener el comentario padre
+    comentario_padre = ComentarioPropiedad.query.get_or_404(comentario_id)
+    
+    # Crear la respuesta
+    respuesta = ComentarioPropiedad(
+        id_usuario=current_user.id,
+        id_propiedad=comentario_padre.id_propiedad,
+        texto=respuesta_texto,
+        fecha_hora=datetime.utcnow(),
+        id_comentario_padre=comentario_padre.id
+    )
+    
+    db.session.add(respuesta)
+    db.session.commit()
+    
+    flash('Respuesta agregada correctamente.')
+    return redirect(url_for('portal_propiedad', id_propiedad=comentario_padre.id_propiedad))
 
 def obtener_access_token():
     zoom_token_url = "https://zoom.us/oauth/token"
@@ -567,47 +627,17 @@ def tolocal(utc_time_str):
     # Formatear la fecha y hora a un formato legible
     return local_time.strftime('%Y-%m-%d %H:%M')
 
-@app.route('/agregar_comentario/<int:propiedad_id>', methods=['POST'])
-@login_required
-def agregar_comentario(propiedad_id):
-    comentario_texto = request.form.get('comentario')
+@app.template_filter('restar_3_horas')
+def restar_3_horas(dt):
+    if dt is None:
+        return ""
     
-    # Crear un nuevo comentario
-    nuevo_comentario = ComentarioPropiedad(
-        id_usuario=current_user.id,
-        id_propiedad=propiedad_id,
-        texto=comentario_texto,
-        fecha_hora=datetime.utcnow()
-    )
+    # Restar 5 horas
+    nueva_hora = dt - timedelta(hours=3)
     
-    db.session.add(nuevo_comentario)
-    db.session.commit()
-    
-    flash('Comentario agregado correctamente.')
-    return redirect(url_for('portal_propiedad', id_propiedad=propiedad_id))
+    # Formatear la nueva hora
+    return nueva_hora.strftime('%Y-%m-%d %H:%M:%S')
 
-@app.route('/responder_comentario/<int:comentario_id>', methods=['POST'])
-@login_required
-def responder_comentario(comentario_id):
-    respuesta_texto = request.form.get('respuesta')
-    
-    # Obtener el comentario padre
-    comentario_padre = ComentarioPropiedad.query.get_or_404(comentario_id)
-    
-    # Crear la respuesta
-    respuesta = ComentarioPropiedad(
-        id_usuario=current_user.id,
-        id_propiedad=comentario_padre.id_propiedad,
-        texto=respuesta_texto,
-        fecha_hora=datetime.utcnow(),
-        id_comentario_padre=comentario_padre.id
-    )
-    
-    db.session.add(respuesta)
-    db.session.commit()
-    
-    flash('Respuesta agregada correctamente.')
-    return redirect(url_for('portal_propiedad', id_propiedad=comentario_padre.id_propiedad))
 
 zoom_token_url = "https://zoom.us/oauth/token"
 zoom_meeting_url = "https://api.zoom.us/v2/users/me/meetings"
@@ -730,6 +760,9 @@ def enviar_invitaciones():
     # Confirmar cambios en la base de datos
     db.session.commit()
 
+    # Obtener el codigo_empresa de la sesión
+    codigo_empresa = session.get('codigo_empresa_activa')
+
     # Redirigir después de 5 segundos a invite.html usando JavaScript
     return '''
         <html>
@@ -740,7 +773,7 @@ def enviar_invitaciones():
             <p>Notificaciones enviadas a los usuarios seleccionados. Serás redirigido a la página de invitaciones en 5 segundos...</p>
         </body>
         </html>
-    '''.format(url_for('vista_propiedad'))
+    '''.format(url_for('vista_propiedad', codigo_empresa=codigo_empresa))
     
 @app.route('/notificaciones')
 @login_required
@@ -773,7 +806,23 @@ def marcar_leido(id):
 @app.route('/dashboard-content')
 @login_required
 def dashboard_content():
-    # Consulta para obtener todas las propiedades de la empresa y sus visitas (0 si no existen)
+    # Obtener las empresas en las que el usuario es miembro y tiene rol de administrador
+    empresas_admin = (
+        db.session.query(UsuarioEmpresa.codigo_empresa)
+        .join(Usuario, UsuarioEmpresa.id_usuario == Usuario.id)  # Relacionar con la tabla Usuario
+        .filter(Usuario.id == current_user.id, Usuario.admin == 1)  # Filtrar por usuario y que sea administrador
+        .all()
+    )
+
+    # Si el usuario no es administrador en ninguna empresa, redirigir o mostrar un mensaje
+    if not empresas_admin:
+        flash("No tienes permisos de administrador en ninguna empresa.", "error")
+        return redirect(url_for('empresas'))
+
+    # Extraer los códigos de empresa en los que el usuario es administrador
+    codigos_empresas = [e.codigo_empresa for e in empresas_admin]
+
+    # Consulta para obtener las propiedades de las empresas en las que el usuario es administrador
     propiedades_trafico = (
         db.session.query(
             Propiedad.id_propiedad,
@@ -781,8 +830,7 @@ def dashboard_content():
             func.count(VisitaPropiedad.id_visita).label('total_visitas')
         )
         .outerjoin(VisitaPropiedad, Propiedad.id_propiedad == VisitaPropiedad.id_propiedad)
-        .join(Usuario, Propiedad.id_usuario == Usuario.id)
-        .filter(Usuario.empresa == current_user.empresa)
+        .filter(Propiedad.codigo_empresa.in_(codigos_empresas))  # Filtrar por las empresas donde es administrador
         .group_by(Propiedad.id_propiedad)
         .all()
     )
@@ -798,9 +846,9 @@ def dashboard_content():
     recent_orders = [
         {'product': 'Iphone 5', 'photo': 'https://via.placeholder.com/110x110', 'product_id': '#9405822', 'amount': 1250, 'date': '03 Aug 2017', 'shipping': 90},
         {'product': 'Earphone GL', 'photo': 'https://via.placeholder.com/110x110', 'product_id': '#9405820', 'amount': 1500, 'date': '03 Aug 2017', 'shipping': 60},
-        # Más pedidos si es necesario
     ]
 
+    # Renderizar el dashboard con las propiedades filtradas y datos adicionales
     return render_template(
         'dashboard_content.html', 
         propiedades_trafico=propiedades_trafico,
@@ -813,83 +861,113 @@ def dashboard_content():
 @app.route('/seguimiento-content')
 @login_required
 def seguimiento_content():
-    # Obtener el código de empresa del usuario autenticado
-    codigo_empresa = (
+    # Obtener los códigos de empresa de las empresas en las que el usuario es miembro
+    codigos_empresas = (
         db.session.query(UsuarioEmpresa.codigo_empresa)
         .filter(UsuarioEmpresa.id_usuario == current_user.id)
-        .scalar()
+        .all()
     )
 
-    # Filtrar las propiedades que pertenecen a la misma empresa
+    # Si el usuario no pertenece a ninguna empresa, redirigir o mostrar un mensaje
+    if not codigos_empresas:
+        flash("No formas parte de ninguna empresa.", "error")
+        return redirect(url_for('empresas'))
+
+    # Extraer los códigos de empresa en una lista
+    codigos_empresas_list = [empresa.codigo_empresa for empresa in codigos_empresas]
+
+    # Filtrar las propiedades que pertenecen a las empresas del usuario, evitando duplicados con distinct
     propiedades = (
-        db.session.query(Propiedad.id_propiedad, Propiedad.direccion, Propiedad.comuna, Usuario.username)
+        db.session.query(
+            Propiedad.id_propiedad, 
+            Propiedad.direccion, 
+            Propiedad.comuna, 
+            Usuario.username,
+            Empresa.nombre_empresa  # Obtener el nombre de la empresa
+        )
         .join(Usuario, Propiedad.id_usuario == Usuario.id)
         .join(UsuarioEmpresa, Usuario.id == UsuarioEmpresa.id_usuario)
-        .filter(UsuarioEmpresa.codigo_empresa == codigo_empresa)
+        .join(Empresa, Propiedad.codigo_empresa == Empresa.codigo_empresa)  # Unir con la tabla de empresas
+        .filter(Propiedad.codigo_empresa.in_(codigos_empresas_list))  # Filtrar propiedades de las empresas del usuario
+        .distinct()  # Evitar duplicados
         .all()
     )
 
     return render_template('seguimiento_content.html', propiedades=propiedades)
 
+
 #BOTON DE EDITAR EMPRESA
 
-@app.route('/edit_company')
+@app.route('/edit_company', methods=['GET', 'POST'])
 @login_required
 def edit_company():
-    # Obtener la empresa asociada al usuario actual
+    # Buscar las empresas en las que el usuario es el creador
     empresa = (
-        db.session.query(Empresa.nombre_empresa)
-        .filter(Empresa.id_usuario == current_user.id)
+        db.session.query(Empresa)
+        .join(UsuarioEmpresa, Empresa.codigo_empresa == UsuarioEmpresa.codigo_empresa)
+        .filter(UsuarioEmpresa.id_usuario == current_user.id, Empresa.id_usuario == current_user.id)
         .first()
     )
 
+    # Si no es el creador de ninguna empresa
+    if not empresa:
+        flash("No tienes permiso para editar ninguna empresa.", "error")
+        return redirect(url_for('dashboard_content'))
+
+    if request.method == 'POST':
+        # Recibir el nuevo nombre de la empresa desde el formulario
+        nuevo_nombre = request.form.get('nombre_empresa')
+
+        if nuevo_nombre:
+            empresa.nombre_empresa = nuevo_nombre
+            db.session.commit()
+            flash("El nombre de la empresa ha sido actualizado correctamente.", "success")
+            # Redirigir al menú principal después de guardar los cambios
+            return redirect(url_for('menu'))
+        else:
+            flash("El nombre de la empresa no puede estar vacío.", "error")
+
     return render_template('edit_company.html', empresa=empresa)
-
-@app.route('/update_company', methods=['POST'])
-@login_required
-def update_company():
-    data = request.get_json()
-    nuevo_nombre = data.get('nombre_empresa')
-
-    # Obtener la empresa asociada al usuario actual
-    empresa = Empresa.query.filter_by(id_usuario=current_user.id).first()
-    
-    # Actualizar el nombre de la empresa si existe
-    if empresa:
-        empresa.nombre_empresa = nuevo_nombre
-        db.session.commit()
-        return jsonify({'success': True})
-    else:
-        return jsonify({'success': False, 'message': 'Empresa no encontrada'}), 404
 
 #BOTON GESTION DE USUARIOS
  
 @app.route('/gestion_usuarios')
 @login_required
 def gestion_usuarios():
-    # Obtener el código de la empresa del usuario autenticado
-    codigo_empresa = UsuarioEmpresa.query.filter_by(id_usuario=current_user.id).first().codigo_empresa
+    # Obtener todas las empresas donde el usuario es administrador
+    empresas_administrador = (
+        db.session.query(UsuarioEmpresa.codigo_empresa)
+        .join(Usuario, UsuarioEmpresa.id_usuario == Usuario.id)
+        .filter(Usuario.id == current_user.id, Usuario.admin == 1)
+        .all()
+    )
 
-    # Consultar las actividades de los usuarios de la misma empresa
+    if not empresas_administrador:
+        flash("No tienes permiso para gestionar usuarios en ninguna empresa.", "error")
+        return redirect(url_for('dashboard_content'))
+    
+    # Extraer los códigos de empresa de la consulta anterior
+    codigos_empresas = [empresa.codigo_empresa for empresa in empresas_administrador]
+
+    # Consultar las actividades de los usuarios de todas las empresas donde el usuario es administrador
     actividades = (
         db.session.query(LogActividad, Usuario.username)
         .join(Usuario, LogActividad.id_usuario == Usuario.id)
-        .filter(LogActividad.codigo_empresa == codigo_empresa)
+        .filter(LogActividad.codigo_empresa.in_(codigos_empresas))  # Usar la lista de códigos de empresa
         .order_by(LogActividad.fecha_hora.desc())
         .all()
     )
 
-    # Obtener los usuarios que son miembros de la misma empresa y que no son administradores
+    # Obtener los usuarios que son miembros de las mismas empresas donde el usuario es administrador
     usuarios_empresa = (
         db.session.query(Usuario, UsuarioEmpresa.bloqueado)
         .join(UsuarioEmpresa, Usuario.id == UsuarioEmpresa.id_usuario)
-        .filter(UsuarioEmpresa.codigo_empresa == codigo_empresa)
-        .filter(Usuario.admin == 0)
+        .filter(UsuarioEmpresa.codigo_empresa.in_(codigos_empresas))  # Usar la lista de códigos de empresa
+        .filter(Usuario.admin == 0)  # Excluir los administradores
         .all()
     )
 
     return render_template('gestion_usuarios.html', actividades=actividades, usuarios_empresa=usuarios_empresa)
-
 
 #CHECKBOX PARA OTORGAR ACCESO AL CRM A LOS USUARIOS DE LA EMPRESA QUE NO SEAN ADMINS
 

@@ -1,30 +1,32 @@
 <div class="container-fluid">
-    <div class="card">
-      <div class="card-header">Seguimiento de Propiedades</div>
-      <div class="card-body">
-        <div class="table-responsive">
-          <table class="table table-bordered table-hover">
-            <thead>
-              <tr>
-                <th>ID de Propiedad</th>
-                <th>Dirección</th>
-                <th>Comuna</th>
-                <th>Publicado por</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for propiedad in propiedades %}
-              <tr>
-                <td>{{ propiedad[0] }}</td>
-                <td>{{ propiedad[1] }}</td>
-                <td>{{ propiedad[2] }}</td>
-                <td>{{ propiedad[3] }}</td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
+  <div class="card">
+    <div class="card-header">Seguimiento de Propiedades</div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+          <thead>
+            <tr>
+              <th>ID de Propiedad</th>
+              <th>Dirección</th>
+              <th>Comuna</th>
+              <th>Publicado por</th>
+              <th>Empresa</th> <!-- Nueva columna para la empresa -->
+            </tr>
+          </thead>
+          <tbody>
+            {% for propiedad in propiedades %}
+            <tr>
+              <td>{{ propiedad[0] }}</td>
+              <td>{{ propiedad[1] }}</td>
+              <td>{{ propiedad[2] }}</td>
+              <td>{{ propiedad[3] }}</td>
+              <td>{{ propiedad[4] }}</td> <!-- Mostrar el nombre de la empresa -->
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
       </div>
     </div>
   </div>
-  
+</div>
+
