@@ -567,6 +567,48 @@ def tolocal(utc_time_str):
     # Formatear la fecha y hora a un formato legible
     return local_time.strftime('%Y-%m-%d %H:%M')
 
+@app.route('/agregar_comentario/<int:propiedad_id>', methods=['POST'])
+@login_required
+def agregar_comentario(propiedad_id):
+    comentario_texto = request.form.get('comentario')
+    
+    # Crear un nuevo comentario
+    nuevo_comentario = ComentarioPropiedad(
+        id_usuario=current_user.id,
+        id_propiedad=propiedad_id,
+        texto=comentario_texto,
+        fecha_hora=datetime.utcnow()
+    )
+    
+    db.session.add(nuevo_comentario)
+    db.session.commit()
+    
+    flash('Comentario agregado correctamente.')
+    return redirect(url_for('portal_propiedad', id_propiedad=propiedad_id))
+
+@app.route('/responder_comentario/<int:comentario_id>', methods=['POST'])
+@login_required
+def responder_comentario(comentario_id):
+    respuesta_texto = request.form.get('respuesta')
+    
+    # Obtener el comentario padre
+    comentario_padre = ComentarioPropiedad.query.get_or_404(comentario_id)
+    
+    # Crear la respuesta
+    respuesta = ComentarioPropiedad(
+        id_usuario=current_user.id,
+        id_propiedad=comentario_padre.id_propiedad,
+        texto=respuesta_texto,
+        fecha_hora=datetime.utcnow(),
+        id_comentario_padre=comentario_padre.id
+    )
+    
+    db.session.add(respuesta)
+    db.session.commit()
+    
+    flash('Respuesta agregada correctamente.')
+    return redirect(url_for('portal_propiedad', id_propiedad=comentario_padre.id_propiedad))
+
 zoom_token_url = "https://zoom.us/oauth/token"
 zoom_meeting_url = "https://api.zoom.us/v2/users/me/meetings"
 
@@ -990,88 +1032,39 @@ def crear_reunion_presencial():
     db.session.add(nueva_reunion)
     db.session.commit()
 
-    # Guardar los invitados en la tabla intermedia
+    mensaje = f"Has sido invitado a una reunión presencial en la propiedad {propiedad.direccion}, {propiedad.comuna} el {fecha_hora}."
+    
+    # Guardar los invitados en la tabla intermedia y enviar notificaciones
     for invitado_id in invitados_ids:
+        # Insertar invitación en la tabla de invitados
         invitacion = InvitacionesReunionPresencial(
             id_reunion=nueva_reunion.id,
             id_usuario_invitado=invitado_id
         )
         db.session.add(invitacion)
 
+        # Enviar notificación a los usuarios invitados
+        notificacion = Notificacion(
+            id_usuario=invitado_id,
+            mensaje=mensaje,
+            leido=0  # Marcar como no leída
+        )
+        db.session.add(notificacion)
+    
+    # Registrar en el Log de Actividad
+    empresa_usuario = UsuarioEmpresa.query.filter_by(id_usuario=current_user.id).first()
+    accion = f"Creación de reunión presencial"
+    detalle = f"Reunión creada para la propiedad {propiedad_id} ubicada en {propiedad.direccion}, en la comuna de {propiedad.comuna}, para el dia{fecha_hora}."
+    log_actividad = LogActividad(
+        id_usuario=current_user.id,
+        codigo_empresa=empresa_usuario.codigo_empresa,
+        accion=accion,
+        detalle=detalle,
+        fecha_hora=datetime.utcnow()
+    )
+    db.session.add(log_actividad)
+
     db.session.commit()
 
     flash('Reunión presencial creada exitosamente', 'success')
     return redirect(url_for('calendario'))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-@app.route('/agregar_comentario/<int:propiedad_id>', methods=['POST'])
-@login_required
-def agregar_comentario(propiedad_id):
-    comentario_texto = request.form.get('comentario')
-    
-    # Crear un nuevo comentario
-    nuevo_comentario = ComentarioPropiedad(
-        id_usuario=current_user.id,
-        id_propiedad=propiedad_id,
-        texto=comentario_texto,
-        fecha_hora=datetime.utcnow()
-    )
-    
-    db.session.add(nuevo_comentario)
-    db.session.commit()
-    
-    flash('Comentario agregado correctamente.')
-    return redirect(url_for('portal_propiedad', id_propiedad=propiedad_id))
-
-@app.route('/responder_comentario/<int:comentario_id>', methods=['POST'])
-@login_required
-def responder_comentario(comentario_id):
-    respuesta_texto = request.form.get('respuesta')
-    
-    # Obtener el comentario padre
-    comentario_padre = ComentarioPropiedad.query.get_or_404(comentario_id)
-    
-    # Crear la respuesta
-    respuesta = ComentarioPropiedad(
-        id_usuario=current_user.id,
-        id_propiedad=comentario_padre.id_propiedad,
-        texto=respuesta_texto,
-        fecha_hora=datetime.utcnow(),
-        id_comentario_padre=comentario_padre.id
-    )
-    
-    db.session.add(respuesta)
-    db.session.commit()
-    
-    flash('Respuesta agregada correctamente.')
-    return redirect(url_for('portal_propiedad', id_propiedad=comentario_padre.id_propiedad))
-
