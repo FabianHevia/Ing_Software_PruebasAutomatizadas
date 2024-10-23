@@ -95,10 +95,12 @@
                 <!-- Dropdown con opciones -->
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                   <li>
-                    <a class="dropdown-item" href="{{ url_for('notificaciones') }}">Notificaciones</a> <!-- Nueva opción -->
+			  <!-- Enlace para mostrar notificaciones en un Iframe -->
+                    <a class="dropdown-item" href="#" onclick=MostrarIframe('notificaciones')">Notificaciones</a> <!-- Nueva opción -->
                   </li>
                   <li>
-                    <a class="dropdown-item" href="{{ url_for('favoritos') }}">Favoritos</a> <!-- Botón de Favoritos dentro del dropdown -->
+			  <!-- Enlace para mostrar favoritos en un Iframe -->
+                    <a class="dropdown-item" href="#" onclick=MostrarIframe('favoritos')">Favoritos</a> <!-- Botón de Favoritos dentro del dropdown -->
                   </li>
                   <li>
                     <a class="dropdown-item" href="{{ url_for('empresas') }}">Cambiar de empresa</a>
