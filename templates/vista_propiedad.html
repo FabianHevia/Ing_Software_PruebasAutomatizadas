@@ -181,7 +181,7 @@
     {% for propiedad in propiedades %}
     <div class="col-6 col-lg-6">
         <!-- Toda la tarjeta es un enlace que redirige al portal de la propiedad -->
-        <a href="{{ url_for('portal_propiedad', id_propiedad=propiedad['id_propiedad'] }}" class="text-decoration-none text-dark">
+        <a href="{{ url_for('portal_propiedad', id_propiedad=propiedad['id_propiedad'], codigo_empresa=session['codigo_empresa_activa']) }}" class="text-decoration-none text-dark">
             <div class="card animacion-container mx-auto" style="height:auto;width:90%">
                 <div class="card-header">Propiedad {{ loop.index }}</div>
                 <div class="table-responsive">
