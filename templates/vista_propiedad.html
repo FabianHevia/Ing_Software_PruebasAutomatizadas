@@ -131,12 +131,12 @@
                 <!-- Dropdown con opciones -->
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                   <li>
-			  <!-- Enlace para mostrar notificaciones en un Iframe -->
-                    <a class="dropdown-item" href="#" onclick=MostrarIframe('notificaciones')">Notificaciones</a> <!-- Nueva opción -->
+			  <!-- Enlace para abrir la ventana emergente de notificaciones-->
+                    <a class="dropdown-item" href="#" onclick="abrirPopup('notificaciones')">Notificaciones</a> <!-- Nueva opción -->
                   </li>
                   <li>
-			  <!-- Enlace para mostrar favoritos en un Iframe -->
-                    <a class="dropdown-item" href="#" onclick=MostrarIframe('favoritos')">Favoritos</a> <!-- Botón de Favoritos dentro del dropdown -->
+			  <!-- Enlace para abrir la ventana emergente de favoritos -->
+                    <a class="dropdown-item" href="#" onclick="abrirPopup('favoritos')">Favoritos</a> <!-- Botón de Favoritos dentro del dropdown -->
                   </li>
                   <li>
                     <a class="dropdown-item" href="{{ url_for('empresas') }}">Cambiar de empresa</a>
@@ -155,11 +155,15 @@
           </div>
         </div>
       </nav>
-<!-- Aqui estara el Iframe para mostrar notificaciones y favoritos-->
-	<div id="contenedor-iframe" class="d-none">
-      <iframe id="iframe-contenido" class="w-100" style="height: 500px; border: none;"></iframe>
-      <a href="#" id="redireccion-link" class="btn btn-primary mt-2 d-none">Redirigir a la página</a>
+<!-- Aqui estara el contenedor de la ventana emergente-->
+<div id="popup-container" class="popup-container">
+        <div class="popup-header">
+            <span id="popup-titulo"></span>
+            <span class="popup-close" onclick="cerrarPopup()">&times;</span>
+        </div>
+        <iframe id="popup-iframe"></iframe>
     </div>
+	
 <!-- Start wrapper-->
  <div id="wrapper">
 
@@ -177,7 +181,7 @@
     {% for propiedad in propiedades %}
     <div class="col-6 col-lg-6">
         <!-- Toda la tarjeta es un enlace que redirige al portal de la propiedad -->
-        <a href="{{ url_for('portal_propiedad', id_propiedad=propiedad['id_propiedad'], codigo_empresa=session['codigo_empresa_activa']) }}" class="text-decoration-none text-dark">
+        <a href="{{ url_for('portal_propiedad', id_propiedad=propiedad['id_propiedad'] }}" class="text-decoration-none text-dark">
             <div class="card animacion-container mx-auto" style="height:auto;width:90%">
                 <div class="card-header">Propiedad {{ loop.index }}</div>
                 <div class="table-responsive">
@@ -336,6 +340,30 @@
 <!-- Index js -->
 <script src="{{ url_for('static', filename='assets/js/index.js') }}"></script>
 
-  
+
+ <!-- JavaScript para manejar la ventana emergente -->
+    <script>
+        function abrirPopup(tipo) {
+            const popup = document.getElementById('popup-container');
+            const titulo = document.getElementById('popup-titulo');
+            const iframe = document.getElementById('popup-iframe');
+
+            if (tipo === 'notificaciones') {
+                titulo.textContent = 'Notificaciones';
+                iframe.src = "{{ url_for('notificaciones') }}"; //URL real
+            } else if (tipo === 'favoritos') {
+                titulo.textContent = 'Favoritos';
+                iframe.src = "{{ url_for('favoritos') }}"; // URL real
+            }
+
+            popup.style.display = 'block';
+        }
+
+        function cerrarPopup() {
+            document.getElementById('popup-container').style.display = 'none';
+            document.getElementById('popup-iframe').src = '';
+        }
+    </script>
+	
 </body>
 </html>
