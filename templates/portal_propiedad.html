@@ -84,6 +84,42 @@
     color: white !important;  /* Forzar blanco para los botones de navegación */
 }
 
+/* Estilo para la ventana emergente interna */
+.popup-container {
+            display: none;
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 400px;
+            height: 100%;
+            background-color: #2c2f33;
+            color: white;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .popup-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.2rem;
+            border-bottom: 1px solid #444;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .popup-close {
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: #aaa;
+        }
+
+        iframe {
+            width: 100%;
+            height: calc(100% - 60px);
+            border: none;
+        }
 
 </style>
 </head>
@@ -114,10 +150,12 @@
             <!-- Dropdown con opciones -->
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
               <li>
-                <a class="dropdown-item" href="{{ url_for('notificaciones') }}">Notificaciones</a> <!-- Nueva opción -->
+                <!-- Enlace para abrir la ventana emergente de notificaciones-->
+                <a class="dropdown-item" href="#" onclick="abrirPopup('notificaciones')">Notificaciones</a> <!-- Nueva opción -->
               </li>
               <li>
-                <a class="dropdown-item" href="{{ url_for('favoritos') }}">Favoritos</a> <!-- Botón de Favoritos dentro del dropdown -->
+                <!-- Enlace para abrir la ventana emergente de favoritos -->
+                <a class="dropdown-item" href="#" onclick="abrirPopup('favoritos')">Favoritos</a> <!-- Botón de Favoritos dentro del dropdown -->
               </li>
               <li>
                 <a class="dropdown-item" href="{{ url_for('empresas') }}">Cambiar de empresa</a>
@@ -136,6 +174,14 @@
       </div>
     </div>
   </nav>
+<!-- Aqui estara el contenedor de la ventana emergente-->
+<div id="popup-container" class="popup-container">
+  <div class="popup-header">
+      <span id="popup-titulo"></span>
+      <span class="popup-close" onclick="cerrarPopup()">&times;</span>
+  </div>
+  <iframe id="popup-iframe"></iframe>
+</div>
   
 <!-- Start wrapper-->
 <div id="wrapper">
@@ -463,6 +509,30 @@
 <!-- Index js -->
 <script src="{{ url_for('static', filename='assets/js/index.js') }}"></script>
 
+ <!-- JavaScript para manejar la ventana emergente -->
+ <script>
+  function abrirPopup(tipo) {
+      const popup = document.getElementById('popup-container');
+      const titulo = document.getElementById('popup-titulo');
+      const iframe = document.getElementById('popup-iframe');
+
+      if (tipo === 'notificaciones') {
+          titulo.textContent = 'Notificaciones';
+          iframe.src = "{{ url_for('notificaciones') }}"; //URL real
+      } else if (tipo === 'favoritos') {
+          titulo.textContent = 'Favoritos';
+          iframe.src = "{{ url_for('favoritos') }}"; // URL real
+      }
+
+      popup.style.display = 'block';
+  }
+
+  function cerrarPopup() {
+      document.getElementById('popup-container').style.display = 'none';
+      document.getElementById('popup-iframe').src = '';
+  }
+</script>
+
 <!-- Datetime Picker JS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.39.0/js/tempusdominus-bootstrap-4.min.js"></script>
@@ -519,6 +589,8 @@
       .catch(error => console.error('Error:', error));
   }
 </script>
+
+
 
 </body>
 </html>

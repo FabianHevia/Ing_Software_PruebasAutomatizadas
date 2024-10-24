@@ -131,11 +131,11 @@
                 <!-- Dropdown con opciones -->
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                   <li>
-			  <!-- Enlace para abrir la ventana emergente de notificaciones-->
+			              <!-- Enlace para abrir la ventana emergente de notificaciones-->
                     <a class="dropdown-item" href="#" onclick="abrirPopup('notificaciones')">Notificaciones</a> <!-- Nueva opción -->
                   </li>
                   <li>
-			  <!-- Enlace para abrir la ventana emergente de favoritos -->
+			              <!-- Enlace para abrir la ventana emergente de favoritos -->
                     <a class="dropdown-item" href="#" onclick="abrirPopup('favoritos')">Favoritos</a> <!-- Botón de Favoritos dentro del dropdown -->
                   </li>
                   <li>
@@ -342,28 +342,28 @@
 
 
  <!-- JavaScript para manejar la ventana emergente -->
-    <script>
-        function abrirPopup(tipo) {
-            const popup = document.getElementById('popup-container');
-            const titulo = document.getElementById('popup-titulo');
-            const iframe = document.getElementById('popup-iframe');
+ <script>
+  function abrirPopup(tipo) {
+      const popup = document.getElementById('popup-container');
+      const titulo = document.getElementById('popup-titulo');
+      const iframe = document.getElementById('popup-iframe');
 
-            if (tipo === 'notificaciones') {
-                titulo.textContent = 'Notificaciones';
-                iframe.src = "{{ url_for('notificaciones') }}"; //URL real
-            } else if (tipo === 'favoritos') {
-                titulo.textContent = 'Favoritos';
-                iframe.src = "{{ url_for('favoritos') }}"; // URL real
-            }
+      if (tipo === 'notificaciones') {
+          titulo.textContent = 'Notificaciones';
+          iframe.src = "{{ url_for('notificaciones') }}"; //URL real
+      } else if (tipo === 'favoritos') {
+          titulo.textContent = 'Favoritos';
+          iframe.src = "{{ url_for('favoritos') }}"; // URL real
+      }
 
-            popup.style.display = 'block';
-        }
+      popup.style.display = 'block';
+  }
 
-        function cerrarPopup() {
-            document.getElementById('popup-container').style.display = 'none';
-            document.getElementById('popup-iframe').src = '';
-        }
-    </script>
+  function cerrarPopup() {
+      document.getElementById('popup-container').style.display = 'none';
+      document.getElementById('popup-iframe').src = '';
+  }
+</script>
 	
 </body>
 </html>
