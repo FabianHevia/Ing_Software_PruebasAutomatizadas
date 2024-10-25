@@ -541,7 +541,10 @@ def favoritos():
 @login_required
 def agregar_comentario(propiedad_id):
     comentario_texto = request.form.get('comentario')
-    
+
+    # Obtener el código de la empresa activa
+    codigo_empresa = session.get('codigo_empresa_activa')
+
     # Crear un nuevo comentario
     nuevo_comentario = ComentarioPropiedad(
         id_usuario=current_user.id,
@@ -554,16 +557,19 @@ def agregar_comentario(propiedad_id):
     db.session.commit()
     
     flash('Comentario agregado correctamente.')
-    return redirect(url_for('portal_propiedad', id_propiedad=propiedad_id))
+    return redirect(url_for('portal_propiedad', id_propiedad=propiedad_id, codigo_empresa=codigo_empresa))
 
 @app.route('/responder_comentario/<int:comentario_id>', methods=['POST'])
 @login_required
 def responder_comentario(comentario_id):
     respuesta_texto = request.form.get('respuesta')
-    
+
     # Obtener el comentario padre
     comentario_padre = ComentarioPropiedad.query.get_or_404(comentario_id)
-    
+
+    # Obtener el código de la empresa activa
+    codigo_empresa = session.get('codigo_empresa_activa')
+
     # Crear la respuesta
     respuesta = ComentarioPropiedad(
         id_usuario=current_user.id,
@@ -577,7 +583,7 @@ def responder_comentario(comentario_id):
     db.session.commit()
     
     flash('Respuesta agregada correctamente.')
-    return redirect(url_for('portal_propiedad', id_propiedad=comentario_padre.id_propiedad))
+    return redirect(url_for('portal_propiedad', id_propiedad=comentario_padre.id_propiedad, codigo_empresa=codigo_empresa))
 
 def obtener_access_token():
     zoom_token_url = "https://zoom.us/oauth/token"

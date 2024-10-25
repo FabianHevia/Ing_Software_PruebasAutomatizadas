@@ -381,7 +381,7 @@
   <h4 class="text-white">Comentarios</h4>
 
   <!-- Formulario para agregar un comentario -->
-  <form action="{{ url_for('agregar_comentario', propiedad_id=propiedad['id_propiedad']) }}" method="POST">
+  <form action="{{ url_for('agregar_comentario', propiedad_id=propiedad['id_propiedad'], codigo_empresa=session['codigo_empresa_activa']) }}" method="POST">
     <div class="mb-3">
       <textarea class="form-control" id="comentario" name="comentario" rows="5" placeholder="Escribe tu comentario..." style="min-height: 150px; resize: vertical;" required></textarea>
     </div>
@@ -407,7 +407,7 @@
       <p class="card-text mt-2" style="color: white;">{{ comentario.texto }}</p> <!-- Margen superior para dar espacio después del nombre -->
 
       <!-- Responder a un comentario -->
-      <form action="{{ url_for('responder_comentario', comentario_id=comentario.id) }}" method="POST" class="mt-3">
+      <form action="{{ url_for('responder_comentario', comentario_id=comentario.id, codigo_empresa=session['codigo_empresa_activa']) }}" method="POST" class="mt-3">
         <div class="mb-2">
           <textarea class="form-control" name="respuesta" rows="3" placeholder="Responder..." style="resize: vertical;" required></textarea>
         </div>
