@@ -11,7 +11,7 @@ class Empresa(db.Model):
     codigo_empresa = db.Column(db.String(255), primary_key=True)
     nombre_empresa = db.Column(db.String(255), nullable=False)
     id_usuario = db.Column(db.Integer, db.ForeignKey('usuarios.id'), nullable=True)
-    confirmada = db.Column(db.SmallInteger, default=0)
+    confirmada = db.Column(db.SmallInteger, default=0)#ELIMINAR MAMAWEBO
 
     def __init__(self, codigo_empresa, nombre_empresa, id_usuario, confirmada=False):
         self.codigo_empresa = codigo_empresa

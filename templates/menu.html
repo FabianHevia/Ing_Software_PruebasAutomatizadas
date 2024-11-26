@@ -36,7 +36,7 @@
   <!--Start sidebar-wrapper-->
    <div id="sidebar-wrapper" data-simplebar="" data-simplebar-auto-hide="true">
      <div class="brand-logo">
-      <a href="#">
+      <a href="menu">
        <img src="{{ url_for('static', filename='assets/images/brokersyncdibujo_rbg.png') }}" class="logo-icon" alt="">
        <h5 class="logo-text">Main Menu CRM</h5>
      </a>
@@ -57,35 +57,27 @@
           <i class="zmdi zmdi-format-list-bulleted"></i> <span>Seguimiento</span>
         </a>
       </li>      
-
+      
       <li>
+        {% if current_user.is_admin%}
         <a href="javascript:void(0);" onclick="loadEditCompanyContent()">
           <i class="zmdi zmdi-edit"></i> <span>Editar Empresa</span>
         </a>
+        {% endif %}
       </li>      
-
+      
       <li>
         {% if current_user.is_admin%}
         <a href="javascript:void(0);" onclick="loadGestionUsuariosContent()">
           <i class="zmdi zmdi-grid"></i> <span>Gestión de Usuarios</span>
         </a>
         {% endif %}
-      </li>
-
-      <li>
-        <a href="javascript:void(0);" onclick="loadCalendarioContent()">
-          <i class="zmdi zmdi-calendar-check"></i> <span>Calendario</span>
-        </a>
-      </li>      
-
-       <li>
-        <a href="#" target="_blank">
-          <i class="zmdi zmdi-account-circle"></i> <span>Cuenta</span>
-        </a>
-      </li>
+      </li> 
 
       <li class="sidebar-header">LABELS</li>
-      <li><a href="{{ url_for('calendario') }}"><i class="zmdi zmdi-calendar-check text-success"></i> <span>Reunión Presencial</span></a></li>
+      
+      <li>{% if current_user.is_admin%}<a href="{{ url_for('calendario') }}"><i class="zmdi zmdi-calendar-check text-success"></i> <span>Reunión Presencial</span></a>{% endif %}</li>
+      
       <li><a href="javaScript:void();"><i class="zmdi zmdi-share text-info"></i> <span>Información</span></a></li>
 
     </ul>
@@ -301,17 +293,6 @@ function loadGestionUsuariosContent() {
     })
     .catch(error => console.log('Error al cargar el contenido de Gestión de Usuarios:', error));
 }
-</script>
-
-<script>
-  function loadCalendarioContent() {
-    fetch('/calendario-content')  // Llamamos a la ruta que devuelve el contenido del calendario
-      .then(response => response.text())
-      .then(html => {
-        document.getElementById('dynamic-content').innerHTML = html;
-      })
-      .catch(error => console.log('Error al cargar el contenido del calendario:', error));
-  }
 </script>
 
 </body>

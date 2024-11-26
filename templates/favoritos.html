@@ -30,8 +30,8 @@
             <p style="font-weight:bold; color:blanchedalmond;"><strong>Comuna:</strong> {{ favorito[2] }}</p>
           </div>
           <div>
-            <!-- Usamos session['codigo_empresa_activa'] -->
-            <a href="{{ url_for('portal_propiedad', id_propiedad=favorito[0], codigo_empresa=session['codigo_empresa_activa']) }}" class="btn btn-primary">Ir a la propiedad</a>
+            <!-- Agrega target="_top" para cargar fuera del iframe -->
+            <a href="{{ url_for('portal_propiedad', id_propiedad=favorito[0], codigo_empresa=session['codigo_empresa_activa']) }}" class="btn btn-primary" target="_top">Ir a la propiedad</a>
           </div>
         </li>
       {% endfor %}

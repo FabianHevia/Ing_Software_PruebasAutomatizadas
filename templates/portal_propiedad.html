@@ -256,6 +256,16 @@
                             border-bottom: 2px solid rgba(0, 0, 0, 0.15) !important;"
                             class="col-9"><strong style="color: rgb(7, 206, 7)">Inspeccionada</strong></td>
                           </tr>
+                          <tr style="background-color: rgba(0, 0, 0, 0.25);">
+                            <td style="font-weight: bold; text-align: left; color: #dddddd;">Video de la Propiedad</td>
+                            <td style="text-align: left; color: #eeeeee;">
+                              {% if propiedad['modificaciones'] %}
+                                <a href="{{ propiedad['modificaciones'] }}" target="_blank" class="btn btn-info btn-sm">Ver Video</a>
+                              {% else %}
+                                <span style="color: #ff4d4d;">No disponible</span>
+                              {% endif %}
+                            </td>
+                          </tr>
                         </section>
                     </tr>
                 </tbody>
@@ -320,6 +330,28 @@
           <input type="hidden" id="fechaHoraInput" name="fecha_hora">
           <button type="submit" class="btn btn-primary">Crear Reunión</button>
         </form>
+         <!-- Enlace para abrir el modal de YouTube -->
+         <button type="button" class="btn btn-link text-info" data-bs-target="#youtubeModal" data-bs-toggle="modal" data-bs-dismiss="modal">¿No posee una conexión estable?</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Nuevo modal para ingresar el enlace de YouTube -->
+<div class="modal fade" id="youtubeModal" tabindex="-1" aria-labelledby="youtubeModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content" style="background-color: #4B4B4B; color: white;">
+      <div class="modal-header" style="border-bottom: 1px solid #666;">
+        <h5 class="modal-title" id="youtubeModalLabel">Proporcionar un enlace de YouTube</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: invert(1);"></button>
+      </div>
+      <div class="modal-body">
+        <label for="youtubeLink" style="color: #FFFFFF;">Ingrese un enlace de YouTube del recorrido de la propiedad:</label>
+        <input type="url" id="youtubeLink" class="form-control" placeholder="https://www.youtube.com/watch?v=..." style="background-color: #666; color: white;" required>
+      </div>
+      <div class="modal-footer" style="border-top: 1px solid #666;">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary" onclick="submitYouTubeLink()">Guardar</button>
       </div>
     </div>
   </div>
@@ -539,13 +571,13 @@
 <script type="text/javascript">
   $(function () {
     $('#datetimepicker').datetimepicker({
-      format: 'YYYY-MM-DDTHH:mm:ss',  // Formato compatible con ISO 8601
+      format: 'YYYY-MM-DDTHH:mm',  // Formato compatible con ISO 8601
       stepping: 1  // Permitir la selección minuto a minuto
     });
 
     // Cuando cambia la fecha/hora seleccionada
     $('#datetimepicker').on('change.datetimepicker', function(event) {
-      const selectedDate = event.date.format('YYYY-MM-DDTHH:mm:ss');
+      const selectedDate = event.date.format('YYYY-MM-DDTHH:mm');
       
       // Mostrar la fecha y hora seleccionadas
       $('#fechaHoraSeleccionada').text(`Fecha y hora seleccionadas: ${selectedDate}`);
@@ -587,6 +619,40 @@
           }
       })
       .catch(error => console.error('Error:', error));
+  }
+</script>
+
+<script>
+  function submitYouTubeLink() {
+    const youtubeLink = document.getElementById('youtubeLink').value;
+
+    // Validar si el enlace no está vacío
+    if (!youtubeLink) {
+      alert('Por favor, ingrese un enlace válido de YouTube.');
+      return;
+    }
+
+    // Realizar una solicitud POST para guardar el enlace
+    fetch("{{ url_for('guardar_video', propiedad_id=propiedad['id_propiedad']) }}", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ video_link: youtubeLink })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        alert("El enlace se ha guardado correctamente.");
+        location.reload(); // Recargar la página para actualizar la información
+      } else {
+        alert("Hubo un error al guardar el enlace: " + data.message);
+      }
+    })
+    .catch(error => {
+      console.error("Error:", error);
+      alert("Hubo un error al procesar tu solicitud.");
+    });
   }
 </script>
 

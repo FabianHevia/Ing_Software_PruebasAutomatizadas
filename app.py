@@ -367,7 +367,8 @@ def portal_propiedad(id_propiedad, codigo_empresa):
         'comuna': propiedad.Propiedad.comuna,
         'username': propiedad.username,
         'id_usuario': propiedad.id_usuario,
-        'imagen': propiedad.Propiedad.imagen
+        'imagen': propiedad.Propiedad.imagen,
+        'modificaciones': propiedad.Propiedad.modificaciones
     }
     
     return render_template(
@@ -378,7 +379,57 @@ def portal_propiedad(id_propiedad, codigo_empresa):
         total_visitas=total_visitas,
         comentarios=comentarios  # Pasar los comentarios al template
     )
+
+@app.route('/guardar_video/<int:propiedad_id>', methods=['POST'])
+@login_required
+def guardar_video(propiedad_id):
+    # Obtener los datos del enlace del video desde la solicitud JSON
+    data = request.get_json()
+    video_link = data.get('video_link')
+    print("link", video_link)
+    if not video_link:
+        return jsonify(success=False, message="El enlace de YouTube es obligatorio."), 400
+
+    # Verificar que la propiedad existe
+    propiedad = Propiedad.query.get(propiedad_id)
+    if not propiedad:
+        return jsonify(success=False, message="Propiedad no encontrada."), 404
+
+    # Guardar el enlace en la columna 'modificaciones'
+    propiedad.modificaciones = video_link
+    db.session.commit()
     
+    # Crear un mensaje de notificación
+    mensaje = f"Se ha añadido un video a la propiedad {propiedad_id}."
+
+    # Obtener los usuarios que tienen la propiedad en favoritos
+    usuarios_favoritos = (
+        db.session.query(Favorito)
+        .join(UsuarioEmpresa, Favorito.id_usuario == UsuarioEmpresa.id_usuario)
+        .filter(Favorito.id_propiedad == propiedad_id)
+        .all()
+    )
+
+    # Enviar notificación a cada usuario con el campo `leido` como no leído (0)
+    for favorito in usuarios_favoritos:
+        notificacion = Notificacion(id_usuario=favorito.id_usuario, mensaje=mensaje, leido=0)
+        db.session.add(notificacion)
+
+    # Registrar la acción en el Log de Actividad
+    accion = "Se añadió un video a una propiedad"
+    detalle = f"El usuario {current_user.username} subió un video para la propiedad {propiedad_id}."
+    log_actividad = LogActividad(
+        id_usuario=current_user.id,
+        codigo_empresa=propiedad.codigo_empresa,
+        accion=accion,
+        detalle=detalle,
+        fecha_hora=datetime.utcnow()
+    )
+    db.session.add(log_actividad)
+
+    db.session.commit()
+    return jsonify(success=True, message="El video se ha guardado correctamente.")
+
 @app.route('/editar_propiedad/<int:propiedad_id>/<string:codigo_empresa>', methods=['POST'])
 @login_required
 def editar_propiedad(propiedad_id, codigo_empresa):
@@ -644,7 +695,6 @@ def restar_3_horas(dt):
     # Formatear la nueva hora
     return nueva_hora.strftime('%Y-%m-%d %H:%M:%S')
 
-
 zoom_token_url = "https://zoom.us/oauth/token"
 zoom_meeting_url = "https://api.zoom.us/v2/users/me/meetings"
 
@@ -652,6 +702,12 @@ zoom_meeting_url = "https://api.zoom.us/v2/users/me/meetings"
 @login_required
 def crear_reunion(propiedad_id):
     fecha_hora_seleccionada = request.form.get('fecha_hora')
+    
+    # Agregar segundos si están ausentes
+    if len(fecha_hora_seleccionada) == 16:  # Formato 'YYYY-MM-DDTHH:mm'
+        fecha_hora_seleccionada += ":00"
+
+    print(f"Fecha y hora seleccionada ajustada: {fecha_hora_seleccionada}")
     
     if not fecha_hora_seleccionada:
         return "Debe seleccionar una fecha y hora para la reunión.", 400
@@ -716,6 +772,9 @@ def invite():
     duration = request.args.get('duration')
     agenda = request.args.get('agenda')
 
+    # Agregar un print para verificar el valor de start_time
+    print(f"Start time recibido: {start_time}")
+    
     # Verificar si join_url fue proporcionado
     if not join_url:
         return "No se encontró el enlace de la reunión.", 400
@@ -812,11 +871,14 @@ def marcar_leido(id):
 @app.route('/dashboard-content')
 @login_required
 def dashboard_content():
-    # Obtener las empresas en las que el usuario es miembro y tiene rol de administrador
+    # Obtener los códigos de empresas donde el usuario es administrador o tiene acceso CRM
     empresas_admin = (
         db.session.query(UsuarioEmpresa.codigo_empresa)
-        .join(Usuario, UsuarioEmpresa.id_usuario == Usuario.id)  # Relacionar con la tabla Usuario
-        .filter(Usuario.id == current_user.id, Usuario.admin == 1)  # Filtrar por usuario y que sea administrador
+        .join(Usuario, UsuarioEmpresa.id_usuario == Usuario.id)
+        .filter(
+            Usuario.id == current_user.id,
+            db.or_(Usuario.admin == 1, Usuario.acceso_crm == True)  # Administrador o acceso CRM
+        )
         .all()
     )
 
@@ -969,9 +1031,13 @@ def gestion_usuarios():
         db.session.query(Usuario, UsuarioEmpresa.bloqueado)
         .join(UsuarioEmpresa, Usuario.id == UsuarioEmpresa.id_usuario)
         .filter(UsuarioEmpresa.codigo_empresa.in_(codigos_empresas))  # Usar la lista de códigos de empresa
-        .filter(Usuario.admin == 0)  # Excluir los administradores
+        .filter(Usuario.admin == 0)  # Excluir administradores
         .all()
     )
+
+    # Mostrar los códigos de empresa para depuración (opcional)
+    print("Códigos de empresa del administrador:", codigos_empresas)
+    print("Usuarios gestionados (no admin):", [usuario.username for usuario, _ in usuarios_empresa])
 
     return render_template('gestion_usuarios.html', actividades=actividades, usuarios_empresa=usuarios_empresa)
 
@@ -1056,31 +1122,36 @@ def bloquear_usuario():
 @app.route('/calendario')
 @login_required
 def calendario():
-    # Obtener el código de la empresa del usuario autenticado
-    empresa_usuario = UsuarioEmpresa.query.filter_by(id_usuario=current_user.id).first()
-    
-    if not empresa_usuario:
-        flash("No perteneces a ninguna empresa.", "error")
-        return redirect(url_for('menu'))
-
-    codigo_empresa = empresa_usuario.codigo_empresa
-
-    # Obtener los usuarios que son miembros de la misma empresa y que no son administradores
-    usuarios_empresa = (
-        db.session.query(Usuario)
-        .join(UsuarioEmpresa, Usuario.id == UsuarioEmpresa.id_usuario)
-        .filter(UsuarioEmpresa.codigo_empresa == codigo_empresa)
-        .filter(Usuario.admin == 0)  # Asegúrate de que admin sea un booleano
+    # Obtener todos los códigos de empresa del administrador
+    codigos_empresas = (
+        db.session.query(UsuarioEmpresa.codigo_empresa)
+        .filter(UsuarioEmpresa.id_usuario == current_user.id)
         .all()
     )
 
-    # Filtrar las propiedades que pertenecen a la misma empresa
-    propiedades = (
-        db.session.query(Propiedad.id_propiedad, Propiedad.direccion, Propiedad.comuna)
-        .join(Usuario, Propiedad.id_usuario == Usuario.id)
+    if not codigos_empresas:
+        flash("No perteneces a ninguna empresa.", "error")
+        return redirect(url_for('menu'))
+
+    # Convertir los resultados en una lista de códigos
+    codigos_empresas = [codigo.codigo_empresa for codigo in codigos_empresas]
+
+    # **Agregar un print para depurar**
+    print(f"Códigos de empresas asociados al usuario {current_user.username}: {codigos_empresas}")
+
+    # Obtener los usuarios que forman parte de las mismas empresas
+    usuarios_empresa = (
+        db.session.query(Usuario)
         .join(UsuarioEmpresa, Usuario.id == UsuarioEmpresa.id_usuario)
-        .filter(UsuarioEmpresa.codigo_empresa == codigo_empresa)
+        .filter(UsuarioEmpresa.codigo_empresa.in_(codigos_empresas))
         .all()
+    )
+
+    # Filtrar las propiedades que pertenecen a las mismas empresas
+    propiedades = (
+    db.session.query(Propiedad.id_propiedad, Propiedad.direccion, Propiedad.comuna)
+    .filter(Propiedad.codigo_empresa.in_(codigos_empresas))  # Filtrar propiedades por los códigos de empresa
+    .all()
     )
 
     # Crear una lista con las propiedades formateadas
