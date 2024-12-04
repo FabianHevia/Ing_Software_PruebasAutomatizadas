@@ -250,6 +250,59 @@ def empresas():
     
     return render_template('empresas.html', empresas=empresas_lista)
 
+@app.route('/eliminar_empresa/<string:codigo_empresa>', methods=['POST'])
+@login_required
+def eliminar_empresa(codigo_empresa):
+    # Verificar si la empresa existe
+    empresa = Empresa.query.filter_by(codigo_empresa=codigo_empresa).first()
+
+    if not empresa:
+        flash("La empresa no existe.", "error")
+        print("No se encontró la empresa.")  # Depuración
+        return redirect(url_for('empresas'))
+
+    # Verificar si el usuario actual es el creador de la empresa
+    print(f"Usuario actual: {current_user.id}, Creador de la empresa: {empresa.id_usuario}")  # Depuración
+    if empresa.id_usuario != current_user.id:
+        flash("Solo el creador de la empresa puede eliminarla.", "error")
+        print("El usuario no tiene permisos para eliminar esta empresa.")  # Depuración
+        return redirect(url_for('empresas'))
+
+    # Eliminar entidades relacionadas con la empresa
+    try:
+        propiedades = Propiedad.query.filter_by(codigo_empresa=codigo_empresa).all()
+        for propiedad in propiedades:
+            Favorito.query.filter_by(id_propiedad=propiedad.id_propiedad).delete()
+            VisitaPropiedad.query.filter_by(id_propiedad=propiedad.id_propiedad).delete()
+            ComentarioPropiedad.query.filter_by(id_propiedad=propiedad.id_propiedad).delete()
+            ReunionesPresenciales.query.filter_by(id_propiedad=propiedad.id_propiedad).delete()
+            db.session.delete(propiedad)
+
+        UsuarioEmpresa.query.filter_by(codigo_empresa=codigo_empresa).delete()
+        db.session.delete(empresa)
+
+        # Registrar la acción en el Log de Actividad
+        accion = "Eliminación de empresa"
+        detalle = f"La empresa {codigo_empresa} ha sido eliminada por el usuario {current_user.username}."
+        log_actividad = LogActividad(
+            id_usuario=current_user.id,
+            codigo_empresa=codigo_empresa,
+            accion=accion,
+            detalle=detalle,
+            fecha_hora=datetime.utcnow()
+        )
+        db.session.add(log_actividad)
+
+        db.session.commit()
+        flash("La empresa y todas las entidades asociadas han sido eliminadas correctamente.", "success")
+        print("La empresa se eliminó correctamente.")  # Depuración
+    except Exception as e:
+        db.session.rollback()
+        flash("Ocurrió un error al intentar eliminar la empresa.", "error")
+        print(f"Error al eliminar la empresa: {e}")  # Depuración
+
+    return redirect(url_for('empresas'))
+
 @app.route('/vista_propiedad/<codigo_empresa>')
 @login_required
 def vista_propiedad(codigo_empresa):
@@ -504,6 +557,11 @@ def eliminar_propiedad(propiedad_id):
     comentarios = ComentarioPropiedad.query.filter_by(id_propiedad=propiedad_id).all()
     for comentario in comentarios:
         db.session.delete(comentario)
+
+    # Eliminar las reuniones presenciales asociadas a la propiedad
+    reuniones = ReunionesPresenciales.query.filter_by(id_propiedad=propiedad_id).all()
+    for reunion in reuniones:
+        db.session.delete(reunion)
 
     # Obtener la propiedad asegurándose de que pertenece a la empresa activa
     propiedad = Propiedad.query.filter_by(id_propiedad=propiedad_id, codigo_empresa=codigo_empresa_activa).first()

@@ -93,11 +93,28 @@
                             </a>
                         </td>
                         <td class="text-center" style="background-color: rgba(0, 0, 0, 0.23);">
-                            <a class="btn bsb-btn-xl btn-danger">
-                                Eliminar
-                            </a>
+                          <form action="{{ url_for('eliminar_empresa', codigo_empresa=empresa.codigo_empresa) }}" method="post" onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta empresa? Esta acción no se puede deshacer.')">
+                              <button type="submit" class="btn bsb-btn-xl btn-danger">Eliminar</button>
+                          </form>
                         </td>
                     </tr>
+                    <!-- Modal de error -->
+                    <div class="modal fade" id="modalErrorPermisos" tabindex="-1" aria-labelledby="modalErrorPermisosLabel" aria-hidden="true">
+                      <div class="modal-dialog">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title text-danger" id="modalErrorPermisosLabel">Permiso denegado</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                          <div class="modal-body">
+                            No tienes permisos para eliminar esta empresa. Solo el creador de la empresa puede realizar esta acción.
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                 {% endfor %}
                 
                 </tbody>

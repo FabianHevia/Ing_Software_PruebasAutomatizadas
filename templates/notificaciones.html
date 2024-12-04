@@ -30,12 +30,19 @@
           <ul class="list-group">
               {% for notificacion in notificaciones %}
               <li class="list-group-item">
-                <p style="font-weight:bold; color:blanchedalmond">{{ notificacion.mensaje }}</p> <!-- El mensaje de la notificación -->
-                <small class="text-muted">Recibido el {{ notificacion.fecha }}</small> <!-- Fecha de la notificación -->
-                <form id="formulario_notificaciones" action="{{ url_for('marcar_leido', id=notificacion.id) }}" method="post" class="mt-2">
-                  <a href="#" style="color: purple;" onclick="document.getElementById('formulario_notificaciones').submit(); return false;">Marcar como leído</a>
+                <p style="font-weight:bold; color:blanchedalmond">
+                  {% if "http" in notificacion.mensaje %}
+                    Has sido invitado a una reunión. Únete usando este enlace: 
+                    <a href="{{ notificacion.mensaje.split(' ')[-1] }}" target="_blank" class="text-primary">Enlace a la reunión</a>
+                  {% else %}
+                    {{ notificacion.mensaje }}
+                  {% endif %}
+                </p>
+                <small class="text-muted">Recibido el {{ notificacion.fecha }}</small>
+                <form id="formulario_notificaciones_{{ notificacion.id }}" action="{{ url_for('marcar_leido', id=notificacion.id) }}" method="post" class="mt-2">
+                  <a href="#" style="color: purple;" onclick="document.getElementById('formulario_notificaciones_{{ notificacion.id }}').submit(); return false;">Marcar como leído</a>
                 </form>
-              </li>
+              </li>              
               {% endfor %}
           </ul>
           {% else %}
@@ -46,7 +53,6 @@
       <div class="content-wrapper">
     <div>
 
-	  
 	<!--start overlay-->
 		  <div class="overlay toggle-menu"></div>
 		<!--end overlay-->

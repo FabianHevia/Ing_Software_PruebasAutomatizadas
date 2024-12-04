@@ -370,11 +370,11 @@
               <form action="{{ url_for('editar_propiedad', propiedad_id=propiedad['id_propiedad'], codigo_empresa=session['codigo_empresa_activa']) }}" method="post">
                 <div class="mb-3"> 
                     <label for="direccion" class="form-label" style="color: rgb(0, 0, 0);">Dirección</label>
-                    <input type="text" class="form-control border border-3" id="direccion" name="direccion" value="{{ propiedad['direccion'] }}" required>
+                    <input type="text" class="form-control border border-3" id="direccion" name="direccion" value="{{ propiedad['direccion'] }}" style="color: black !important; background-color: white !important;" >
                 </div>
                 <div class="mb-3">
                   <label for="comuna" class="form-label" style="color: rgb(0, 0, 0);">Comuna</label>
-                  <input type="text" class="form-control border border-3" id="comuna" name="comuna" value="{{ propiedad['comuna'] }}" required>
+                  <input type="text" class="form-control border border-3" id="comuna" name="comuna" value="{{ propiedad['comuna'] }}" style="color: black !important; background-color: white !important;">
               </div>
                 <button type="submit" class="btn btn-primary">Actualizar</button>
             </form>
