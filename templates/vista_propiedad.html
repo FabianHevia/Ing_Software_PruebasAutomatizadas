@@ -184,7 +184,7 @@
 
 <div class="clearfix"></div>
 	
-    <div class="row mt-4 mb-4 col-12 mx-auto text-center shadow-lg" style="text-align:center; background-color: rgba(0, 0, 0, 0.10);">
+    <div class="row mt-4 mb-2 col-12 mx-auto text-center shadow-lg" style="text-align:center; background-color: rgba(0, 0, 0, 0.10);">
 
       <div class="col-7 col-lg-10 col-md-9 col-sm-8 pt-3">
           <h5 class="text-center" style="text-align:center; font-weight: bold;" >Vista de Propiedades</h5>
@@ -196,7 +196,7 @@
     </div>
     <div class="row p-4 text-center" style="text-align:center;">
       {% for propiedad in propiedades %}
-      <div class="col-12 col-lg-6 col-md-6 col-sm-12 mx-auto">
+      <div class="col-12 col-lg-6 col-md-6 col-sm-12 mx-auto mt-2">
           <!-- Toda la tarjeta es un enlace que redirige al portal de la propiedad -->
           <a href="{{ url_for('portal_propiedad', id_propiedad=propiedad['id_propiedad'], codigo_empresa=session['codigo_empresa_activa']) }}" class="shadow-lg" style="text-decoration: none;">
               <div class="card animacion-container mx-auto" style="height:auto;width:90%">
@@ -257,20 +257,6 @@
                                         {% else %}
                                           <span style="color: #ff4d4d;">No Disponible</span>
                                         {% endif %}
-                                      </div>
-                                      <div class="col-12 text-center p-4 mx-auto" style="font-weight: bold;text-align: left;color: #dddddd; 
-                                      border-right: 2px solid rgba(0, 0, 0, 0.25) !important; 
-                                      border-left: 2px solid rgba(0, 0, 0, 0.25) !important;
-                                      border-top: 2px solid rgba(0, 0, 0, 0.25) !important;
-                                      border-bottom: 2px solid rgba(0, 0, 0, 0.15) !important;
-                                      background-color: rgba(0, 0, 0, 0.25);" 
-                                      class="col-3">
-                                        Subido por
-                                      </div>
-                                      <div class="col-12 text-center p-2 mx-auto" style="text-align: left;color: #eeeeee; 
-                                      border-bottom: 2px solid rgba(0, 0, 0, 0.15) !important;" 
-                                      class="col-9">
-                                      {{ propiedad['username'] }}
                                       </div>
                                     </div> 
                                     <tr style="background-color: rgba(0, 0, 0, 0.25);">

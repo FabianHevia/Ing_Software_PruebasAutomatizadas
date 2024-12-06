@@ -120,7 +120,21 @@
             height: calc(100% - 60px);
             border: none;
         }
+        /* Ocultar etiquetas en pantallas mayores a 576px */
+        @media (min-width: 577px) {
+          .responsive-label {
+            display: none !important; /* Oculta etiquetas fuera del flujo */
+          }
+        }
 
+        /* Mostrar etiquetas en pantallas menores a 576px */
+        @media (max-width: 576px) {
+          .responsive-label {
+            display: flex !important; /* Muestra etiquetas en móviles */
+            font-weight: bold;
+            margin-right: 5px;
+          }
+        }
 </style>
 </head>
 
@@ -187,13 +201,13 @@
 <div id="wrapper">
 
 <div class="clearfix"></div>
-<div class="row col-12 mt-3 text-center" style="text-align:center; max-width: 105%;">
+<div class="row col-12 mt-3 text-center mx-auto" style="text-align:center; max-width: 105%;">
   <div class="col-12 mt-3" style="text-align:center;">
       <h1 class="text-center" style="text-align:center; font-weight: bold;">Portal de Propiedad</h1>
   </div>
 </div>
 
-<div class="row col-12 p-5" style="text-align:center; max-width: 100%; margin-top: -10px;">
+<div class="row col-12 p-5 mx-auto" style="text-align:center; max-width: 100%; margin-top: -10px;">
   <div class="card mx-auto">
     <div class="card-header d-flex justify-content-between align-items-center col-12 rounded-1 mt-2" style="text-align:center; width: 100%; background-color: rgba(0, 0, 0, 0.50);">
       <!-- Título -->
@@ -205,93 +219,153 @@
     </div>
     <div class="card-body col-12">
       <div class="row">
-        <div class="col-md-8 col-sm-12">
+        <div class="col-lg-7 col-md-8 col-sm-12 col-12">
           <img class="mx-auto object-fit-cover rounded-1" 
-           style="min-width: 100%; max-width: 100%; max-height:1000px; min-height: 400px;"
+           style="min-width: 100%; max-width: 100%; max-height:1000px; min-height: 250px; width:auto; height: fit-content;"
            src="{{ propiedad['imagen'] or 'https://lajoya.ec/wp-content/uploads/2015/02/LJ-CONDOMINIO-2-SALA-COMEDOR-1108x960.png' }}" 
            alt="Imagen de la propiedad">
         </div>
-        <div class="col-md-4 col-sm-12">
-          <div class="table-responsive col-12 mx-auto">
-            <table class="table align-items-center table-flush table-borderless mx-auto mt-1">
-                <thead>
-                  <th colspan="2" style="color:white; background-color: rgba(0, 0, 0, 0.50);">Información de la Propiedad</th>
+        <div class="col-lg-5 col-md-4 col-sm-12 col-12 mt-2 mb-2 rounded-1">
+          <div class="table-responsive">
+            <table class="table align-items-center table-flush table-borderless mx-auto rounded-1" style="width:100%">
+                <thead class="rounded-1">
+                  <th class="d-none d-sm-table-cell" colspan="2" style="color:white; background-color: rgba(0, 0, 0, 0.50);">Información de la Propiedad</th>
                 </thead>
                 <tbody>
                     <tr>
-                        <section style="font-weight:bold; text-align: left;">
-                          <tr style="background-color: rgba(0, 0, 0, 0.25);">
-                            <td style="font-weight: bold;text-align: left;color: #dddddd; 
-                            border-right: 2px solid rgba(0, 0, 0, 0.25) !important; 
-                            border-bottom: 2px solid rgba(0, 0, 0, 0.15) !important;" 
-                            class="col-3">Dirección</td>
-                            <td style="text-align: left;color: #eeeeee; 
-                            border-bottom: 2px solid rgba(0, 0, 0, 0.15) !important;" 
-                            class="col-9">{{ propiedad['direccion'] }}</td>
-                          </tr>
-                          <tr style="background-color: rgba(0, 0, 0, 0.40);">
-                            <td style="font-weight: bold;text-align: left;color: #dddddd; 
-                            border-right: 2px solid rgba(0, 0, 0, 0.25) !important; 
-                            border-bottom: 2px solid rgba(0, 0, 0, 0.15) !important;" 
-                            class="col-3">Comuna</td>
-                            <td style="text-align: left;color: #eeeeee;
-                            border-bottom: 2px solid rgba(0, 0, 0, 0.15) !important;"
-                            class="col-9">{{ propiedad['comuna'] }}</td>
-                          </tr>
-                          <tr style="background-color: rgba(0, 0, 0, 0.25);">
-                            <td style="font-weight: bold; text-align: left; color: #dddddd; 
-                            border-right: 2px solid rgba(0, 0, 0, 0.25) !important; 
-                            border-bottom: 2px solid rgba(0, 0, 0, 0.15) !important;" 
-                            class="col-3">Subido por </td>
-                              <td style="text-align: left;color: #eeeeee;
-                              border-bottom: 2px solid rgba(0, 0, 0, 0.15) !important;" 
-                              class="col-9">{{ propiedad['username'] }}</td>
-                          </tr>
-                          <tr style="background-color: rgba(0, 0, 0, 0.40);">
-                            <td style="font-weight: bold;text-align: left;color: #dddddd; 
-                            border-right: 2px solid rgba(0, 0, 0, 0.25) !important; 
-                            border-bottom: 2px solid rgba(0, 0, 0, 0.15) !important;" 
-                            class="col-3">Estado</td>
-                            <td style="text-align: left;color: #eeeeee;
-                            border-bottom: 2px solid rgba(0, 0, 0, 0.15) !important;"
-                            class="col-9"><strong style="color: rgb(7, 206, 7)">Inspeccionada</strong></td>
-                          </tr>
-                          <tr style="background-color: rgba(0, 0, 0, 0.25);">
-                            <td style="font-weight: bold; text-align: left; color: #dddddd;">Video de la Propiedad</td>
-                            <td style="text-align: left; color: #eeeeee;">
-                              {% if propiedad['modificaciones'] %}
-                                <a href="{{ propiedad['modificaciones'] }}" target="_blank" class="btn btn-info btn-sm">Ver Video</a>
-                              {% else %}
-                                <span style="color: #ff4d4d;">No disponible</span>
-                              {% endif %}
-                            </td>
-                          </tr>
-                        </section>
+                      <section class="mx-auto" style="font-weight:bold; text-align: left; width: 100%;">
+                        <div class="row responsive-label d-none d-sm-flex text-center mx-auto mt-1 mb-1" style="color: white; background-color: rgba(0, 0, 0, 0.23);">
+                          <div class="col-12 text-center p-4 mx-auto" style="font-weight: bold;text-align: left;color: #dddddd; 
+                          border-right: 2px solid rgba(0, 0, 0, 0.25) !important; 
+                          border-left: 2px solid rgba(0, 0, 0, 0.25) !important;
+                          border-top: 2px solid rgba(0, 0, 0, 0.25) !important;
+                          border-bottom: 2px solid rgba(0, 0, 0, 0.15) !important;
+                          background-color: rgba(0, 0, 0, 0.25);"
+                          class="col-3">
+                            Dirección
+                          </div>
+                          <div class="col-12 text-center p-2 mx-auto" style="text-align: left;color: #eeeeee; 
+                          border-bottom: 2px solid rgba(0, 0, 0, 0.15) !important;" 
+                          class="col-9">
+                            {{ propiedad['direccion'] }}
+                          </div>
+                          <div class="col-12 text-center p-4 mx-auto" style="font-weight: bold;text-align: left;color: #dddddd; 
+                          border-right: 2px solid rgba(0, 0, 0, 0.25) !important; 
+                          border-left: 2px solid rgba(0, 0, 0, 0.25) !important;
+                          border-top: 2px solid rgba(0, 0, 0, 0.25) !important;
+                          border-bottom: 2px solid rgba(0, 0, 0, 0.15) !important;
+                          background-color: rgba(0, 0, 0, 0.25);" 
+                          class="col-3">
+                            Comuna
+                          </div>
+                          <div class="col-12 text-center p-2 mx-auto" style="text-align: left;color: #eeeeee; 
+                          border-bottom: 2px solid rgba(0, 0, 0, 0.15) !important;" 
+                          class="col-9">
+                          {{ propiedad['comuna'] }}
+                          </div>
+                          <div class="col-12 text-center p-4 mx-auto" style="font-weight: bold;text-align: left;color: #dddddd; 
+                          border-right: 2px solid rgba(0, 0, 0, 0.25) !important;
+                          border-left: 2px solid rgba(0, 0, 0, 0.25) !important;
+                          border-top: 2px solid rgba(0, 0, 0, 0.25) !important; 
+                          border-bottom: 2px solid rgba(0, 0, 0, 0.15) !important;
+                          background-color: rgba(0, 0, 0, 0.25);" 
+                          class="col-3">
+                            Video de la Propiedad
+                          </div>
+                          <div class="col-12 text-center p-2 mx-auto" style="text-align: left;color: #eeeeee; 
+                          border-bottom: 2px solid rgba(0, 0, 0, 0.15) !important;" 
+                          class="col-9">
+                            {% if propiedad['modificaciones'] %}
+                            <span style="color: #00ff00;">Disponible</span>
+                            {% else %}
+                              <span style="color: #ff4d4d;">No Disponible</span>
+                            {% endif %}
+                          </div>
+                        </div> 
+                        <tr style="background-color: rgba(0, 0, 0, 0.25);">
+                          <td class="d-none d-sm-table-cell" style="font-weight: bold;text-align: left;color: #dddddd; 
+                          border-right: 2px solid rgba(0, 0, 0, 0.25) !important; 
+                          border-bottom: 2px solid rgba(0, 0, 0, 0.15) !important;" 
+                          class="col-3">Dirección</td>
+                          <td class="d-none d-sm-table-cell" style="text-align: left;color: #eeeeee; 
+                          border-bottom: 2px solid rgba(0, 0, 0, 0.15) !important;" 
+                          class="col-9">{{ propiedad['direccion'] }}</td>
+                        </tr>
+                        <tr style="background-color: rgba(0, 0, 0, 0.40);">
+                          <td class="d-none d-sm-table-cell" style="font-weight: bold;text-align: left;color: #dddddd; 
+                          border-right: 2px solid rgba(0, 0, 0, 0.25) !important; 
+                          border-bottom: 2px solid rgba(0, 0, 0, 0.15) !important;" 
+                          class="col-3">Comuna</td>
+                          <td class="d-none d-sm-table-cell" style="text-align: left;color: #eeeeee;
+                          border-bottom: 2px solid rgba(0, 0, 0, 0.15) !important;"
+                          class="col-9">{{ propiedad['comuna'] }}</td>
+                        </tr>
+                        <tr style="background-color: rgba(0, 0, 0, 0.25);">
+                          <td class="d-none d-sm-table-cell" style="font-weight: bold; text-align: left; color: #dddddd; 
+                          border-right: 2px solid rgba(0, 0, 0, 0.25) !important; 
+                          border-bottom: 2px solid rgba(0, 0, 0, 0.15) !important;" 
+                          class="col-3">Subido por </td>
+                          <td class="d-none d-sm-table-cell" style="text-align: left;color: #eeeeee;
+                          border-bottom: 2px solid rgba(0, 0, 0, 0.15) !important;" 
+                          class="col-9">{{ propiedad['username'] }}</td>
+                        </tr>
+                        <tr style="background-color: rgba(0, 0, 0, 0.40);">
+                          <td class="d-none d-sm-table-cell" style="font-weight: bold;text-align: left;color: #dddddd; 
+                          border-right: 2px solid rgba(0, 0, 0, 0.25) !important; 
+                          border-bottom: 2px solid rgba(0, 0, 0, 0.15) !important;" 
+                          class="col-3">Estado</td>
+                          <td class="d-none d-sm-table-cell" style="text-align: left;color: #eeeeee;
+                          border-bottom: 2px solid rgba(0, 0, 0, 0.15) !important;"
+                          class="col-9"><strong style="color: rgb(7, 206, 7)">Inspeccionada</strong></td>
+                        </tr>
+                        <tr style="background-color: rgba(0, 0, 0, 0.25);">
+                          <td class="d-none d-sm-table-cell" style="font-weight: bold; text-align: left; color: #dddddd;">Video de la Propiedad</td>
+                          <td class="d-none d-sm-table-cell" style="text-align: left; color: #eeeeee;">
+                            {% if propiedad['modificaciones'] %}
+                              <a href="{{ propiedad['modificaciones'] }}" target="_blank" class="btn btn-info btn-sm">Ver Video</a>
+                            {% else %}
+                              <span style="color: #ff4d4d;">No disponible</span>
+                            {% endif %}
+                          </td>
+                        </tr>
+                      </section>
                     </tr>
                 </tbody>
             </table>
           </div>
-          <div class="col-12 mx-auto">
-            <div class="row">
-              {% if es_admin or current_user.crear_reuniones %}
-              <div class="col-md-12 col-lg-4 col-sm-12 col-xs-12 mx-auto p-1">
-                <button type="button" class="btn btn-info mt-1" data-bs-toggle="modal" data-bs-target="#crearReunionModal">
+          <div class="mx-auto">
+            <div class="row mx-auto">
+              {% if es_admin %}
+              <div class="col-md-12 col-lg-5 col-sm-12 col-xs-12 mx-auto p-1">
+                <button type="button" class="btn btn-info mt-1" data-bs-toggle="modal" data-bs-target="#crearReunionModal"
+                style="min-width: 100%; min-height: 50px;">
                   Crear Reunión
                 </button>
               </div>
-              {% endif %}
-              {% if es_admin or propiedad['id_usuario'] == current_user.id or current_user.editar_propiedades %}
-              <div class="col-md-12 col-lg-4 col-sm-12 col-xs-12 mx-auto p-1">
+              <div class="col-md-12 col-lg-5 col-sm-12 col-xs-12 mx-auto p-1">
+                <button type="button" class="btn btn-primary mt-1" data-bs-toggle="modal" data-bs-target="#editModal{{ propiedad['id_propiedad'] }}"
+                style="min-width: 100%; min-height: 50px;">
+                  Editar Información
+                </button>
+              </div>
+              <div class="col-md-12 col-lg-5 col-sm-12 col-xs-12 mx-auto p-1">
+                <button type="button" class="btn btn-danger mt-1" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal{{ propiedad['id_propiedad'] }}"
+                style="min-width: 100%; min-height: 50px;">
+                  Eliminar Propiedad
+                </button>
+              </div>
+              {% elif es_admin or propiedad['id_usuario'] == current_user.id or current_user.editar_propiedades %}
+              <div class="col-md-6 col-lg-6 col-sm-12 col-xs-12 mx-auto p-1">
                 <button type="button" class="btn btn-primary mt-1" data-bs-toggle="modal" data-bs-target="#editModal{{ propiedad['id_propiedad'] }}">
                   Editar Información
                 </button>
               </div>
-              <div class="col-md-12 col-lg-4 col-sm-12 col-xs-12 mx-auto p-1">
+              <div class="col-md-6 col-lg-6 col-sm-12 col-xs-12 mx-auto p-1">
                 <button type="button" class="btn btn-danger mt-1" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal{{ propiedad['id_propiedad'] }}">
                   Eliminar Propiedad
                 </button>
               </div>
-              {% endif %}
+              {% endif %}              
             </div>
           </div>
         </div>
@@ -409,7 +483,7 @@
 
 <!--End Row-->
 <!--Caja de comentarios-->
-<div class="row col-12 p-5" style="text-align:center; max-width: 100%; margin-top: -10px;">
+<div class="row col-12 p-4 mx-auto" style="text-align:center; max-width: 100%; margin-top: -20px;">
   <h4 class="text-white">Comentarios</h4>
 
   <!-- Formulario para agregar un comentario -->
