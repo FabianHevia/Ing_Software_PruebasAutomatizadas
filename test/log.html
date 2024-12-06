@@ -5,7 +5,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="-1">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta content="Robot Framework 7.1 (Python 3.11.9 on win32)" name="Generator">
+<meta content="Robot Framework 7.0.1 (Python 3.12.2 on win32)" name="Generator">
 <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64,AAABAAEAEBAAAAEAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKcAAAD/AAAA/wAAAP8AAAD/AAAA/wAAAP8AAAD/AAAA/wAAAP8AAAD/AAAAqAAAAAAAAAAAAAAAAAAAALIAAAD/AAAA4AAAANwAAADcAAAA3AAAANwAAADcAAAA3AAAANwAAADcAAAA4AAAAP8AAACxAAAAAAAAAKYAAAD/AAAAuwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAC/AAAA/wAAAKkAAAD6AAAAzAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAN8AAAD/AAAA+gAAAMMAAAAAAAAAAgAAAGsAAABrAAAAawAAAGsAAABrAAAAawAAAGsAAABrAAAADAAAAAAAAADaAAAA/wAAAPoAAADDAAAAAAAAAIsAAAD/AAAA/wAAAP8AAAD/AAAA/wAAAP8AAAD/AAAA/wAAANEAAAAAAAAA2gAAAP8AAAD6AAAAwwAAAAAAAAAAAAAAMgAAADIAAAAyAAAAMgAAADIAAAAyAAAAMgAAADIAAAAFAAAAAAAAANoAAAD/AAAA+gAAAMMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADaAAAA/wAAAPoAAADDAAAAAAAAADwAAAB8AAAAAAAAAGAAAABcAAAAAAAAAH8AAABKAAAAAAAAAAAAAAAAAAAA2gAAAP8AAAD6AAAAwwAAAAAAAADCAAAA/wAAACkAAADqAAAA4QAAAAAAAAD7AAAA/wAAALAAAAAGAAAAAAAAANoAAAD/AAAA+gAAAMMAAAAAAAAAIwAAAP4AAAD/AAAA/wAAAGAAAAAAAAAAAAAAAMkAAAD/AAAAigAAAAAAAADaAAAA/wAAAPoAAADDAAAAAAAAAAAAAAAIAAAAcAAAABkAAAAAAAAAAAAAAAAAAAAAAAAAEgAAAAAAAAAAAAAA2gAAAP8AAAD7AAAAywAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAN4AAAD/AAAAqwAAAP8AAACvAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALIAAAD/AAAAsgAAAAAAAAC5AAAA/wAAAMoAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMkAAAD/AAAAvAAAAAAAAAAAAAAAAAAAAKwAAAD/AAAA/wAAAP8AAAD/AAAA/wAAAP8AAAD/AAAA/wAAAP8AAAD/AAAArQAAAAAAAAAAwAMAAIABAAAf+AAAP/wAAD/8AAAgBAAAP/wAAD/8AAA//AAAJIwAADHEAAA//AAAP/wAAB/4AACAAQAAwAMAAA==">
 <style media="all">
 :root {
@@ -1252,48 +1252,58 @@ window.stats = (function () {
             });
     }
     function calculatePercents(total, passed, failed, skipped) {
-        if (total == 0)
+        if (total == 0) {
             return [0.0, 0.0, 0.0];
+        }
         var pass = 100.0 * passed / total;
         var skip = 100.0 * skipped / total;
         var fail = 100.0 * failed / total;
         if (pass > 0 && pass < 0.1)
-            pass = 0.1;
+            pass = 0.1
         if (fail > 0 && fail < 0.1)
-            fail = 0.1;
+            fail = 0.1
         if (skip > 0 && skip < 0.1)
-            skip = 0.1;
+            skip = 0.1
         if (pass > 99.95 && pass < 100)
-            pass = 99.9;
+            pass = 99.9
         if (fail > 99.95 && fail < 100)
-            fail = 99.9;
+            fail = 99.9
         if (skip > 99.95 && skip < 100)
-            skip = 99.9;
-        return [round1(pass), round1(skip), round1(fail)];
+            skip = 99.9
+        return [Math.round(pass*10)/10, Math.round(skip*10)/10, Math.round(fail*10)/10];
     }
     function calculateWidths(num1, num2, num3) {
         if (num1 + num2 + num3 === 0)
             return [0.0, 0.0, 0.0];
         // Make small percentages better visible
         if (num1 > 0 && num1 < 1)
-            num1 = 1.0;
+            num1 = 1
         if (num2 > 0 && num2 < 1)
-            num2 = 1.0;
+            num2 = 1
         if (num3 > 0 && num3 < 1)
-            num3 = 1.0;
+            num3 = 1
         // Handle situation where some are rounded up
         while (num1 + num2 + num3 > 100) {
-            if (num1 >= num2 && num1 >= num3)
-                num1 = round1(num1 - 0.1);
-            else if (num2 >= num1 && num2 >= num3)
-                num2 = round1(num2 - 0.1);
-            else
-                num3 = round1(num3 - 0.1);
+            if (num1 > num2 && num1 > num3)
+                num1 -= 0.1;
+            else if (num2 > num1 && num2 > num3)
+                num2 -= 0.1;
+            else if (num3 > num1 && num3 > num2)
+                num3 -= 0.1;
+            else if (num1 > num3 && num1 == num2) {
+                num1 -= 0.1;
+                num2 -= 0.1;
+            }
+            else if (num1 > num2 && num1 == num3) {
+                num1 -= 0.1;
+                num3 -= 0.1;
+            }
+            else if (num2 > num1 && num2 == num3) {
+                num2 -= 0.1;
+                num3 -= 0.1;
+            }
         }
-        return [num1, num2, num3];
-    }
-    function round1(num) {
-        return Math.round(num*10) / 10;
+        return [Math.ceil(num1*10)/10, Math.ceil(num2*10)/10, Math.ceil(num3*10)/10];
     }
     return {
         Statistics: Statistics
@@ -2071,25 +2081,25 @@ storage = function () {
 window.output = {};
 </script>
 <script type="text/javascript">
-window.output["suite"] = [1,2,3,4,[],[0,0,48225],[],[[5,0,6,[],[0,225,7328,7],[[0,8,0,0,0,0,0,0,[0,226,7325],[[0,9,10,0,11,12,0,0,[1,226,1791],[[227,2,13]]],[0,14,10,0,15,0,0,0,[1,2017,40],[]],[0,16,0,0,0,0,0,0,[0,2059,5493],[[0,17,10,0,18,19,0,0,[1,2059,116],[[2060,2,20]]],[0,17,10,0,18,21,0,0,[1,2175,134],[[2175,2,22]]],[0,23,10,0,24,25,0,0,[1,2310,69],[[2310,2,26]]],[0,27,10,0,28,29,0,0,[0,2378,5172],[[7548,2,30],[7548,5,7]]]]],[0,31,10,0,32,33,0,0,[3,7551,0],[]],[0,34,10,0,35,33,0,0,[3,7551,0],[]]]],[0,36,0,0,0,0,0,0,[3,7552,0],[]],[0,37,0,0,0,0,0,0,[3,7552,0],[]]]],[38,0,39,[],[0,7554,7751,7],[[0,8,0,0,0,0,0,0,[0,7555,7749],[[0,9,10,0,11,12,0,0,[1,7556,1931],[[7556,2,13]]],[0,14,10,0,15,0,0,0,[1,9487,56],[]],[0,16,0,0,0,0,0,0,[0,9544,5759],[[0,17,10,0,18,19,0,0,[1,9545,205],[[9546,2,20]]],[0,17,10,0,18,21,0,0,[1,9751,160],[[9751,2,22]]],[0,23,10,0,24,25,0,0,[1,9912,101],[[9912,2,26]]],[0,27,10,0,28,29,0,0,[0,10013,5290],[[15303,2,40],[15304,5,7]]]]],[0,31,10,0,32,33,0,0,[3,15305,0],[]],[0,34,10,0,35,33,0,0,[3,15305,0],[]]]],[0,41,0,0,0,0,0,0,[3,15305,0],[]],[0,42,0,0,0,0,0,0,[3,15305,0],[]],[0,37,0,0,0,0,0,0,[3,15305,0],[]]]],[43,0,44,[],[0,15306,27324,45],[[0,8,0,0,0,0,0,0,[0,15307,27322],[[0,9,10,0,11,12,0,0,[1,15307,1993],[[15307,2,13]]],[0,14,10,0,15,0,0,0,[1,17301,62],[]],[0,16,0,0,0,0,0,0,[0,17363,25265],[[0,17,10,0,18,19,0,0,[1,17364,160],[[17364,2,20]]],[0,17,10,0,18,21,0,0,[1,17524,123],[[17525,2,22]]],[0,23,10,0,24,25,0,0,[1,17646,96],[[17646,2,26]]],[0,27,10,0,28,29,0,0,[0,17742,24885],[[30396,3,47],[34468,3,48],[38502,3,49],[42533,3,50],[42535,5,45]]]]],[0,31,10,0,32,33,0,0,[3,42629,0],[]],[0,34,10,0,35,33,0,0,[3,42629,0],[]]]],[0,51,0,0,0,0,0,0,[3,42629,0],[]],[0,52,0,0,0,0,0,0,[3,42629,0],[]],[0,53,0,0,0,0,0,0,[3,42629,0],[]],[0,54,0,0,0,0,0,0,[3,42629,0],[]],[0,37,0,0,0,0,0,0,[3,42629,1],[]]]],[55,0,56,[],[0,42631,5590,57],[[0,8,0,0,0,0,0,0,[0,42631,5586],[[0,9,10,0,11,12,0,0,[1,42632,1835],[[42632,2,13]]],[0,14,10,0,15,0,0,0,[1,44467,44],[]],[0,16,0,0,0,0,0,0,[0,44511,3706],[[0,17,10,0,18,19,0,0,[1,44512,137],[[44513,2,20]]],[0,17,10,0,18,21,0,0,[1,44650,121],[[44650,2,22]]],[0,23,10,0,24,25,0,0,[1,44772,93],[[44772,2,26]]],[0,27,10,0,28,29,0,0,[0,44865,3351],[[48209,3,59],[48212,5,57]]]]],[0,31,10,0,32,33,0,0,[3,48217,0],[]],[0,34,10,0,35,33,0,0,[3,48217,0],[]]]],[0,60,0,0,0,0,0,0,[3,48219,0],[]],[0,61,0,0,0,0,0,0,[3,48219,0],[]],[0,62,0,0,0,0,0,0,[3,48220,0],[]],[0,63,0,0,0,0,0,0,[3,48220,0],[]],[0,37,0,0,0,0,0,0,[3,48221,0],[]]]]],[],[4,0,4,0]];
+window.output["suite"] = [1,2,3,4,[],[0,0,44603],[],[[5,0,6,[],[1,169,9061],[[0,7,0,0,0,0,0,0,[1,170,6903],[[0,8,9,0,10,11,0,0,[1,171,3730],[[171,2,12]]],[0,13,9,0,14,0,0,0,[1,3901,46],[]],[0,15,0,0,0,0,0,0,[1,3948,2259],[[0,16,9,0,17,18,0,0,[1,3948,118],[[3949,2,19]]],[0,16,9,0,17,20,0,0,[1,4067,81],[[4067,2,21]]],[0,22,9,0,23,24,0,0,[1,4148,2046],[[4149,2,25]]],[0,26,9,0,27,28,0,0,[1,6195,12],[]]]],[0,29,9,0,30,31,0,0,[1,6207,862],[[6207,2,32]]],[0,33,9,0,34,31,0,0,[1,7069,5],[[7073,2,35]]]]],[0,36,0,0,0,0,0,0,[1,7074,7],[[0,37,9,0,38,28,0,0,[1,7074,7],[[7081,2,39]]]]],[0,40,0,0,0,0,0,0,[1,7082,2147],[[0,41,9,0,42,0,0,0,[1,7082,2147],[]]]]]],[43,0,44,[],[0,9230,11929,45],[[0,7,0,0,0,0,0,0,[1,9230,6380],[[0,8,9,0,10,11,0,0,[1,9231,1522],[[9231,2,12]]],[0,13,9,0,14,0,0,0,[1,10753,46],[]],[0,15,0,0,0,0,0,0,[1,10800,4003],[[0,16,9,0,17,18,0,0,[1,10801,123],[[10801,2,19]]],[0,16,9,0,17,20,0,0,[1,10925,86],[[10925,2,21]]],[0,22,9,0,23,24,0,0,[1,11011,3781],[[11011,2,25]]],[0,26,9,0,27,28,0,0,[1,14792,11],[]]]],[0,29,9,0,30,31,0,0,[1,14803,802],[[14803,2,32]]],[0,33,9,0,34,31,0,0,[1,15605,5],[[15610,2,35]]]]],[0,46,0,0,0,0,0,0,[0,15610,5548],[[0,47,9,0,48,49,0,0,[0,15611,5547],[[21156,2,50],[21157,5,45]]],[0,51,9,0,52,49,0,0,[3,21158,0],[]]]],[0,53,0,0,0,0,0,0,[3,21159,0],[]],[0,40,0,0,0,0,0,0,[3,21159,0],[]]]],[54,0,55,[],[0,21160,10374,56],[[0,7,0,0,0,0,0,0,[1,21160,10249],[[0,8,9,0,10,11,0,0,[1,21162,2174],[[21162,2,12]]],[0,13,9,0,14,0,0,0,[1,23337,43],[]],[0,15,0,0,0,0,0,0,[1,23381,6733],[[0,16,9,0,17,18,0,0,[1,23381,137],[[23381,2,19]]],[0,16,9,0,17,20,0,0,[1,23519,101],[[23519,2,21]]],[0,22,9,0,23,24,0,0,[1,23621,6481],[[23621,2,25]]],[0,26,9,0,27,28,0,0,[1,30103,11],[]]]],[0,29,9,0,30,31,0,0,[1,30114,1288],[[30114,2,32]]],[0,33,9,0,34,31,0,0,[1,31402,6],[[31408,2,35]]]]],[0,57,0,0,0,0,0,0,[0,31409,125],[[0,22,9,0,23,58,0,0,[0,31409,125],[[31409,2,59],[31532,2,60],[31532,5,56]]],[0,47,9,0,48,61,0,0,[3,31534,0],[]],[0,51,9,0,52,61,0,0,[3,31534,0],[]]]],[0,62,0,0,0,0,0,0,[3,31534,0],[]],[0,63,0,0,0,0,0,0,[3,31535,0],[]],[0,64,0,0,0,0,0,0,[3,31535,0],[]],[0,40,0,0,0,0,0,0,[3,31535,0],[]]]],[65,0,66,[],[0,31536,13065,67],[[0,7,0,0,0,0,0,0,[1,31537,11031],[[0,8,9,0,10,11,0,0,[1,31537,3061],[[31537,2,12]]],[0,13,9,0,14,0,0,0,[1,34598,45],[]],[0,15,0,0,0,0,0,0,[1,34643,5994],[[0,16,9,0,17,18,0,0,[1,34644,128],[[34644,2,19]]],[0,16,9,0,17,20,0,0,[1,34774,109],[[34774,2,21]]],[0,22,9,0,23,24,0,0,[1,34882,5742],[[34883,2,25]]],[0,26,9,0,27,28,0,0,[1,40626,12],[]]]],[0,29,9,0,30,31,0,0,[1,40637,1922],[[40637,2,32]]],[0,33,9,0,34,31,0,0,[1,42559,9],[[42567,2,35]]]]],[0,68,0,0,0,0,0,0,[1,42568,314],[[0,22,9,0,23,69,0,0,[1,42568,61],[[42568,2,70]]],[0,47,9,0,48,71,0,0,[1,42629,240],[]],[0,51,9,0,52,71,0,0,[1,42869,13],[[42881,2,72]]]]],[0,73,0,0,0,0,0,0,[1,42882,131],[[0,16,9,0,17,74,0,0,[1,42882,131],[[42882,2,75]]]]],[0,76,0,0,0,0,0,0,[0,43014,1585],[[0,22,9,0,23,69,0,0,[0,43014,1585],[[43014,2,70],[44598,2,77],[44598,5,67]]]]],[0,78,0,0,0,0,0,0,[3,44601,0],[]],[0,40,0,0,0,0,0,0,[3,44601,0],[]]]]],[],[4,1,3,0]];
 </script>
 <script type="text/javascript">
 window.output["strings"] = [];
 </script>
 <script type="text/javascript">
-window.output["strings"] = window.output["strings"].concat(["*","*Empresas Test","*C:\\Users\\agust\\OneDrive\\Documentos\\GitHub\\Ing_Software_PruebasAutomatizadas\\test\\empresas_test.robot","*empresas_test.robot","*<p>Pruebas para la página de empresas: verificar visualización y acciones\x3c/p>","*Prueba de Carga de Página","*<p>Verifica que la página cargue correctamente y que el título sea \"Empresas\"\x3c/p>","*Text 'Empresas' did not appear in 5 seconds.","*Abrir Página de Empresas","*Open Browser","*SeleniumLibrary","*<p>Opens a new browser instance to the optional <code>url\x3c/code>.\x3c/p>","*${URL}    ${BROWSER}","*Opening browser 'Chrome' to base url '<a href=\"http://127.0.0.1:5000/login\">http://127.0.0.1:5000/login\x3c/a>'.","*Maximize Browser Window","*<p>Maximizes current browser window.\x3c/p>","*Iniciar Sesion","*Input Text","*<p>Types the given <code>text\x3c/code> into the text field identified by <code>locator\x3c/code>.\x3c/p>","*id=username    ${usuario}","*Typing text 'agustinikus' into text field 'id=username'.","*id=password    ${contrasena}","*Typing text 'amparo12' into text field 'id=password'.","*Click Button","*<p>Clicks the button identified by <code>locator\x3c/code>.\x3c/p>","*xpath=//button[@type='submit']","*Clicking button 'xpath=//button[@type='submit']'.","*Wait Until Page Contains","*<p>Waits until <code>text\x3c/code> appears on the current page.\x3c/p>","*Empresas","*\x3c/td>\x3c/tr><tr><td colspan=\"3\"><a href=\"selenium-screenshot-8.png\"><img src=\"selenium-screenshot-8.png\" width=\"800px\">\x3c/a>","*Go To","*<p>Navigates the current browser window to the provided <code>url\x3c/code>.\x3c/p>","*${EMPRESAS_URL}","*Location Should Be","*<p>Verifies that the current URL is exactly <code>url\x3c/code>.\x3c/p>","*Verificar Carga de Página","*Cerrar Navegador","*Prueba de Visualización de Tabla de Empresas","*<p>Verifica que la tabla de empresas sea visible y tenga al menos una fila\x3c/p>","*\x3c/td>\x3c/tr><tr><td colspan=\"3\"><a href=\"selenium-screenshot-9.png\"><img src=\"selenium-screenshot-9.png\" width=\"800px\">\x3c/a>","*Verificar Tabla de Empresas Visible","*Verificar Empresa en la Tabla","*Prueba de Crear Nueva Empresa","*<p>Prueba que se puede abrir el modal y crear una nueva empresa\x3c/p>","*ProtocolError: ('Connection aborted.', ConnectionResetError(10054, 'Se ha forzado la interrupción de una conexión existente por el host remoto', None, 10054, None))","*s1-t3-k1-k3-k4","*Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError('&lt;urllib3.connection.HTTPConnection object at 0x0000029BC498DA50&gt;: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión')': /session/8ac568c01affa1f9ea8b452ec42c1118/screenshot","*Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError('&lt;urllib3.connection.HTTPConnection object at 0x0000029BC3743950&gt;: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión')': /session/8ac568c01affa1f9ea8b452ec42c1118/screenshot","*Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError('&lt;urllib3.connection.HTTPConnection object at 0x0000029BC49A6010&gt;: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión')': /session/8ac568c01affa1f9ea8b452ec42c1118/screenshot","*Keyword 'Capture Page Screenshot' could not be run on failure: HTTPConnectionPool(host='localhost', port=60916): Max retries exceeded with url: /session/8ac568c01affa1f9ea8b452ec42c1118/screenshot (Caused by NewConnectionError('&lt;urllib3.connection.HTTPConnection object at 0x0000029BC498CDD0&gt;: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))","*Abrir Modal Crear Empresa","*Rellenar Formulario Crear Empresa","*Enviar Formulario Crear Empresa","*Verificar Empresa Creada en la Tabla","*Prueba de Añadir Empresa con Código","*<p>Prueba que se puede abrir el modal y añadir una empresa con un código\x3c/p>","eNqN0jFP3DAUB/CZfIo3giKdnmPH9kXqEF9i2qEMPVoG1CEkPi4i2MjxNfDt6wMGWHx4s/TL/1n/vCu3PfT7m9EObmmfe/MURmcr+Gnmubs3FVgHcwSwvIoKQufvTXi/Qjd50w0v0E9uNkO28+4RDvbBusWC8d75ChZzB/9Gs8SkADt3sEMGcL6N+XEQjHbnKuj38UPzjVBc4YqLgq74+iLbhq5/CL7rTZWdXZrwvbPDZP4YP+5G4+EWnzEeobVQJQpaqzIvJGL5Nzs7v4rPfnm8c9PFJ8d0I6nClGhFKbFOCqZrmZzS6qJuRPIdqIgiyYxWiZYmhRLlRqaFFPQ45UR7lHNGm5wSImWx/oJXfLPGnDImOcMv+HqjMeYzlJSI057QmqHKJSMMkxXoNmbq9A/XTLITgpMmKTax6mMtqpvN9f648j/sGK73cdU/SC1jiUUpmvy1w19h+j0b/+bjLvvwyXJe1BplfuzvP+ciAc8=","*s1-t4-k1-k3-k4","eNqNkkFvnDAQhc/hV8wtiZBWBhvsReoBA26rqlXVTXqpemBhCCjErowp3X9fb9pDcvHGN8vfvDd6fp/wtBnbw3XV/nKrRfjaPiAcOouol9G4a+jMOvegjYMjgl01GA1DO80eLuAzLosfKPw7LGs3wjbp3mwFuNY+oPt/hXa22PYn6GazYB8N1jzBqh+12TSgtcYWsOERfk+4PTsNZtV9BHBz8PqTN5z0YAroRj+I7xJKdmSX85Tu8v1tdHBt9+hs22ERXb1H96HV/Yzf0U7DhBZ+kD/EH64UlxnhtJRZnApCsp/R1c0Xv/bp6Wjm21ccU7WgkoSIhmeClEGCqVIEXRqVljUP7kFkIpOgRiN5Q4OE5FklwoTg9OxyIT2a54zWMU0SIdL9G3iZV3sSU8ZEzsgb+LJSxOszImjCL/MJLRmRsWAJI8EIVOM1VfjDFRPsApEndZCofNTnWGS74N14rvxHPbm70Vf9BamEDzHNeB0/Z/jNzfcL2n+877J1r9g8T0tFRHzO7y/lBg9j","*Abrir Modal Añadir Empresa","*Rellenar Formulario Añadir Empresa","*Enviar Formulario Añadir Empresa","*Verificar Empresa Añadida en la Tabla"]);
+window.output["strings"] = window.output["strings"].concat(["*","*Empresas Test","*C:\\Users\\fabia\\OneDrive\\Documentos\\GitHub\\Ing_Software_PruebasAutomatizadas\\test\\empresas_test.robot","*empresas_test.robot","*<p>Pruebas para la página de empresas: verificar visualización y acciones\x3c/p>","*Prueba de Carga de Página","*<p>Verifica que la página cargue correctamente y que el título sea \"Empresas\"\x3c/p>","*Abrir Página de Empresas","*Open Browser","*SeleniumLibrary","*<p>Opens a new browser instance to the optional <code>url\x3c/code>.\x3c/p>","*${URL}    ${BROWSER}","*Opening browser 'Chrome' to base url '<a href=\"http://127.0.0.1:5000/login\">http://127.0.0.1:5000/login\x3c/a>'.","*Maximize Browser Window","*<p>Maximizes current browser window.\x3c/p>","*Iniciar Sesion","*Input Text","*<p>Types the given <code>text\x3c/code> into the text field identified by <code>locator\x3c/code>.\x3c/p>","*id=username    ${usuario}","*Typing text 'agustinikus' into text field 'id=username'.","*id=password    ${contrasena}","*Typing text 'amparo12' into text field 'id=password'.","*Click Button","*<p>Clicks the button identified by <code>locator\x3c/code>.\x3c/p>","*xpath=//button[@type='submit']","*Clicking button 'xpath=//button[@type='submit']'.","*Wait Until Page Contains","*<p>Waits until <code>text\x3c/code> appears on the current page.\x3c/p>","*Empresas","*Go To","*<p>Navigates the current browser window to the provided <code>url\x3c/code>.\x3c/p>","*${EMPRESAS_URL}","*Opening url '<a href=\"http://127.0.0.1:5000/empresas\">http://127.0.0.1:5000/empresas\x3c/a>'","*Location Should Be","*<p>Verifies that the current URL is exactly <code>url\x3c/code>.\x3c/p>","*Current location is '<a href=\"http://127.0.0.1:5000/empresas\">http://127.0.0.1:5000/empresas\x3c/a>'.","*Verificar Carga de Página","*Title Should Be","*<p>Verifies that the current page title equals <code>title\x3c/code>.\x3c/p>","*Page title is 'Empresas'.","*Cerrar Navegador","*Close Browser","*<p>Closes the current browser.\x3c/p>","*Prueba de Visualización de Tabla de Empresas","*<p>Verifica que la tabla de empresas sea visible y tenga al menos una fila\x3c/p>","*Element 'xpath=//table[@class='table']' not visible after 5 seconds.","*Verificar Tabla de Empresas Visible","*Wait Until Element Is Visible","*<p>Waits until the element <code>locator\x3c/code> is visible.\x3c/p>","*xpath=//table[@class='table']","*\x3c/td>\x3c/tr><tr><td colspan=\"3\"><a href=\"selenium-screenshot-19.png\"><img src=\"selenium-screenshot-19.png\" width=\"800px\">\x3c/a>","*Element Should Be Visible","*<p>Verifies that the element identified by <code>locator\x3c/code> is visible.\x3c/p>","*Verificar Empresa en la Tabla","*Prueba de Crear Nueva Empresa","*<p>Prueba que se puede abrir el modal y crear una nueva empresa\x3c/p>","*Button with locator 'xpath=//button[contains(text(), 'Crear Empresa')]' not found.","*Abrir Modal Crear Empresa","*xpath=//button[contains(text(), 'Crear Empresa')]","*Clicking button 'xpath=//button[contains(text(), 'Crear Empresa')]'.","*\x3c/td>\x3c/tr><tr><td colspan=\"3\"><a href=\"selenium-screenshot-20.png\"><img src=\"selenium-screenshot-20.png\" width=\"800px\">\x3c/a>","*id=formModal","*Rellenar Formulario Crear Empresa","*Enviar Formulario Crear Empresa","*Verificar Empresa Creada en la Tabla","*Prueba de Añadir Empresa con Código","*<p>Prueba que se puede abrir el modal y añadir una empresa con un código\x3c/p>","eNqNk8FunDAQhs/dpxhRNUq0XWLAgCHaA2ahzSGt1KS9VFHlhQmgAF4Zp0neviabqkkP3iAhNJ5vxv/8GooeBxx13nfV7fmoUVW401gXD/O3k2MKFzhNosEUcI9CNbPQ/YNTKJ5TR70+295pLUfQjztcO/vAMTVimkyoRzDvqhZjgwqmVtTyftU3sJWqRrUKHZj0Y28K77tat6lHyIczB2qhxWo7rbRsmjk5yFr0L46FalCvnfc3Ug0Xc853jhp95rruLOh0L2I+gW6CUT6PILY9gtCwk2YWOI4S9hF84p248FW3Rt3fee/lXV+Dwgq73wgmtS9Pn6adrwRRzVatnVMxirpTv3DYKZyEAwPqVtZrZycn/UrSXDbHC4DjS2OwKTeO3sgUqlbJAddeQFziRrEfuDE5WVxqUd1qJSpMF+8+of4sxrrHH6i6m85I/UkeiHnisox5lvEg4+HSZ4SE14t3x18kTI/DVvYn/3EeCzixEYyHjGQ2IiGbKC/sBPei3E6wyGd2Imbhxqq0TBJi1+HzLMgO9PBpdKBHHlodSyhnPDjQIy4Cu444zJmdYHHgXR/chE0W0WCzDDyPMT95A19GeUKWAaUsouQNfJGXxPSnhAVefJjncUYJXzLqUWK1IPNNz9K+vCVl9AARedalyUjB49kWLia8ahWK+nzs9FV7N96+IJOCR8QP483yycNvuv8+odrz5r9U+hWb0ywrCVvO/v0B5YaRxg==","*Abrir Modal Añadir Empresa","*xpath=//button[contains(text(), 'Añadir Empresa')]","*Clicking button 'xpath=//button[contains(text(), 'Añadir Empresa')]'.","*id=formModal2","*Element 'id=formModal2' is displayed.","*Rellenar Formulario Añadir Empresa","*id=codigo    ${CODIGO_EMPRESA}","*Typing text '6TVI1DiWkIdZ6dRLUnGy' into text field 'id=codigo'.","*Enviar Formulario Añadir Empresa","*\x3c/td>\x3c/tr><tr><td colspan=\"3\"><a href=\"selenium-screenshot-21.png\"><img src=\"selenium-screenshot-21.png\" width=\"800px\">\x3c/a>","*Verificar Empresa Añadida en la Tabla"]);
 </script>
 <script type="text/javascript">
-window.output["stats"] = [[{"elapsed":"00:00:48","fail":4,"label":"All Tests","pass":0,"skip":0}],[],[{"elapsed":"00:00:48","fail":4,"id":"s1","label":"Empresas Test","name":"Empresas Test","pass":0,"skip":0}]];
+window.output["stats"] = [[{"elapsed":"00:00:44","fail":3,"label":"All Tests","pass":1,"skip":0}],[],[{"elapsed":"00:00:45","fail":3,"id":"s1","label":"Empresas Test","name":"Empresas Test","pass":1,"skip":0}]];
 </script>
 <script type="text/javascript">
-window.output["errors"] = [[30396,3,47,46],[34468,3,48,46],[38502,3,49,46],[42533,3,50,46],[48209,3,59,58]];
+window.output["errors"] = [];
 </script>
 <script type="text/javascript">
-window.output["baseMillis"] = 1729812077880;
+window.output["baseMillis"] = 1729824033620;
 </script>
 <script type="text/javascript">
-window.output["generated"] = 48260;
+window.output["generated"] = 44621;
 </script>
 <script type="text/javascript">
 window.output["expand_keywords"] = null;

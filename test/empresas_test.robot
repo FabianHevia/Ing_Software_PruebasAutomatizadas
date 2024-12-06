@@ -9,7 +9,7 @@ ${EMPRESAS_URL}   http://127.0.0.1:5000/empresas
 ${USUARIO}        agustinikus
 ${CONTRASENA}     amparo12
 ${EMPRESA}        Empresa Ejemplo
-${CODIGO_EMPRESA}    123456
+${CODIGO_EMPRESA}   6TVI1DiWkIdZ6dRLUnGy
 
 *** Test Cases ***
 Prueba de Carga de Página
@@ -93,7 +93,7 @@ Rellenar Formulario Añadir Empresa
     Input Text    id=codigo    ${CODIGO_EMPRESA}
 
 Enviar Formulario Añadir Empresa
-    Click Button    xpath=//button[contains(text(), 'Añadir')]
+    Click Button    xpath=//button[contains(text(), 'Añadir Empresa')]
 
 Verificar Empresa Añadida en la Tabla
     Wait Until Element Is Visible    xpath=//table[@class='table']/tbody/tr[td[contains(text(), '${CODIGO_EMPRESA}')]]
