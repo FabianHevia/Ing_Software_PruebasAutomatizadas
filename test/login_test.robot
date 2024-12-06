@@ -5,8 +5,8 @@ Library           SeleniumLibrary
 *** Variables ***
 ${BROWSER}        Chrome
 ${URL}            http://127.0.0.1:5000/
-${USERNAME}       hasher
-${PASSWORD}       hash
+${USERNAME}       admin
+${PASSWORD}       1234
 
 *** Test Cases ***
 Prueba de Login
