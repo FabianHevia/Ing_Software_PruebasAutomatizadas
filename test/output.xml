@@ -1,465 +1,480 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<robot generator="Robot 7.1 (Python 3.11.9 on win32)" generated="2024-10-24T20:21:17.879052" rpa="false" schemaversion="5">
-<suite id="s1" name="Empresas Test" source="C:\Users\agust\OneDrive\Documentos\GitHub\Ing_Software_PruebasAutomatizadas\test\empresas_test.robot">
+<robot generator="Robot 7.0.1 (Python 3.12.2 on win32)" generated="2024-10-24T23:40:33.619185" rpa="false" schemaversion="5">
+<suite id="s1" name="Empresas Test" source="C:\Users\fabia\OneDrive\Documentos\GitHub\Ing_Software_PruebasAutomatizadas\test\empresas_test.robot">
 <test id="s1-t1" name="Prueba de Carga de Página" line="15">
 <kw name="Abrir Página de Empresas">
 <kw name="Open Browser" owner="SeleniumLibrary">
-<msg time="2024-10-24T20:21:18.107385" level="INFO">Opening browser 'Chrome' to base url 'http://127.0.0.1:5000/login'.</msg>
+<msg time="2024-10-24T23:40:33.791238" level="INFO">Opening browser 'Chrome' to base url 'http://127.0.0.1:5000/login'.</msg>
 <arg>${URL}</arg>
 <arg>${BROWSER}</arg>
 <doc>Opens a new browser instance to the optional ``url``.</doc>
-<status status="PASS" start="2024-10-24T20:21:18.106384" elapsed="1.790654"/>
+<status status="PASS" start="2024-10-24T23:40:33.790734" elapsed="3.729728"/>
 </kw>
 <kw name="Maximize Browser Window" owner="SeleniumLibrary">
 <doc>Maximizes current browser window.</doc>
-<status status="PASS" start="2024-10-24T20:21:19.897038" elapsed="0.040421"/>
+<status status="PASS" start="2024-10-24T23:40:37.521458" elapsed="0.046444"/>
 </kw>
 <kw name="Iniciar Sesion">
 <kw name="Input Text" owner="SeleniumLibrary">
-<msg time="2024-10-24T20:21:19.939768" level="INFO">Typing text 'agustinikus' into text field 'id=username'.</msg>
+<msg time="2024-10-24T23:40:37.569408" level="INFO">Typing text 'agustinikus' into text field 'id=username'.</msg>
 <arg>id=username</arg>
 <arg>${usuario}</arg>
 <doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
-<status status="PASS" start="2024-10-24T20:21:19.938628" elapsed="0.115908"/>
+<status status="PASS" start="2024-10-24T23:40:37.567902" elapsed="0.117637"/>
 </kw>
 <kw name="Input Text" owner="SeleniumLibrary">
-<msg time="2024-10-24T20:21:20.054536" level="INFO">Typing text 'amparo12' into text field 'id=password'.</msg>
+<msg time="2024-10-24T23:40:37.686538" level="INFO">Typing text 'amparo12' into text field 'id=password'.</msg>
 <arg>id=password</arg>
 <arg>${contrasena}</arg>
 <doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
-<status status="PASS" start="2024-10-24T20:21:20.054536" elapsed="0.133602"/>
+<status status="PASS" start="2024-10-24T23:40:37.686538" elapsed="0.081390"/>
 </kw>
 <kw name="Click Button" owner="SeleniumLibrary">
-<msg time="2024-10-24T20:21:20.189572" level="INFO">Clicking button 'xpath=//button[@type='submit']'.</msg>
+<msg time="2024-10-24T23:40:37.768933" level="INFO">Clicking button 'xpath=//button[@type='submit']'.</msg>
 <arg>xpath=//button[@type='submit']</arg>
 <doc>Clicks the button identified by ``locator``.</doc>
-<status status="PASS" start="2024-10-24T20:21:20.189572" elapsed="0.068643"/>
+<status status="PASS" start="2024-10-24T23:40:37.767928" elapsed="2.046154"/>
 </kw>
 <kw name="Wait Until Page Contains" owner="SeleniumLibrary">
-<msg time="2024-10-24T20:21:25.428389" level="INFO" html="true">&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td colspan="3"&gt;&lt;a href="selenium-screenshot-8.png"&gt;&lt;img src="selenium-screenshot-8.png" width="800px"&gt;&lt;/a&gt;</msg>
-<msg time="2024-10-24T20:21:25.428389" level="FAIL">Text 'Empresas' did not appear in 5 seconds.</msg>
 <arg>Empresas</arg>
 <doc>Waits until ``text`` appears on the current page.</doc>
-<status status="FAIL" start="2024-10-24T20:21:20.258215" elapsed="5.172230">Text 'Empresas' did not appear in 5 seconds.</status>
+<status status="PASS" start="2024-10-24T23:40:39.815088" elapsed="0.011527"/>
 </kw>
-<status status="FAIL" start="2024-10-24T20:21:19.938628" elapsed="5.492812">Text 'Empresas' did not appear in 5 seconds.</status>
+<status status="PASS" start="2024-10-24T23:40:37.567902" elapsed="2.258713"/>
 </kw>
 <kw name="Go To" owner="SeleniumLibrary">
+<msg time="2024-10-24T23:40:39.826615" level="INFO">Opening url 'http://127.0.0.1:5000/empresas'</msg>
 <arg>${EMPRESAS_URL}</arg>
 <doc>Navigates the current browser window to the provided ``url``.</doc>
-<status status="NOT RUN" start="2024-10-24T20:21:25.431440" elapsed="0.000000"/>
+<status status="PASS" start="2024-10-24T23:40:39.826615" elapsed="0.862044"/>
 </kw>
 <kw name="Location Should Be" owner="SeleniumLibrary">
+<msg time="2024-10-24T23:40:40.693212" level="INFO">Current location is 'http://127.0.0.1:5000/empresas'.</msg>
 <arg>${EMPRESAS_URL}</arg>
 <doc>Verifies that the current URL is exactly ``url``.</doc>
-<status status="NOT RUN" start="2024-10-24T20:21:25.431440" elapsed="0.000000"/>
+<status status="PASS" start="2024-10-24T23:40:40.688659" elapsed="0.004553"/>
 </kw>
-<status status="FAIL" start="2024-10-24T20:21:18.106384" elapsed="7.325056">Text 'Empresas' did not appear in 5 seconds.</status>
+<status status="PASS" start="2024-10-24T23:40:33.789734" elapsed="6.903478"/>
 </kw>
 <kw name="Verificar Carga de Página">
-<status status="NOT RUN" start="2024-10-24T20:21:25.432444" elapsed="0.000000"/>
+<kw name="Title Should Be" owner="SeleniumLibrary">
+<msg time="2024-10-24T23:40:40.700751" level="INFO">Page title is 'Empresas'.</msg>
+<arg>Empresas</arg>
+<doc>Verifies that the current page title equals ``title``.</doc>
+<status status="PASS" start="2024-10-24T23:40:40.693720" elapsed="0.007031"/>
+</kw>
+<status status="PASS" start="2024-10-24T23:40:40.693720" elapsed="0.007031"/>
 </kw>
 <kw name="Cerrar Navegador">
-<status status="NOT RUN" start="2024-10-24T20:21:25.432444" elapsed="0.000000"/>
+<kw name="Close Browser" owner="SeleniumLibrary">
+<doc>Closes the current browser.</doc>
+<status status="PASS" start="2024-10-24T23:40:40.701746" elapsed="2.146551"/>
+</kw>
+<status status="PASS" start="2024-10-24T23:40:40.701746" elapsed="2.146551"/>
 </kw>
 <doc>Verifica que la página cargue correctamente y que el título sea "Empresas"</doc>
-<status status="FAIL" start="2024-10-24T20:21:18.105382" elapsed="7.328061">Text 'Empresas' did not appear in 5 seconds.</status>
+<status status="PASS" start="2024-10-24T23:40:33.788736" elapsed="9.060560"/>
 </test>
 <test id="s1-t2" name="Prueba de Visualización de Tabla de Empresas" line="21">
 <kw name="Abrir Página de Empresas">
 <kw name="Open Browser" owner="SeleniumLibrary">
-<msg time="2024-10-24T20:21:25.436442" level="INFO">Opening browser 'Chrome' to base url 'http://127.0.0.1:5000/login'.</msg>
+<msg time="2024-10-24T23:40:42.850804" level="INFO">Opening browser 'Chrome' to base url 'http://127.0.0.1:5000/login'.</msg>
 <arg>${URL}</arg>
 <arg>${BROWSER}</arg>
 <doc>Opens a new browser instance to the optional ``url``.</doc>
-<status status="PASS" start="2024-10-24T20:21:25.436442" elapsed="1.930872"/>
+<status status="PASS" start="2024-10-24T23:40:42.850804" elapsed="1.522343"/>
 </kw>
 <kw name="Maximize Browser Window" owner="SeleniumLibrary">
 <doc>Maximizes current browser window.</doc>
-<status status="PASS" start="2024-10-24T20:21:27.367314" elapsed="0.056093"/>
+<status status="PASS" start="2024-10-24T23:40:44.373147" elapsed="0.046399"/>
 </kw>
 <kw name="Iniciar Sesion">
 <kw name="Input Text" owner="SeleniumLibrary">
-<msg time="2024-10-24T20:21:27.426407" level="INFO">Typing text 'agustinikus' into text field 'id=username'.</msg>
+<msg time="2024-10-24T23:40:44.420557" level="INFO">Typing text 'agustinikus' into text field 'id=username'.</msg>
 <arg>id=username</arg>
 <arg>${usuario}</arg>
 <doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
-<status status="PASS" start="2024-10-24T20:21:27.425407" elapsed="0.205059"/>
+<status status="PASS" start="2024-10-24T23:40:44.420557" elapsed="0.123041"/>
 </kw>
 <kw name="Input Text" owner="SeleniumLibrary">
-<msg time="2024-10-24T20:21:27.631467" level="INFO">Typing text 'amparo12' into text field 'id=password'.</msg>
+<msg time="2024-10-24T23:40:44.544598" level="INFO">Typing text 'amparo12' into text field 'id=password'.</msg>
 <arg>id=password</arg>
 <arg>${contrasena}</arg>
 <doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
-<status status="PASS" start="2024-10-24T20:21:27.631467" elapsed="0.159754"/>
+<status status="PASS" start="2024-10-24T23:40:44.544598" elapsed="0.086460"/>
 </kw>
 <kw name="Click Button" owner="SeleniumLibrary">
-<msg time="2024-10-24T20:21:27.792237" level="INFO">Clicking button 'xpath=//button[@type='submit']'.</msg>
+<msg time="2024-10-24T23:40:44.631058" level="INFO">Clicking button 'xpath=//button[@type='submit']'.</msg>
 <arg>xpath=//button[@type='submit']</arg>
 <doc>Clicks the button identified by ``locator``.</doc>
-<status status="PASS" start="2024-10-24T20:21:27.792237" elapsed="0.101135"/>
+<status status="PASS" start="2024-10-24T23:40:44.631058" elapsed="3.781428"/>
 </kw>
 <kw name="Wait Until Page Contains" owner="SeleniumLibrary">
-<msg time="2024-10-24T20:21:33.182633" level="INFO" html="true">&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td colspan="3"&gt;&lt;a href="selenium-screenshot-9.png"&gt;&lt;img src="selenium-screenshot-9.png" width="800px"&gt;&lt;/a&gt;</msg>
-<msg time="2024-10-24T20:21:33.183635" level="FAIL">Text 'Empresas' did not appear in 5 seconds.</msg>
 <arg>Empresas</arg>
 <doc>Waits until ``text`` appears on the current page.</doc>
-<status status="FAIL" start="2024-10-24T20:21:27.893372" elapsed="5.290263">Text 'Empresas' did not appear in 5 seconds.</status>
+<status status="PASS" start="2024-10-24T23:40:48.412486" elapsed="0.010541"/>
 </kw>
-<status status="FAIL" start="2024-10-24T20:21:27.424408" elapsed="5.759227">Text 'Empresas' did not appear in 5 seconds.</status>
+<status status="PASS" start="2024-10-24T23:40:44.419546" elapsed="4.003481"/>
 </kw>
 <kw name="Go To" owner="SeleniumLibrary">
+<msg time="2024-10-24T23:40:48.423027" level="INFO">Opening url 'http://127.0.0.1:5000/empresas'</msg>
 <arg>${EMPRESAS_URL}</arg>
 <doc>Navigates the current browser window to the provided ``url``.</doc>
-<status status="NOT RUN" start="2024-10-24T20:21:33.184732" elapsed="0.000000"/>
+<status status="PASS" start="2024-10-24T23:40:48.423027" elapsed="0.801761"/>
 </kw>
 <kw name="Location Should Be" owner="SeleniumLibrary">
+<msg time="2024-10-24T23:40:49.229605" level="INFO">Current location is 'http://127.0.0.1:5000/empresas'.</msg>
 <arg>${EMPRESAS_URL}</arg>
 <doc>Verifies that the current URL is exactly ``url``.</doc>
-<status status="NOT RUN" start="2024-10-24T20:21:33.184732" elapsed="0.000000"/>
+<status status="PASS" start="2024-10-24T23:40:49.224788" elapsed="0.004817"/>
 </kw>
-<status status="FAIL" start="2024-10-24T20:21:25.435443" elapsed="7.749289">Text 'Empresas' did not appear in 5 seconds.</status>
+<status status="PASS" start="2024-10-24T23:40:42.849800" elapsed="6.379805"/>
 </kw>
 <kw name="Verificar Tabla de Empresas Visible">
-<status status="NOT RUN" start="2024-10-24T20:21:33.184732" elapsed="0.000000"/>
+<kw name="Wait Until Element Is Visible" owner="SeleniumLibrary">
+<msg time="2024-10-24T23:40:54.776005" level="INFO" html="true">&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td colspan="3"&gt;&lt;a href="selenium-screenshot-19.png"&gt;&lt;img src="selenium-screenshot-19.png" width="800px"&gt;&lt;/a&gt;</msg>
+<msg time="2024-10-24T23:40:54.777017" level="FAIL">Element 'xpath=//table[@class='table']' not visible after 5 seconds.</msg>
+<arg>xpath=//table[@class='table']</arg>
+<doc>Waits until the element ``locator`` is visible.</doc>
+<status status="FAIL" start="2024-10-24T23:40:49.230606" elapsed="5.547416">Element 'xpath=//table[@class='table']' not visible after 5 seconds.</status>
+</kw>
+<kw name="Element Should Be Visible" owner="SeleniumLibrary">
+<arg>xpath=//table[@class='table']</arg>
+<doc>Verifies that the element identified by ``locator`` is visible.</doc>
+<status status="NOT RUN" start="2024-10-24T23:40:54.778022" elapsed="0.000000"/>
+</kw>
+<status status="FAIL" start="2024-10-24T23:40:49.229605" elapsed="5.548417">Element 'xpath=//table[@class='table']' not visible after 5 seconds.</status>
 </kw>
 <kw name="Verificar Empresa en la Tabla">
-<status status="NOT RUN" start="2024-10-24T20:21:33.184732" elapsed="0.000000"/>
+<status status="NOT RUN" start="2024-10-24T23:40:54.779022" elapsed="0.000000"/>
 </kw>
 <kw name="Cerrar Navegador">
-<status status="NOT RUN" start="2024-10-24T20:21:33.184732" elapsed="0.000000"/>
+<status status="NOT RUN" start="2024-10-24T23:40:54.779022" elapsed="0.000000"/>
 </kw>
 <doc>Verifica que la tabla de empresas sea visible y tenga al menos una fila</doc>
-<status status="FAIL" start="2024-10-24T20:21:25.434445" elapsed="7.751297">Text 'Empresas' did not appear in 5 seconds.</status>
+<status status="FAIL" start="2024-10-24T23:40:42.849800" elapsed="11.929222">Element 'xpath=//table[@class='table']' not visible after 5 seconds.</status>
 </test>
 <test id="s1-t3" name="Prueba de Crear Nueva Empresa" line="28">
 <kw name="Abrir Página de Empresas">
 <kw name="Open Browser" owner="SeleniumLibrary">
-<msg time="2024-10-24T20:21:33.186755" level="INFO">Opening browser 'Chrome' to base url 'http://127.0.0.1:5000/login'.</msg>
+<msg time="2024-10-24T23:40:54.781946" level="INFO">Opening browser 'Chrome' to base url 'http://127.0.0.1:5000/login'.</msg>
 <arg>${URL}</arg>
 <arg>${BROWSER}</arg>
 <doc>Opens a new browser instance to the optional ``url``.</doc>
-<status status="PASS" start="2024-10-24T20:21:33.186755" elapsed="1.992911"/>
+<status status="PASS" start="2024-10-24T23:40:54.781946" elapsed="2.174169"/>
 </kw>
 <kw name="Maximize Browser Window" owner="SeleniumLibrary">
 <doc>Maximizes current browser window.</doc>
-<status status="PASS" start="2024-10-24T20:21:35.180678" elapsed="0.062215"/>
+<status status="PASS" start="2024-10-24T23:40:56.957123" elapsed="0.042663"/>
 </kw>
 <kw name="Iniciar Sesion">
 <kw name="Input Text" owner="SeleniumLibrary">
-<msg time="2024-10-24T20:21:35.243893" level="INFO">Typing text 'agustinikus' into text field 'id=username'.</msg>
+<msg time="2024-10-24T23:40:57.000786" level="INFO">Typing text 'agustinikus' into text field 'id=username'.</msg>
 <arg>id=username</arg>
 <arg>${usuario}</arg>
 <doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
-<status status="PASS" start="2024-10-24T20:21:35.243893" elapsed="0.159709"/>
+<status status="PASS" start="2024-10-24T23:40:57.000786" elapsed="0.137178"/>
 </kw>
 <kw name="Input Text" owner="SeleniumLibrary">
-<msg time="2024-10-24T20:21:35.404600" level="INFO">Typing text 'amparo12' into text field 'id=password'.</msg>
+<msg time="2024-10-24T23:40:57.138994" level="INFO">Typing text 'amparo12' into text field 'id=password'.</msg>
 <arg>id=password</arg>
 <arg>${contrasena}</arg>
 <doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
-<status status="PASS" start="2024-10-24T20:21:35.403602" elapsed="0.122751"/>
+<status status="PASS" start="2024-10-24T23:40:57.138994" elapsed="0.101327"/>
 </kw>
 <kw name="Click Button" owner="SeleniumLibrary">
-<msg time="2024-10-24T20:21:35.526353" level="INFO">Clicking button 'xpath=//button[@type='submit']'.</msg>
+<msg time="2024-10-24T23:40:57.241332" level="INFO">Clicking button 'xpath=//button[@type='submit']'.</msg>
 <arg>xpath=//button[@type='submit']</arg>
 <doc>Clicks the button identified by ``locator``.</doc>
-<status status="PASS" start="2024-10-24T20:21:35.526353" elapsed="0.095777"/>
+<status status="PASS" start="2024-10-24T23:40:57.241332" elapsed="6.480679"/>
 </kw>
 <kw name="Wait Until Page Contains" owner="SeleniumLibrary">
-<msg time="2024-10-24T20:21:48.276304" level="WARN">Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError('&lt;urllib3.connection.HTTPConnection object at 0x0000029BC498DA50&gt;: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión')': /session/8ac568c01affa1f9ea8b452ec42c1118/screenshot</msg>
-<msg time="2024-10-24T20:21:52.348015" level="WARN">Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError('&lt;urllib3.connection.HTTPConnection object at 0x0000029BC3743950&gt;: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión')': /session/8ac568c01affa1f9ea8b452ec42c1118/screenshot</msg>
-<msg time="2024-10-24T20:21:56.382242" level="WARN">Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError('&lt;urllib3.connection.HTTPConnection object at 0x0000029BC49A6010&gt;: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión')': /session/8ac568c01affa1f9ea8b452ec42c1118/screenshot</msg>
-<msg time="2024-10-24T20:22:00.413444" level="WARN">Keyword 'Capture Page Screenshot' could not be run on failure: HTTPConnectionPool(host='localhost', port=60916): Max retries exceeded with url: /session/8ac568c01affa1f9ea8b452ec42c1118/screenshot (Caused by NewConnectionError('&lt;urllib3.connection.HTTPConnection object at 0x0000029BC498CDD0&gt;: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))</msg>
-<msg time="2024-10-24T20:22:00.415448" level="FAIL">ProtocolError: ('Connection aborted.', ConnectionResetError(10054, 'Se ha forzado la interrupción de una conexión existente por el host remoto', None, 10054, None))</msg>
 <arg>Empresas</arg>
 <doc>Waits until ``text`` appears on the current page.</doc>
-<status status="FAIL" start="2024-10-24T20:21:35.622130" elapsed="24.885369">ProtocolError: ('Connection aborted.', ConnectionResetError(10054, 'Se ha forzado la interrupción de una conexión existente por el host remoto', None, 10054, None))</status>
+<status status="PASS" start="2024-10-24T23:41:03.723021" elapsed="0.010770"/>
 </kw>
-<status status="FAIL" start="2024-10-24T20:21:35.242893" elapsed="25.264606">ProtocolError: ('Connection aborted.', ConnectionResetError(10054, 'Se ha forzado la interrupción de una conexión existente por el host remoto', None, 10054, None))</status>
+<status status="PASS" start="2024-10-24T23:40:57.000786" elapsed="6.733005"/>
 </kw>
 <kw name="Go To" owner="SeleniumLibrary">
+<msg time="2024-10-24T23:41:03.733791" level="INFO">Opening url 'http://127.0.0.1:5000/empresas'</msg>
 <arg>${EMPRESAS_URL}</arg>
 <doc>Navigates the current browser window to the provided ``url``.</doc>
-<status status="NOT RUN" start="2024-10-24T20:22:00.508502" elapsed="0.000000"/>
+<status status="PASS" start="2024-10-24T23:41:03.733791" elapsed="1.288121"/>
 </kw>
 <kw name="Location Should Be" owner="SeleniumLibrary">
+<msg time="2024-10-24T23:41:05.028331" level="INFO">Current location is 'http://127.0.0.1:5000/empresas'.</msg>
 <arg>${EMPRESAS_URL}</arg>
 <doc>Verifies that the current URL is exactly ``url``.</doc>
-<status status="NOT RUN" start="2024-10-24T20:22:00.508502" elapsed="0.000000"/>
+<status status="PASS" start="2024-10-24T23:41:05.021912" elapsed="0.006419"/>
 </kw>
-<status status="FAIL" start="2024-10-24T20:21:33.186755" elapsed="27.321747">ProtocolError: ('Connection aborted.', ConnectionResetError(10054, 'Se ha forzado la interrupción de una conexión existente por el host remoto', None, 10054, None))</status>
+<status status="PASS" start="2024-10-24T23:40:54.780478" elapsed="10.248854"/>
 </kw>
 <kw name="Abrir Modal Crear Empresa">
-<status status="NOT RUN" start="2024-10-24T20:22:00.508502" elapsed="0.000000"/>
+<kw name="Click Button" owner="SeleniumLibrary">
+<msg time="2024-10-24T23:41:05.029332" level="INFO">Clicking button 'xpath=//button[contains(text(), 'Crear Empresa')]'.</msg>
+<msg time="2024-10-24T23:41:05.151892" level="INFO" html="true">&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td colspan="3"&gt;&lt;a href="selenium-screenshot-20.png"&gt;&lt;img src="selenium-screenshot-20.png" width="800px"&gt;&lt;/a&gt;</msg>
+<msg time="2024-10-24T23:41:05.151892" level="FAIL">Button with locator 'xpath=//button[contains(text(), 'Crear Empresa')]' not found.</msg>
+<arg>xpath=//button[contains(text(), 'Crear Empresa')]</arg>
+<doc>Clicks the button identified by ``locator``.</doc>
+<status status="FAIL" start="2024-10-24T23:41:05.029332" elapsed="0.124573">Button with locator 'xpath=//button[contains(text(), 'Crear Empresa')]' not found.</status>
+</kw>
+<kw name="Wait Until Element Is Visible" owner="SeleniumLibrary">
+<arg>id=formModal</arg>
+<doc>Waits until the element ``locator`` is visible.</doc>
+<status status="NOT RUN" start="2024-10-24T23:41:05.153905" elapsed="0.000000"/>
+</kw>
+<kw name="Element Should Be Visible" owner="SeleniumLibrary">
+<arg>id=formModal</arg>
+<doc>Verifies that the element identified by ``locator`` is visible.</doc>
+<status status="NOT RUN" start="2024-10-24T23:41:05.153905" elapsed="0.000000"/>
+</kw>
+<status status="FAIL" start="2024-10-24T23:41:05.029332" elapsed="0.124573">Button with locator 'xpath=//button[contains(text(), 'Crear Empresa')]' not found.</status>
 </kw>
 <kw name="Rellenar Formulario Crear Empresa">
-<status status="NOT RUN" start="2024-10-24T20:22:00.508502" elapsed="0.000000"/>
+<status status="NOT RUN" start="2024-10-24T23:41:05.153905" elapsed="0.000000"/>
 </kw>
 <kw name="Enviar Formulario Crear Empresa">
-<status status="NOT RUN" start="2024-10-24T20:22:00.508502" elapsed="0.000000"/>
+<status status="NOT RUN" start="2024-10-24T23:41:05.154912" elapsed="0.000000"/>
 </kw>
 <kw name="Verificar Empresa Creada en la Tabla">
-<status status="NOT RUN" start="2024-10-24T20:22:00.508502" elapsed="0.000000"/>
+<status status="NOT RUN" start="2024-10-24T23:41:05.154912" elapsed="0.000000"/>
 </kw>
 <kw name="Cerrar Navegador">
-<status status="NOT RUN" start="2024-10-24T20:22:00.508502" elapsed="0.001392"/>
+<status status="NOT RUN" start="2024-10-24T23:41:05.154912" elapsed="0.000000"/>
 </kw>
 <doc>Prueba que se puede abrir el modal y crear una nueva empresa</doc>
-<status status="FAIL" start="2024-10-24T20:21:33.185742" elapsed="27.324152">ProtocolError: ('Connection aborted.', ConnectionResetError(10054, 'Se ha forzado la interrupción de una conexión existente por el host remoto', None, 10054, None))</status>
+<status status="FAIL" start="2024-10-24T23:40:54.780478" elapsed="10.374434">Button with locator 'xpath=//button[contains(text(), 'Crear Empresa')]' not found.</status>
 </test>
 <test id="s1-t4" name="Prueba de Añadir Empresa con Código" line="37">
 <kw name="Abrir Página de Empresas">
 <kw name="Open Browser" owner="SeleniumLibrary">
-<msg time="2024-10-24T20:22:00.511903" level="INFO">Opening browser 'Chrome' to base url 'http://127.0.0.1:5000/login'.</msg>
+<msg time="2024-10-24T23:41:05.156915" level="INFO">Opening browser 'Chrome' to base url 'http://127.0.0.1:5000/login'.</msg>
 <arg>${URL}</arg>
 <arg>${BROWSER}</arg>
 <doc>Opens a new browser instance to the optional ``url``.</doc>
-<status status="PASS" start="2024-10-24T20:22:00.511903" elapsed="1.834738"/>
+<status status="PASS" start="2024-10-24T23:41:05.156915" elapsed="3.061357"/>
 </kw>
 <kw name="Maximize Browser Window" owner="SeleniumLibrary">
 <doc>Maximizes current browser window.</doc>
-<status status="PASS" start="2024-10-24T20:22:02.346641" elapsed="0.043868"/>
+<status status="PASS" start="2024-10-24T23:41:08.218272" elapsed="0.045067"/>
 </kw>
 <kw name="Iniciar Sesion">
 <kw name="Input Text" owner="SeleniumLibrary">
-<msg time="2024-10-24T20:22:02.392551" level="INFO">Typing text 'agustinikus' into text field 'id=username'.</msg>
+<msg time="2024-10-24T23:41:08.264347" level="INFO">Typing text 'agustinikus' into text field 'id=username'.</msg>
 <arg>id=username</arg>
 <arg>${usuario}</arg>
 <doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
-<status status="PASS" start="2024-10-24T20:22:02.391535" elapsed="0.137012"/>
+<status status="PASS" start="2024-10-24T23:41:08.264347" elapsed="0.128429"/>
 </kw>
 <kw name="Input Text" owner="SeleniumLibrary">
-<msg time="2024-10-24T20:22:02.529911" level="INFO">Typing text 'amparo12' into text field 'id=password'.</msg>
+<msg time="2024-10-24T23:41:08.393782" level="INFO">Typing text 'amparo12' into text field 'id=password'.</msg>
 <arg>id=password</arg>
 <arg>${contrasena}</arg>
 <doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
-<status status="PASS" start="2024-10-24T20:22:02.529911" elapsed="0.121302"/>
+<status status="PASS" start="2024-10-24T23:41:08.393782" elapsed="0.108528"/>
 </kw>
 <kw name="Click Button" owner="SeleniumLibrary">
-<msg time="2024-10-24T20:22:02.652211" level="INFO">Clicking button 'xpath=//button[@type='submit']'.</msg>
+<msg time="2024-10-24T23:41:08.503310" level="INFO">Clicking button 'xpath=//button[@type='submit']'.</msg>
 <arg>xpath=//button[@type='submit']</arg>
 <doc>Clicks the button identified by ``locator``.</doc>
-<status status="PASS" start="2024-10-24T20:22:02.652211" elapsed="0.093139"/>
+<status status="PASS" start="2024-10-24T23:41:08.502310" elapsed="5.742253"/>
 </kw>
 <kw name="Wait Until Page Contains" owner="SeleniumLibrary">
-<msg time="2024-10-24T20:22:06.089087" level="WARN">Keyword 'Capture Page Screenshot' could not be run on failure: Message: no such window: target window already closed
-from unknown error: web view not found
-  (Session info: chrome=130.0.6723.69)
-Stacktrace:
-	GetHandleVerifier [0x00007FF7B5073AB5+28005]
-	(No symbol) [0x00007FF7B4FD83B0]
-	(No symbol) [0x00007FF7B4E7580A]
-	(No symbol) [0x00007FF7B4E4FA85]
-	(No symbol) [0x00007FF7B4EF2AD7]
-	(No symbol) [0x00007FF7B4F0B1B1]
-	(No symbol) [0x00007FF7B4EEB7E3]
-	(No symbol) [0x00007FF7B4EB75C8]
-	(No symbol) [0x00007FF7B4EB8731]
-	GetHandleVerifier [0x00007FF7B536643D+3118829]
-	GetHandleVerifier [0x00007FF7B53B6C90+3448640]
-	GetHandleVerifier [0x00007FF7B53ACF0D+3408317]
-	GetHandleVerifier [0x00007FF7B513A40B+841403]
-	(No symbol) [0x00007FF7B4FE340F]
-	(No symbol) [0x00007FF7B4FDF484]
-	(No symbol) [0x00007FF7B4FDF61D]
-	(No symbol) [0x00007FF7B4FCEB79]
-	BaseThreadInitThunk [0x00007FFF843D257D+29]
-	RtlUserThreadStart [0x00007FFF8662AF08+40]
-</msg>
-<msg time="2024-10-24T20:22:06.092411" level="FAIL">NoSuchWindowException: Message: no such window: target window already closed
-from unknown error: web view not found
-  (Session info: chrome=130.0.6723.69)
-Stacktrace:
-	GetHandleVerifier [0x00007FF7B5073AB5+28005]
-	(No symbol) [0x00007FF7B4FD83B0]
-	(No symbol) [0x00007FF7B4E7580A]
-	(No symbol) [0x00007FF7B4E4FA85]
-	(No symbol) [0x00007FF7B4EF2AD7]
-	(No symbol) [0x00007FF7B4F0B1B1]
-	(No symbol) [0x00007FF7B4EEB7E3]
-	(No symbol) [0x00007FF7B4EB75C8]
-	(No symbol) [0x00007FF7B4EB8731]
-	GetHandleVerifier [0x00007FF7B536643D+3118829]
-	GetHandleVerifier [0x00007FF7B53B6C90+3448640]
-	GetHandleVerifier [0x00007FF7B53ACF0D+3408317]
-	GetHandleVerifier [0x00007FF7B513A40B+841403]
-	(No symbol) [0x00007FF7B4FE340F]
-	(No symbol) [0x00007FF7B4FDF484]
-	(No symbol) [0x00007FF7B4FDF61D]
-	(No symbol) [0x00007FF7B4FCEB79]
-	BaseThreadInitThunk [0x00007FFF843D257D+29]
-	RtlUserThreadStart [0x00007FFF8662AF08+40]
-</msg>
 <arg>Empresas</arg>
 <doc>Waits until ``text`` appears on the current page.</doc>
-<status status="FAIL" start="2024-10-24T20:22:02.745350" elapsed="3.350670">NoSuchWindowException: Message: no such window: target window already closed
-from unknown error: web view not found
-  (Session info: chrome=130.0.6723.69)
-Stacktrace:
-	GetHandleVerifier [0x00007FF7B5073AB5+28005]
-	(No symbol) [0x00007FF7B4FD83B0]
-	(No symbol) [0x00007FF7B4E7580A]
-	(No symbol) [0x00007FF7B4E4FA85]
-	(No symbol) [0x00007FF7B4EF2AD7]
-	(No symbol) [0x00007FF7B4F0B1B1]
-	(No symbol) [0x00007FF7B4EEB7E3]
-	(No symbol) [0x00007FF7B4EB75C8]
-	(No symbol) [0x00007FF7B4EB8731]
-	GetHandleVerifier [0x00007FF7B536643D+3118829]
-	GetHandleVerifier [0x00007FF7B53B6C90+3448640]
-	GetHandleVerifier [0x00007FF7B53ACF0D+3408317]
-	GetHandleVerifier [0x00007FF7B513A40B+841403]
-	(No symbol) [0x00007FF7B4FE340F]
-	(No symbol) [0x00007FF7B4FDF484]
-	(No symbol) [0x00007FF7B4FDF61D]
-	(No symbol) [0x00007FF7B4FCEB79]
-	BaseThreadInitThunk [0x00007FFF843D257D+29]
-	RtlUserThreadStart [0x00007FFF8662AF08+40]
-</status>
+<status status="PASS" start="2024-10-24T23:41:14.245572" elapsed="0.011684"/>
 </kw>
-<status status="FAIL" start="2024-10-24T20:22:02.390509" elapsed="3.705511">NoSuchWindowException: Message: no such window: target window already closed
-from unknown error: web view not found
-  (Session info: chrome=130.0.6723.69)
-Stacktrace:
-	GetHandleVerifier [0x00007FF7B5073AB5+28005]
-	(No symbol) [0x00007FF7B4FD83B0]
-	(No symbol) [0x00007FF7B4E7580A]
-	(No symbol) [0x00007FF7B4E4FA85]
-	(No symbol) [0x00007FF7B4EF2AD7]
-	(No symbol) [0x00007FF7B4F0B1B1]
-	(No symbol) [0x00007FF7B4EEB7E3]
-	(No symbol) [0x00007FF7B4EB75C8]
-	(No symbol) [0x00007FF7B4EB8731]
-	GetHandleVerifier [0x00007FF7B536643D+3118829]
-	GetHandleVerifier [0x00007FF7B53B6C90+3448640]
-	GetHandleVerifier [0x00007FF7B53ACF0D+3408317]
-	GetHandleVerifier [0x00007FF7B513A40B+841403]
-	(No symbol) [0x00007FF7B4FE340F]
-	(No symbol) [0x00007FF7B4FDF484]
-	(No symbol) [0x00007FF7B4FDF61D]
-	(No symbol) [0x00007FF7B4FCEB79]
-	BaseThreadInitThunk [0x00007FFF843D257D+29]
-	RtlUserThreadStart [0x00007FFF8662AF08+40]
-</status>
+<status status="PASS" start="2024-10-24T23:41:08.263339" elapsed="5.993917"/>
 </kw>
 <kw name="Go To" owner="SeleniumLibrary">
+<msg time="2024-10-24T23:41:14.257256" level="INFO">Opening url 'http://127.0.0.1:5000/empresas'</msg>
 <arg>${EMPRESAS_URL}</arg>
 <doc>Navigates the current browser window to the provided ``url``.</doc>
-<status status="NOT RUN" start="2024-10-24T20:22:06.097047" elapsed="0.000000"/>
+<status status="PASS" start="2024-10-24T23:41:14.257256" elapsed="1.921530"/>
 </kw>
 <kw name="Location Should Be" owner="SeleniumLibrary">
+<msg time="2024-10-24T23:41:16.187079" level="INFO">Current location is 'http://127.0.0.1:5000/empresas'.</msg>
 <arg>${EMPRESAS_URL}</arg>
 <doc>Verifies that the current URL is exactly ``url``.</doc>
-<status status="NOT RUN" start="2024-10-24T20:22:06.097047" elapsed="0.000000"/>
+<status status="PASS" start="2024-10-24T23:41:16.178786" elapsed="0.008796"/>
 </kw>
-<status status="FAIL" start="2024-10-24T20:22:00.510903" elapsed="5.586144">NoSuchWindowException: Message: no such window: target window already closed
-from unknown error: web view not found
-  (Session info: chrome=130.0.6723.69)
-Stacktrace:
-	GetHandleVerifier [0x00007FF7B5073AB5+28005]
-	(No symbol) [0x00007FF7B4FD83B0]
-	(No symbol) [0x00007FF7B4E7580A]
-	(No symbol) [0x00007FF7B4E4FA85]
-	(No symbol) [0x00007FF7B4EF2AD7]
-	(No symbol) [0x00007FF7B4F0B1B1]
-	(No symbol) [0x00007FF7B4EEB7E3]
-	(No symbol) [0x00007FF7B4EB75C8]
-	(No symbol) [0x00007FF7B4EB8731]
-	GetHandleVerifier [0x00007FF7B536643D+3118829]
-	GetHandleVerifier [0x00007FF7B53B6C90+3448640]
-	GetHandleVerifier [0x00007FF7B53ACF0D+3408317]
-	GetHandleVerifier [0x00007FF7B513A40B+841403]
-	(No symbol) [0x00007FF7B4FE340F]
-	(No symbol) [0x00007FF7B4FDF484]
-	(No symbol) [0x00007FF7B4FDF61D]
-	(No symbol) [0x00007FF7B4FCEB79]
-	BaseThreadInitThunk [0x00007FFF843D257D+29]
-	RtlUserThreadStart [0x00007FFF8662AF08+40]
-</status>
+<status status="PASS" start="2024-10-24T23:41:05.156915" elapsed="11.030667"/>
 </kw>
 <kw name="Abrir Modal Añadir Empresa">
-<status status="NOT RUN" start="2024-10-24T20:22:06.098562" elapsed="0.000000"/>
+<kw name="Click Button" owner="SeleniumLibrary">
+<msg time="2024-10-24T23:41:16.187582" level="INFO">Clicking button 'xpath=//button[contains(text(), 'Añadir Empresa')]'.</msg>
+<arg>xpath=//button[contains(text(), 'Añadir Empresa')]</arg>
+<doc>Clicks the button identified by ``locator``.</doc>
+<status status="PASS" start="2024-10-24T23:41:16.187582" elapsed="0.061070"/>
+</kw>
+<kw name="Wait Until Element Is Visible" owner="SeleniumLibrary">
+<arg>id=formModal2</arg>
+<doc>Waits until the element ``locator`` is visible.</doc>
+<status status="PASS" start="2024-10-24T23:41:16.248652" elapsed="0.240366"/>
+</kw>
+<kw name="Element Should Be Visible" owner="SeleniumLibrary">
+<msg time="2024-10-24T23:41:16.500733" level="INFO">Element 'id=formModal2' is displayed.</msg>
+<arg>id=formModal2</arg>
+<doc>Verifies that the element identified by ``locator`` is visible.</doc>
+<status status="PASS" start="2024-10-24T23:41:16.489018" elapsed="0.012838"/>
+</kw>
+<status status="PASS" start="2024-10-24T23:41:16.187582" elapsed="0.314274"/>
 </kw>
 <kw name="Rellenar Formulario Añadir Empresa">
-<status status="NOT RUN" start="2024-10-24T20:22:06.098562" elapsed="0.000000"/>
+<kw name="Input Text" owner="SeleniumLibrary">
+<msg time="2024-10-24T23:41:16.501856" level="INFO">Typing text '6TVI1DiWkIdZ6dRLUnGy' into text field 'id=codigo'.</msg>
+<arg>id=codigo</arg>
+<arg>${CODIGO_EMPRESA}</arg>
+<doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
+<status status="PASS" start="2024-10-24T23:41:16.501856" elapsed="0.131415"/>
+</kw>
+<status status="PASS" start="2024-10-24T23:41:16.501856" elapsed="0.131415"/>
 </kw>
 <kw name="Enviar Formulario Añadir Empresa">
-<status status="NOT RUN" start="2024-10-24T20:22:06.099582" elapsed="0.000000"/>
+<kw name="Click Button" owner="SeleniumLibrary">
+<msg time="2024-10-24T23:41:16.634286" level="INFO">Clicking button 'xpath=//button[contains(text(), 'Añadir Empresa')]'.</msg>
+<msg time="2024-10-24T23:41:18.218273" level="INFO" html="true">&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td colspan="3"&gt;&lt;a href="selenium-screenshot-21.png"&gt;&lt;img src="selenium-screenshot-21.png" width="800px"&gt;&lt;/a&gt;</msg>
+<msg time="2024-10-24T23:41:18.218273" level="FAIL">ElementClickInterceptedException: Message: element click intercepted: Element &lt;button type="button" class="btn btn-danger shadow-lg border-5" style="width:100%;" data-bs-toggle="modal" data-bs-target="#formModal2"&gt;...&lt;/button&gt; is not clickable at point (698, 201). Other element would receive the click: &lt;form action="/anadir_empresa" method="post"&gt;...&lt;/form&gt;
+  (Session info: chrome=130.0.6723.70)
+Stacktrace:
+	GetHandleVerifier [0x00007FF7BAAB3AB5+28005]
+	(No symbol) [0x00007FF7BAA183B0]
+	(No symbol) [0x00007FF7BA8B580A]
+	(No symbol) [0x00007FF7BA90D6CE]
+	(No symbol) [0x00007FF7BA90B16C]
+	(No symbol) [0x00007FF7BA908628]
+	(No symbol) [0x00007FF7BA90785D]
+	(No symbol) [0x00007FF7BA8F990E]
+	(No symbol) [0x00007FF7BA92BA3A]
+	(No symbol) [0x00007FF7BA8F9246]
+	(No symbol) [0x00007FF7BA92BC50]
+	(No symbol) [0x00007FF7BA94B8B3]
+	(No symbol) [0x00007FF7BA92B7E3]
+	(No symbol) [0x00007FF7BA8F75C8]
+	(No symbol) [0x00007FF7BA8F8731]
+	GetHandleVerifier [0x00007FF7BADA643D+3118829]
+	GetHandleVerifier [0x00007FF7BADF6C90+3448640]
+	GetHandleVerifier [0x00007FF7BADECF0D+3408317]
+	GetHandleVerifier [0x00007FF7BAB7A40B+841403]
+	(No symbol) [0x00007FF7BAA2340F]
+	(No symbol) [0x00007FF7BAA1F484]
+	(No symbol) [0x00007FF7BAA1F61D]
+	(No symbol) [0x00007FF7BAA0EB79]
+	BaseThreadInitThunk [0x00007FF9EB60257D+29]
+	RtlUserThreadStart [0x00007FF9EC4AAF08+40]
+</msg>
+<arg>xpath=//button[contains(text(), 'Añadir Empresa')]</arg>
+<doc>Clicks the button identified by ``locator``.</doc>
+<status status="FAIL" start="2024-10-24T23:41:16.634286" elapsed="1.584993">ElementClickInterceptedException: Message: element click intercepted: Element &lt;button type="button" class="btn btn-danger shadow-lg border-5" style="width:100%;" data-bs-toggle="modal" data-bs-target="#formModal2"&gt;...&lt;/button&gt; is not clickable at point (698, 201). Other element would receive the click: &lt;form action="/anadir_empresa" method="post"&gt;...&lt;/form&gt;
+  (Session info: chrome=130.0.6723.70)
+Stacktrace:
+	GetHandleVerifier [0x00007FF7BAAB3AB5+28005]
+	(No symbol) [0x00007FF7BAA183B0]
+	(No symbol) [0x00007FF7BA8B580A]
+	(No symbol) [0x00007FF7BA90D6CE]
+	(No symbol) [0x00007FF7BA90B16C]
+	(No symbol) [0x00007FF7BA908628]
+	(No symbol) [0x00007FF7BA90785D]
+	(No symbol) [0x00007FF7BA8F990E]
+	(No symbol) [0x00007FF7BA92BA3A]
+	(No symbol) [0x00007FF7BA8F9246]
+	(No symbol) [0x00007FF7BA92BC50]
+	(No symbol) [0x00007FF7BA94B8B3]
+	(No symbol) [0x00007FF7BA92B7E3]
+	(No symbol) [0x00007FF7BA8F75C8]
+	(No symbol) [0x00007FF7BA8F8731]
+	GetHandleVerifier [0x00007FF7BADA643D+3118829]
+	GetHandleVerifier [0x00007FF7BADF6C90+3448640]
+	GetHandleVerifier [0x00007FF7BADECF0D+3408317]
+	GetHandleVerifier [0x00007FF7BAB7A40B+841403]
+	(No symbol) [0x00007FF7BAA2340F]
+	(No symbol) [0x00007FF7BAA1F484]
+	(No symbol) [0x00007FF7BAA1F61D]
+	(No symbol) [0x00007FF7BAA0EB79]
+	BaseThreadInitThunk [0x00007FF9EB60257D+29]
+	RtlUserThreadStart [0x00007FF9EC4AAF08+40]
+</status>
+</kw>
+<status status="FAIL" start="2024-10-24T23:41:16.634286" elapsed="1.584993">ElementClickInterceptedException: Message: element click intercepted: Element &lt;button type="button" class="btn btn-danger shadow-lg border-5" style="width:100%;" data-bs-toggle="modal" data-bs-target="#formModal2"&gt;...&lt;/button&gt; is not clickable at point (698, 201). Other element would receive the click: &lt;form action="/anadir_empresa" method="post"&gt;...&lt;/form&gt;
+  (Session info: chrome=130.0.6723.70)
+Stacktrace:
+	GetHandleVerifier [0x00007FF7BAAB3AB5+28005]
+	(No symbol) [0x00007FF7BAA183B0]
+	(No symbol) [0x00007FF7BA8B580A]
+	(No symbol) [0x00007FF7BA90D6CE]
+	(No symbol) [0x00007FF7BA90B16C]
+	(No symbol) [0x00007FF7BA908628]
+	(No symbol) [0x00007FF7BA90785D]
+	(No symbol) [0x00007FF7BA8F990E]
+	(No symbol) [0x00007FF7BA92BA3A]
+	(No symbol) [0x00007FF7BA8F9246]
+	(No symbol) [0x00007FF7BA92BC50]
+	(No symbol) [0x00007FF7BA94B8B3]
+	(No symbol) [0x00007FF7BA92B7E3]
+	(No symbol) [0x00007FF7BA8F75C8]
+	(No symbol) [0x00007FF7BA8F8731]
+	GetHandleVerifier [0x00007FF7BADA643D+3118829]
+	GetHandleVerifier [0x00007FF7BADF6C90+3448640]
+	GetHandleVerifier [0x00007FF7BADECF0D+3408317]
+	GetHandleVerifier [0x00007FF7BAB7A40B+841403]
+	(No symbol) [0x00007FF7BAA2340F]
+	(No symbol) [0x00007FF7BAA1F484]
+	(No symbol) [0x00007FF7BAA1F61D]
+	(No symbol) [0x00007FF7BAA0EB79]
+	BaseThreadInitThunk [0x00007FF9EB60257D+29]
+	RtlUserThreadStart [0x00007FF9EC4AAF08+40]
+</status>
 </kw>
 <kw name="Verificar Empresa Añadida en la Tabla">
-<status status="NOT RUN" start="2024-10-24T20:22:06.099582" elapsed="0.000000"/>
+<status status="NOT RUN" start="2024-10-24T23:41:18.220761" elapsed="0.000000"/>
 </kw>
 <kw name="Cerrar Navegador">
-<status status="NOT RUN" start="2024-10-24T20:22:06.100578" elapsed="0.000000"/>
+<status status="NOT RUN" start="2024-10-24T23:41:18.220761" elapsed="0.000000"/>
 </kw>
 <doc>Prueba que se puede abrir el modal y añadir una empresa con un código</doc>
-<status status="FAIL" start="2024-10-24T20:22:00.510903" elapsed="5.589675">NoSuchWindowException: Message: no such window: target window already closed
-from unknown error: web view not found
-  (Session info: chrome=130.0.6723.69)
+<status status="FAIL" start="2024-10-24T23:41:05.155910" elapsed="13.065357">ElementClickInterceptedException: Message: element click intercepted: Element &lt;button type="button" class="btn btn-danger shadow-lg border-5" style="width:100%;" data-bs-toggle="modal" data-bs-target="#formModal2"&gt;...&lt;/button&gt; is not clickable at point (698, 201). Other element would receive the click: &lt;form action="/anadir_empresa" method="post"&gt;...&lt;/form&gt;
+  (Session info: chrome=130.0.6723.70)
 Stacktrace:
-	GetHandleVerifier [0x00007FF7B5073AB5+28005]
-	(No symbol) [0x00007FF7B4FD83B0]
-	(No symbol) [0x00007FF7B4E7580A]
-	(No symbol) [0x00007FF7B4E4FA85]
-	(No symbol) [0x00007FF7B4EF2AD7]
-	(No symbol) [0x00007FF7B4F0B1B1]
-	(No symbol) [0x00007FF7B4EEB7E3]
-	(No symbol) [0x00007FF7B4EB75C8]
-	(No symbol) [0x00007FF7B4EB8731]
-	GetHandleVerifier [0x00007FF7B536643D+3118829]
-	GetHandleVerifier [0x00007FF7B53B6C90+3448640]
-	GetHandleVerifier [0x00007FF7B53ACF0D+3408317]
-	GetHandleVerifier [0x00007FF7B513A40B+841403]
-	(No symbol) [0x00007FF7B4FE340F]
-	(No symbol) [0x00007FF7B4FDF484]
-	(No symbol) [0x00007FF7B4FDF61D]
-	(No symbol) [0x00007FF7B4FCEB79]
-	BaseThreadInitThunk [0x00007FFF843D257D+29]
-	RtlUserThreadStart [0x00007FFF8662AF08+40]
+	GetHandleVerifier [0x00007FF7BAAB3AB5+28005]
+	(No symbol) [0x00007FF7BAA183B0]
+	(No symbol) [0x00007FF7BA8B580A]
+	(No symbol) [0x00007FF7BA90D6CE]
+	(No symbol) [0x00007FF7BA90B16C]
+	(No symbol) [0x00007FF7BA908628]
+	(No symbol) [0x00007FF7BA90785D]
+	(No symbol) [0x00007FF7BA8F990E]
+	(No symbol) [0x00007FF7BA92BA3A]
+	(No symbol) [0x00007FF7BA8F9246]
+	(No symbol) [0x00007FF7BA92BC50]
+	(No symbol) [0x00007FF7BA94B8B3]
+	(No symbol) [0x00007FF7BA92B7E3]
+	(No symbol) [0x00007FF7BA8F75C8]
+	(No symbol) [0x00007FF7BA8F8731]
+	GetHandleVerifier [0x00007FF7BADA643D+3118829]
+	GetHandleVerifier [0x00007FF7BADF6C90+3448640]
+	GetHandleVerifier [0x00007FF7BADECF0D+3408317]
+	GetHandleVerifier [0x00007FF7BAB7A40B+841403]
+	(No symbol) [0x00007FF7BAA2340F]
+	(No symbol) [0x00007FF7BAA1F484]
+	(No symbol) [0x00007FF7BAA1F61D]
+	(No symbol) [0x00007FF7BAA0EB79]
+	BaseThreadInitThunk [0x00007FF9EB60257D+29]
+	RtlUserThreadStart [0x00007FF9EC4AAF08+40]
 </status>
 </test>
 <doc>Pruebas para la página de empresas: verificar visualización y acciones</doc>
-<status status="FAIL" start="2024-10-24T20:21:17.880055" elapsed="48.224628"/>
+<status status="FAIL" start="2024-10-24T23:40:33.620186" elapsed="44.603232"/>
 </suite>
 <statistics>
 <total>
-<stat pass="0" fail="4" skip="0">All Tests</stat>
+<stat pass="1" fail="3" skip="0">All Tests</stat>
 </total>
 <tag>
 </tag>
 <suite>
-<stat pass="0" fail="4" skip="0" id="s1" name="Empresas Test">Empresas Test</stat>
+<stat pass="1" fail="3" skip="0" id="s1" name="Empresas Test">Empresas Test</stat>
 </suite>
 </statistics>
 <errors>
-<msg time="2024-10-24T20:21:48.276304" level="WARN">Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError('&lt;urllib3.connection.HTTPConnection object at 0x0000029BC498DA50&gt;: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión')': /session/8ac568c01affa1f9ea8b452ec42c1118/screenshot</msg>
-<msg time="2024-10-24T20:21:52.348015" level="WARN">Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError('&lt;urllib3.connection.HTTPConnection object at 0x0000029BC3743950&gt;: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión')': /session/8ac568c01affa1f9ea8b452ec42c1118/screenshot</msg>
-<msg time="2024-10-24T20:21:56.382242" level="WARN">Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError('&lt;urllib3.connection.HTTPConnection object at 0x0000029BC49A6010&gt;: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión')': /session/8ac568c01affa1f9ea8b452ec42c1118/screenshot</msg>
-<msg time="2024-10-24T20:22:00.413444" level="WARN">Keyword 'Capture Page Screenshot' could not be run on failure: HTTPConnectionPool(host='localhost', port=60916): Max retries exceeded with url: /session/8ac568c01affa1f9ea8b452ec42c1118/screenshot (Caused by NewConnectionError('&lt;urllib3.connection.HTTPConnection object at 0x0000029BC498CDD0&gt;: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))</msg>
-<msg time="2024-10-24T20:22:06.089087" level="WARN">Keyword 'Capture Page Screenshot' could not be run on failure: Message: no such window: target window already closed
-from unknown error: web view not found
-  (Session info: chrome=130.0.6723.69)
-Stacktrace:
-	GetHandleVerifier [0x00007FF7B5073AB5+28005]
-	(No symbol) [0x00007FF7B4FD83B0]
-	(No symbol) [0x00007FF7B4E7580A]
-	(No symbol) [0x00007FF7B4E4FA85]
-	(No symbol) [0x00007FF7B4EF2AD7]
-	(No symbol) [0x00007FF7B4F0B1B1]
-	(No symbol) [0x00007FF7B4EEB7E3]
-	(No symbol) [0x00007FF7B4EB75C8]
-	(No symbol) [0x00007FF7B4EB8731]
-	GetHandleVerifier [0x00007FF7B536643D+3118829]
-	GetHandleVerifier [0x00007FF7B53B6C90+3448640]
-	GetHandleVerifier [0x00007FF7B53ACF0D+3408317]
-	GetHandleVerifier [0x00007FF7B513A40B+841403]
-	(No symbol) [0x00007FF7B4FE340F]
-	(No symbol) [0x00007FF7B4FDF484]
-	(No symbol) [0x00007FF7B4FDF61D]
-	(No symbol) [0x00007FF7B4FCEB79]
-	BaseThreadInitThunk [0x00007FFF843D257D+29]
-	RtlUserThreadStart [0x00007FFF8662AF08+40]
-</msg>
 </errors>
 </robot>

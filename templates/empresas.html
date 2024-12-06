@@ -50,6 +50,21 @@
     .text-input-black:visited {
         color: black !important; /* Forzar negro en cualquier estado */
     }
+   /* Ocultar etiquetas en pantallas mayores a 576px */
+    @media (min-width: 577px) {
+      .responsive-label {
+        display: none !important; /* Oculta etiquetas fuera del flujo */
+      }
+    }
+
+    /* Mostrar etiquetas en pantallas menores a 576px */
+    @media (max-width: 576px) {
+      .responsive-label {
+        display: flex !important; /* Muestra etiquetas en móviles */
+        font-weight: bold;
+        margin-right: 5px;
+      }
+    }
 </style>
 </head>
 
@@ -61,87 +76,115 @@
 <div class="clearfix"></div>
 	
 	<div class="row mt-3 p-5">
-	<div class="col-12 col-lg-12">
-	   <div class="card">
-	     <div class="card-header" style="background-color: rgba(0, 0, 0, 0.30);">Seleccionar Empresa
-		 </div>
-	       <div class="table-responsive" style="background-color: transparent;">
-                 <table class="table align-items-center table-borderless table-flush" style="background-color: transparent; width: 100%; border-collapse: collapse;">
-                  <thead style="background-color: transparent;">
-                   <tr>
-                     <th class="text-center" style="color: white; background-color: rgba(0, 0, 0, 0.23);">Empresa</th>
-                     <th class="text-center" style="color: white; background-color: rgba(0, 0, 0, 0.20);">Logo</th>
-                     <th class="text-center" style="color: white; background-color: rgba(0, 0, 0, 0.23);">Cargo</th>
-                     <th class="text-center" style="color: white; background-color: rgba(0, 0, 0, 0.20);">Fecha de Ingreso</th>
-                     <th class="text-center" colspan="2" style="color: white; background-color: rgba(0, 0, 0, 0.23);">Acciones</th>
-                   </tr>
-                   </thead>
-                   <tbody>
-                    {% for empresa in empresas %}
-                    <tr>
-                        <td class="text-center" style="color: white; background-color: rgba(0, 0, 0, 0.23);">{{ empresa.nombre }}</td>
-                        <td class="text-center" style="background-color: rgba(0, 0, 0, 0.20);"><img src="{{ empresa.logo }}" class="product-img" alt="Logo de empresa"></td>
-                        <td class="text-center" style="color: white; background-color: rgba(0, 0, 0, 0.23);">{{ empresa.cargo }}</td>
-                        <td class="text-center" style="color: white; background-color: rgba(0, 0, 0, 0.20);">{{ empresa.fecha_ingreso }}</td>
-                        <td class="text-center" style="background-color: rgba(0, 0, 0, 0.23);">
-                            <!-- Verificar si el codigo_empresa está llegando -->
-                            <!-- <p style="color: red;">Codigo de empresa: {{ empresa.codigo_empresa }}</p> --> <!-- Línea para depuración -->
-                
-                            <!-- Botón para ingresar -->
-                            <a class="btn bsb-btn-xl btn-success" href="{{ url_for('vista_propiedad', codigo_empresa=empresa.codigo_empresa) }}">
-                                Ingresar
-                            </a>
-                        </td>
-                        <td class="text-center" style="background-color: rgba(0, 0, 0, 0.23);">
-                          <form action="{{ url_for('eliminar_empresa', codigo_empresa=empresa.codigo_empresa) }}" method="post" onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta empresa? Esta acción no se puede deshacer.')">
-                              <button type="submit" class="btn bsb-btn-xl btn-danger">Eliminar</button>
-                          </form>
-                        </td>
-                    </tr>
-                    <!-- Modal de error -->
-                    <div class="modal fade" id="modalErrorPermisos" tabindex="-1" aria-labelledby="modalErrorPermisosLabel" aria-hidden="true">
-                      <div class="modal-dialog">
-                        <div class="modal-content">
-                          <div class="modal-header">
-                            <h5 class="modal-title text-danger" id="modalErrorPermisosLabel">Permiso denegado</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                          </div>
-                          <div class="modal-body">
-                            No tienes permisos para eliminar esta empresa. Solo el creador de la empresa puede realizar esta acción.
-                          </div>
-                          <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                          </div>
-                        </div>
-                      </div>
+	  <div class="col-12 col-lg-12">
+      <div class="card">
+        <div class="card-header" style="background-color: rgba(0, 0, 0, 0.30);">
+          Seleccionar Empresa
+        </div>
+        <div class="table-responsive">
+          <table class="table align-items-center table-borderless table-flush">
+            <thead> <!-- Ocultar encabezados en móviles -->
+              <tr>
+                <th class="text-center d-none d-sm-table-cell" style="color: white;">Empresa</th>
+                <th class="text-center d-none d-md-table-cell" style="color: white;">Logo</th>
+                <th class="text-center d-none d-md-table-cell" style="color: white;">Cargo</th>
+                <th class="text-center d-none d-lg-table-cell" style="color: white;">Fecha de Ingreso</th>
+                <th class="text-center d-none d-sm-table-cell" colspan="2" style="color: white;">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for empresa in empresas %}
+              <!-- Diseño responsivo para filas -->
+              <tr style="width: 100%;">
+                <div class="row responsive-label d-none d-sm-flex text-center mx-auto" style="color: white; background-color: rgba(0, 0, 0, 0.23);">
+                  <div class="col-12 text-center p-4 mx-auto" style="color: white; background-color: rgba(0, 0, 0, 0.23);">
+                    <span>Empresa</span>
+                  </div>
+                  <div class="col-12 text-center p-2 mx-auto" style="color: white; background-color: rgba(0, 0, 0, 0.20);">
+                    {{ empresa.nombre }}
+                  </div>
+                  <div class="col-12 text-center p-4 mx-auto" style="color: white; background-color: rgba(0, 0, 0, 0.23);">
+                    <span>Acciones</span>
+                  </div>
+                  <div class="col-12 d-flex justify-content-center gap-2 flex-wrap mx-auto p-2" style="color: white; background-color: rgba(0, 0, 0, 0.20);">
+                    <a class="btn btn-success" href="{{ url_for('vista_propiedad', codigo_empresa=empresa.codigo_empresa) }}">
+                      Ingresar
+                    </a>
+                    <a class="btn btn-danger">
+                      Eliminar
+                    </a>
+                  </div>
+                </div>                
+                <td class="text-center d-none d-sm-table-cell" style="color: white; background-color: rgba(0, 0, 0, 0.23);">
+                  <div class="row">
+                    <div class="col-12 col-sm-6 mx-auto">
+                      {{ empresa.nombre }}
                     </div>
-                {% endfor %}
-                
-                </tbody>
-              </table>
-            </div>
-	   </div>
-    </div>
-    <div class="row col-4 mx-auto">
+                  </div>
+                </td>
+                <td class="text-center d-none d-md-table-cell" style="background-color: rgba(0, 0, 0, 0.20);">
+                  <div class="row">
+                    <div class="col-12 col-sm-12 mx-auto">
+                      <img src="{{ empresa.logo }}" class="product-img img-fluid" alt="Logo de empresa" style="max-width: 50px;">
+                    </div>
+                  </div>
+                </td>
+                <td class="text-center d-none d-md-table-cell" style="color: white; background-color: rgba(0, 0, 0, 0.23);">
+                  <div class="row">
+                    <div class="col-12 col-sm-6 mx-auto">
+                      {{ empresa.cargo }}
+                    </div>
+                  </div>
+                </td>
+                <td class="text-center d-none d-lg-table-cell" style="color: white; background-color: rgba(0, 0, 0, 0.20);">
+                  <div class="row">
+                    <div class="col-12 col-sm-6 mx-auto">
+                      {{ empresa.fecha_ingreso }}
+                    </div>
+                  </div>
+                </td>
+                <td class="text-center d-none d-sm-table-cell" colspan="2" style="background-color: rgba(0, 0, 0, 0.23);">
+                  <div class="row">
+                    <div class="responsive-label d-inline d-sm-none mx-auto">
+                      <span>Acciones:</span>
+                    </div>
+                    <div class="col-12 col-sm-12 d-flex justify-content-center gap-2 flex-wrap mx-auto">
+                      <a class="btn btn-success" href="{{ url_for('vista_propiedad', codigo_empresa=empresa.codigo_empresa) }}">
+                        Ingresar
+                      </a>
+                      <a class="btn btn-danger">
+                        Eliminar
+                      </a>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>    
+    <div class="row mx-auto" style="justify-content: center;">
       {% if current_user.is_admin %}
         <!-- Mostrar solo a los administradores -->
-        <div class="col-6 p-1">
+        <div class="col-lg-3 col-md-5 col-sm-6 col-xs-6 p-1">
           <button type="button" class="btn btn-primary shadow-lg border-5" 
           style="width:100%;"
           data-bs-toggle="modal" data-bs-target="#formModal">
               Crear Empresa
           </button>
         </div>
-        <div class="col-6 p-1">
+        <div class="col-lg-3 col-md-5 col-sm-6 col-xs-6 p-1">
           <button type="button" class="btn btn-danger shadow-lg border-5" 
           style="width:100%;"
           data-bs-toggle="modal" data-bs-target="#formModal2">
               Añadir Empresa
           </button>
-        </div>
+      </div>
       {% else %}
         <!-- Mostrar solo a los no administradores, ocupando todo el ancho -->
-        <div class="col-8 mx-auto p-1">
+        <div class="col-lg-6 col-md-8 col-sm-12 mx-auto p-1">
           <button type="button" class="btn btn-danger shadow-lg border-5" 
           style="width:100%;"
           data-bs-toggle="modal" data-bs-target="#formModal2">
