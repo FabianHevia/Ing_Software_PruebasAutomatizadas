@@ -39,22 +39,14 @@
 
         <div class="col-12 col-lg-4 col-xl-4">
           <div class="card">
-            <div class="card-header">Weekly sales</div>
+            <div class="card-header">Informacion adicional</div>
             <div class="card-body">
               <div class="chart-container-2">
                 <canvas id="chart2"></canvas>
               </div>
               <div class="table-responsive">
                 <table class="table align-items-center">
-                  <tbody>
-                    {% for sale in weekly_sales %}
-                    <tr>
-                      <td><i class="fa fa-circle text-white mr-2"></i> {{ sale.type }}</td>
-                      <td>${{ sale.amount }}</td>
-                      <td>+{{ sale.percentage }}%</td>
-                    </tr>
-                    {% endfor %}
-                  </tbody>
+            
                 </table>
               </div>
             </div>
@@ -65,7 +57,7 @@
       <div class="row">
         <div class="col-12 col-lg-12">
           <div class="card">
-            <div class="card-header">Recent Order Tables</div>
+            <div class="card-header">Informacion adicional</div>
             <div class="table-responsive">
               <table class="table align-items-center table-flush table-borderless">
                 <thead>
@@ -78,22 +70,7 @@
                     <th>Shipping</th>
                   </tr>
                 </thead>
-                <tbody>
-                  {% for order in recent_orders %}
-                  <tr>
-                    <td>{{ order.product }}</td>
-                    <td><img src="{{ order.photo }}" class="product-img" alt="product img"></td>
-                    <td>{{ order.product_id }}</td>
-                    <td>$ {{ order.amount }}</td>
-                    <td>{{ order.date }}</td>
-                    <td>
-                      <div class="progress shadow" style="height: 3px;">
-                        <div class="progress-bar" role="progressbar" style="width: {{ order.shipping }}%"></div>
-                      </div>
-                    </td>
-                  </tr>
-                  {% endfor %}
-                </tbody>
+                
               </table>
             </div>
           </div>
